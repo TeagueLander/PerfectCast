@@ -1,0 +1,10 @@
+<resources>
+    <!-- Main App Strings -->
+    <string name="app_name">PerfectCast</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Action Strings -->
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+
+</resources>
