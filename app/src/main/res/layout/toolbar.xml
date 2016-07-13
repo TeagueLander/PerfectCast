@@ -6,28 +6,23 @@
     android:layout_height="?attr/actionBarSize"
     android:background="?attr/colorPrimary"
     app:popupTheme="@style/AppTheme.PopupOverlay"
-    android:layout_gravity="bottom"
+    android:layout_gravity="top"
     >
 
-    <ImageButton
-        android:id="@+id/playPauseButton"
+    <!--<ImageButton
+        android:id="@+id/search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:onClick="playButtonPressed"
-        android:background="@android:drawable/ic_media_play"
+        android:background="@android:drawable/ic_menu_search"
         />
-
-    <!--<item
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/action_favorite"
-        android:icon="@android:drawable/ic_media_play"
-        android:title="@string/play"
-        app:showAsAction="ifRoom"
-        />
--->
-
-
+        -->
+    <!--android:onClick="playButtonPressed"-->
+    <!--<item android:id="@+id/search"
+        android:title="@string/search_title"
+        android:icon="@drawable/ic_search"
+        android:showAsAction="collapseActionView|ifRoom"
+        android:actionViewClass="android.widget.SearchView" />
+    -->
 </android.support.v7.widget.Toolbar>

@@ -71,9 +71,22 @@ public class AudioService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         //Continues running until its stopped
         //Toast.makeText(this, "Audio Service Started", Toast.LENGTH_LONG).show();
-
-        mp = MediaPlayer.create(this, curTrack);
-        playAudio();
+        String action = intent.getAction();
+        if (action == null) {
+            playAudio();
+        }
+        else if (action.equals(PAUSE_ACTION)) {
+            pauseAudio();
+        }
+        else if (action.equals(PLAY_ACTION)) {
+            playAudio();
+        }
+        else if (action.equals(SKIP_ACTION)) {
+            skipAudio();
+        }
+        else if (action.equals(REWIND_ACTION)) {
+            rewindAudio();
+        }
         //showNotification();
 
         return START_NOT_STICKY;
@@ -89,7 +102,9 @@ public class AudioService extends Service {
     }
 
     public void playAudio() {
-        mp = MediaPlayer.create(this, curTrack);
+        if (mp == null) {
+            mp = MediaPlayer.create(this, curTrack);
+        }
         mp.start();
         showNotification();
     }
