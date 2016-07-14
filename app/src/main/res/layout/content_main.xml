@@ -12,7 +12,14 @@
     tools:context="com.teaguelander.audio.perfectcast.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <TextView
+    <ExpandableListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/expandableListView_search"
+        >
+    </ExpandableListView>
+
+    <!--<TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Hello World!" />
@@ -22,7 +29,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/button"
         android:text="Start Services"
-        android:layout_below="@+id/imageButton"
         android:layout_centerHorizontal="true" />
 
     <Button
@@ -46,5 +52,5 @@
         android:layout_alignStart="@+id/button2"
         android:layout_alignRight="@+id/button2"
         android:layout_alignEnd="@+id/button2" />
-
+    -->
 </RelativeLayout>

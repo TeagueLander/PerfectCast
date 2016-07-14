@@ -6,5 +6,6 @@
     <!-- Action Strings -->
     <string name="play">Play</string>
     <string name="pause">Pause</string>
+    <string name="search">Search</string>
 
 </resources>
