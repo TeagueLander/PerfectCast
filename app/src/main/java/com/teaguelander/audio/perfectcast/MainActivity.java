@@ -191,13 +191,29 @@ public class MainActivity extends AppCompatActivity
 
         childRows.add(new ChildRow(R.mipmap.ic_launcher, "Lorem ipsum dolor sit amet"));
         childRows.add(new ChildRow(R.mipmap.ic_launcher, "Sit Fido, sit"));
+        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Lorem ipsum dolor sit amet"));
+        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Sit Fido, sit"));
         parentRow = new ParentRow("First Group", childRows);
         parentList.add(parentRow);
 
         childRows = new ArrayList<ChildRow>();
         childRows.add(new ChildRow(R.mipmap.ic_launcher, "Fido is the name of my dog"));
         childRows.add(new ChildRow(R.mipmap.ic_launcher, "Two plus two is ten"));
+        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Fido is the name of my dog"));
+        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Two plus two is ten"));
+        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Fido is the name of my dog"));
+        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Two plus two is ten"));
         parentRow = new ParentRow("Second Group", childRows);
+        parentList.add(parentRow);
+
+        childRows = new ArrayList<ChildRow>();
+        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Fido is the name of my dog"));
+        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Two plus two is ten"));
+        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Fido is the name of my dog"));
+        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Two plus two is ten"));
+        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Fido is the name of my dog"));
+        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Two plus two is ten"));
+        parentRow = new ParentRow("Third Group", childRows);
         parentList.add(parentRow);
     }
 
