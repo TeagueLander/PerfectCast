@@ -11,19 +11,20 @@
     tools:context="com.teaguelander.audio.perfectcast.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <!--<ExpandableListView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/expandableListView_search"
-        >
-    </ExpandableListView>
-    -->
-
-    <!--<TextView
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:id="@+id/retrieveButton"
+        android:text="Retrieve Data"
+        android:layout_centerHorizontal="true" />
 
+    <TextView
+        android:id="@+id/testText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/retrieveButton"
+        android:text="Test World!" />
+    <!--
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

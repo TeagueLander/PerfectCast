@@ -1,5 +1,6 @@
 package com.teaguelander.audio.perfectcast;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 //import android.support.design.widget.FloatingActionButton;
 //import android.support.design.widget.Snackbar;
+import android.os.StrictMode;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -18,29 +20,26 @@ import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import com.teaguelander.audio.perfectcast.PodcastInfoPull;
 
-public class MainActivity extends AppCompatActivity
-    implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
+public class MainActivity extends AppCompatActivity { //implements SearchView.OnQueryTextListener, SearchView.OnCloseListener
 
     boolean isAudioPlaying = false;
     BroadcastReceiver receiver;
-
-    //Search
-    private SearchManager searchManager;
-    private android.widget.SearchView searchView;
-    private ExpandableListAdapter listAdapter;
-    private ExpandableListView myList;
-    private ArrayList<ParentRow> parentList = new ArrayList<ParentRow>();
-    private ArrayList<ParentRow> showTheseParentList = new ArrayList<ParentRow>();
-    private MenuItem searchItem;
+    AppCompatActivity thisActivity = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Allow Internet Access
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         //The top bar with search
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -73,6 +72,16 @@ public class MainActivity extends AppCompatActivity
         filter.addAction(AudioService.PAUSE_ACTION);
         registerReceiver(receiver, filter);
 
+        Button retrieveButton = (Button) findViewById(R.id.retrieveButton);
+        retrieveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //PodcastInfoPull pull = new PodcastInfoPull();
+                (new PodcastInfoPull()).pull(findViewById(R.id.testText), thisActivity);
+                podcastInfoPull();
+            }
+        });
+
         /*Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,15 +96,12 @@ public class MainActivity extends AppCompatActivity
                 stopAudioService();
             }
         });*/
+    }
 
-        searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        parentList = new ArrayList<ParentRow>();
-        showTheseParentList = new ArrayList<ParentRow>();
-
-        //App will crash if not called here
-        displayList();
-        //Expands list of contents
-        expandAll();
+    private void podcastInfoPull() {
+        //TextView textView = (TextView) findViewById(R.id.testText);
+        //textView.setText("Working!");
+        //(new PodcastInfoPull()).pull(findViewById(R.id.testText), this);
     }
 
     @Override()
@@ -109,13 +115,6 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        searchItem = menu.findItem(R.id.action_search);
-        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setIconifiedByDefault(false);
-        searchView.setOnQueryTextListener(this);
-        searchView.setOnCloseListener(this);
-        searchView.requestFocus();
         return true;
     }
 
@@ -125,12 +124,6 @@ public class MainActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        /*if (id == R.id.search) {
-            startActivity(new Intent(this, SearchActivity.class));
-            return true;
-        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -161,74 +154,6 @@ public class MainActivity extends AppCompatActivity
             playPauseButton.setBackgroundResource(android.R.drawable.ic_media_pause);
             isAudioPlaying = true;
         }
-    }
-
-    @Override
-    public boolean onClose() {
-        listAdapter.filterData("");
-        expandAll();
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        listAdapter.filterData(query);
-        expandAll();
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        listAdapter.filterData(newText);
-        expandAll();
-        return false;
-    }
-
-    //Temp function
-    private void loadData() {
-        ArrayList<ChildRow> childRows = new ArrayList<ChildRow>();
-        ParentRow parentRow = null;
-
-        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Lorem ipsum dolor sit amet"));
-        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Sit Fido, sit"));
-        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Lorem ipsum dolor sit amet"));
-        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Sit Fido, sit"));
-        parentRow = new ParentRow("First Group", childRows);
-        parentList.add(parentRow);
-
-        childRows = new ArrayList<ChildRow>();
-        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Fido is the name of my dog"));
-        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Two plus two is ten"));
-        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Fido is the name of my dog"));
-        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Two plus two is ten"));
-        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Fido is the name of my dog"));
-        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Two plus two is ten"));
-        parentRow = new ParentRow("Second Group", childRows);
-        parentList.add(parentRow);
-
-        childRows = new ArrayList<ChildRow>();
-        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Fido is the name of my dog"));
-        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Two plus two is ten"));
-        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Fido is the name of my dog"));
-        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Two plus two is ten"));
-        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Fido is the name of my dog"));
-        childRows.add(new ChildRow(R.mipmap.ic_launcher, "Two plus two is ten"));
-        parentRow = new ParentRow("Third Group", childRows);
-        parentList.add(parentRow);
-    }
-
-    private void expandAll() {
-        int count = listAdapter.getGroupCount();
-        for (int i = 0; i < count; i++) {
-            myList.expandGroup(i);
-        }
-    }
-
-    private void displayList() {
-        loadData();
-        myList = (ExpandableListView) findViewById(R.id.expandableListView_search);
-        listAdapter = new ExpandableListAdapter(MainActivity.this, parentList);
-        myList.setAdapter(listAdapter);
     }
 
 }
