@@ -17,27 +17,31 @@ import java.io.IOException;
  */
 public class PodcastInfoPull {
 
-    public void pull(View view, AppCompatActivity app) {
-        TextView textView = (TextView) view;
+	public void pull(AppCompatActivity app) {
+		TextView titleView = (TextView) app.findViewById(R.id.infoTitle);
+		TextView descView = (TextView) app.findViewById(R.id.infoDesc);
 
-        Document doc = null;
-        try {
-            doc = Jsoup.connect("https://www.spreaker.com/show/1672823/episodes/feed").get();
-        } catch (IOException e) {
-            e.printStackTrace();
-            textView.setText("Didnt work now!");
-        }
-        String htmlString = doc.toString();
-        textView.setText(htmlString);
+		Document doc = null;
+		try {
+			doc = Jsoup.connect("https://www.spreaker.com/show/1672823/episodes/feed").get();
+		} catch (IOException e) {
+			e.printStackTrace();
+			titleView.setText("Didnt work now!");
+		}
 
-        Element title = doc.select("title").first();
-        textView.setText(title.text());
+		//Parsing here
+		Element title = doc.select("title").first();
+		Element desc = doc.select("description").first();
 
-    }
+		titleView.setText(title.text());
+		descView.setText(desc.text());
 
-    /*public PodcastInfoPull() {
-        TextView textView = (TextView) findViewById(R.id.testText);
-        textView.setText("Working now!");
-    }*/
+
+	}
+
+	/*public PodcastInfoPull() {
+		TextView textView = (TextView) findViewById(R.id.testText);
+		textView.setText("Working now!");
+	}*/
 
 }

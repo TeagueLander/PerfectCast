@@ -27,133 +27,133 @@ import com.teaguelander.audio.perfectcast.PodcastInfoPull;
 
 public class MainActivity extends AppCompatActivity { //implements SearchView.OnQueryTextListener, SearchView.OnCloseListener
 
-    boolean isAudioPlaying = false;
-    BroadcastReceiver receiver;
-    AppCompatActivity thisActivity = this;
+	boolean isAudioPlaying = false;
+	BroadcastReceiver receiver;
+	AppCompatActivity thisActivity = this;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
 
-        //Allow Internet Access
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+		//Allow Internet Access
+		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+		StrictMode.setThreadPolicy(policy);
 
-        //The top bar with search
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+		//The top bar with search
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
 
 
-        //The bottom toolbar which has audio controls
-        Toolbar controlToolbar = (Toolbar) findViewById(R.id.control_toolbar);
-        ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+		//The bottom toolbar which has audio controls
+		Toolbar controlToolbar = (Toolbar) findViewById(R.id.control_toolbar);
+		ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
 
-        //BroadcastReceiver and filter - recieves actions like play and pause from the notification tray
-        receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
-                if (action.equals(AudioService.PAUSE_ACTION)) {
-                    playPauseButton.setBackgroundResource(android.R.drawable.ic_media_play);
-                    isAudioPlaying = false;
-                }
-                else if (action.equals(AudioService.PLAY_ACTION)) {
-                    playPauseButton.setBackgroundResource(android.R.drawable.ic_media_pause);
-                    isAudioPlaying = true;
-                }
-            }
-        };
+		//BroadcastReceiver and filter - recieves actions like play and pause from the notification tray
+		receiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				String action = intent.getAction();
+				ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+				if (action.equals(AudioService.PAUSE_ACTION)) {
+					playPauseButton.setBackgroundResource(android.R.drawable.ic_media_play);
+					isAudioPlaying = false;
+				}
+				else if (action.equals(AudioService.PLAY_ACTION)) {
+					playPauseButton.setBackgroundResource(android.R.drawable.ic_media_pause);
+					isAudioPlaying = true;
+				}
+			}
+		};
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(AudioService.PLAY_ACTION);
-        filter.addAction(AudioService.PAUSE_ACTION);
-        registerReceiver(receiver, filter);
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(AudioService.PLAY_ACTION);
+		filter.addAction(AudioService.PAUSE_ACTION);
+		registerReceiver(receiver, filter);
 
-        Button retrieveButton = (Button) findViewById(R.id.retrieveButton);
-        retrieveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //PodcastInfoPull pull = new PodcastInfoPull();
-                (new PodcastInfoPull()).pull(findViewById(R.id.testText), thisActivity);
-                podcastInfoPull();
-            }
-        });
+		Button retrieveButton = (Button) findViewById(R.id.retrieveButton);
+		retrieveButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				//PodcastInfoPull pull = new PodcastInfoPull();
+				(new PodcastInfoPull()).pull(thisActivity);
+				podcastInfoPull();
+			}
+		});
 
-        /*Button button = (Button) findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startAudioService();
-            }
-        });
-        Button button2 = (Button) findViewById(R.id.button2);
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                stopAudioService();
-            }
-        });*/
-    }
+		/*Button button = (Button) findViewById(R.id.button);
+		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				startAudioService();
+			}
+		});
+		Button button2 = (Button) findViewById(R.id.button2);
+		button2.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				stopAudioService();
+			}
+		});*/
+	}
 
-    private void podcastInfoPull() {
-        //TextView textView = (TextView) findViewById(R.id.testText);
-        //textView.setText("Working!");
-        //(new PodcastInfoPull()).pull(findViewById(R.id.testText), this);
-    }
+	private void podcastInfoPull() {
+		//TextView textView = (TextView) findViewById(R.id.testText);
+		//textView.setText("Working!");
+		//(new PodcastInfoPull()).pull(findViewById(R.id.testText), this);
+	}
 
-    @Override()
-    public void onDestroy() {
-        //Cleanup goes here
-        super.onDestroy();
-        stopAudioService();
-    }
+	@Override()
+	public void onDestroy() {
+		//Cleanup goes here
+		super.onDestroy();
+		stopAudioService();
+	}
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.menu_main, menu);
+		return true;
+	}
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
 
-        return super.onOptionsItemSelected(item);
-    }
+		return super.onOptionsItemSelected(item);
+	}
 
-    public void startAudioService() {
-        startService(new Intent(getBaseContext(), AudioService.class));
-        isAudioPlaying = true;
-        ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
-        playPauseButton.setBackgroundResource(android.R.drawable.ic_media_pause);
-    }
-    public void stopAudioService() {
-        stopService(new Intent(getBaseContext(), AudioService.class));
-        isAudioPlaying = false;
-        ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
-        playPauseButton.setBackgroundResource(android.R.drawable.ic_media_play);
-    }
+	public void startAudioService() {
+		startService(new Intent(getBaseContext(), AudioService.class));
+		isAudioPlaying = true;
+		ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+		playPauseButton.setBackgroundResource(android.R.drawable.ic_media_pause);
+	}
+	public void stopAudioService() {
+		stopService(new Intent(getBaseContext(), AudioService.class));
+		isAudioPlaying = false;
+		ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+		playPauseButton.setBackgroundResource(android.R.drawable.ic_media_play);
+	}
 
-    //Ideally the button would have a pending intent on it instead.  That way an intent is sent to the service and the service returns an intent which changes the icon
-    public void playButtonPressed(View view) {
-        if(isAudioPlaying){
-            startService(new Intent(AudioService.PAUSE_ACTION, null, getBaseContext(), AudioService.class));
-            ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
-            playPauseButton.setBackgroundResource(android.R.drawable.ic_media_play);
-            isAudioPlaying = false;
-        }else {
-            startService(new Intent(AudioService.PLAY_ACTION, null, getBaseContext(), AudioService.class));
-            ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
-            playPauseButton.setBackgroundResource(android.R.drawable.ic_media_pause);
-            isAudioPlaying = true;
-        }
-    }
+	//Ideally the button would have a pending intent on it instead.  That way an intent is sent to the service and the service returns an intent which changes the icon
+	public void playButtonPressed(View view) {
+		if(isAudioPlaying){
+			startService(new Intent(AudioService.PAUSE_ACTION, null, getBaseContext(), AudioService.class));
+			ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+			playPauseButton.setBackgroundResource(android.R.drawable.ic_media_play);
+			isAudioPlaying = false;
+		}else {
+			startService(new Intent(AudioService.PLAY_ACTION, null, getBaseContext(), AudioService.class));
+			ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+			playPauseButton.setBackgroundResource(android.R.drawable.ic_media_pause);
+			isAudioPlaying = true;
+		}
+	}
 
 }
