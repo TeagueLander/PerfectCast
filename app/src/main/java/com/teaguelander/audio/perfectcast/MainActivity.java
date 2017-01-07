@@ -12,6 +12,7 @@ import android.os.StrictMode;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +22,7 @@ import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import com.teaguelander.audio.perfectcast.PodcastInfoPull;
@@ -28,7 +30,6 @@ import com.teaguelander.audio.perfectcast.PodcastInfoPull;
 public class MainActivity extends AppCompatActivity { //implements SearchView.OnQueryTextListener, SearchView.OnCloseListener
 
 	//Useful everywhere
-	//Toast.makeText(getApplicationContext(), "Hello World", Toast.LENGTH_SHORT).show();
 
 	boolean isAudioPlaying = false;
 	BroadcastReceiver receiver;
@@ -58,8 +59,11 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				String action = intent.getAction();
+				Log.d("ma", "MainActivity received Intent: " + action);
 				ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
-				if (action.equals(AudioService.PAUSE_ACTION)) {
+
+//				Toast.makeText(getApplicationContext(), "Action Received: " + action, Toast.LENGTH_SHORT).show();
+				if (action.equals(AudioService.PAUSE_ACTION) || action.equals(AudioService.STOP_ACTION) || action.equals(AudioService.DESTROY_ACTION)) {
 					playPauseButton.setBackgroundResource(android.R.drawable.ic_media_play);
 					isAudioPlaying = false;
 				}
@@ -73,6 +77,8 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(AudioService.PLAY_ACTION);
 		filter.addAction(AudioService.PAUSE_ACTION);
+		filter.addAction(AudioService.STOP_ACTION);
+		filter.addAction(AudioService.DESTROY_ACTION);
 		registerReceiver(receiver, filter);
 
 		Button retrieveButton = (Button) findViewById(R.id.retrieveButton);
@@ -147,7 +153,8 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 	//Ideally the button would have a pending intent on it instead.  That way an intent is sent to the service and the service returns an intent which changes the icon
 	public void playButtonPressed(View view) {
 		if(isAudioPlaying){
-			startService(new Intent(AudioService.PAUSE_ACTION, null, getBaseContext(), AudioService.class));
+//			startService(new Intent(AudioService.PAUSE_ACTION, null, getBaseContext(), AudioService.class));
+			sendBroadcast(new Intent(AudioService.PAUSE_ACTION));
 			ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
 			playPauseButton.setBackgroundResource(android.R.drawable.ic_media_play);
 			isAudioPlaying = false;

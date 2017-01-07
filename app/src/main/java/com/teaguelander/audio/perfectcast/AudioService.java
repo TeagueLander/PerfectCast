@@ -12,10 +12,12 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.IBinder;
 import android.media.MediaPlayer;
+import android.provider.ContactsContract;
 import android.support.v4.content.SharedPreferencesCompat;
 import android.support.v7.app.NotificationCompat;
 import android.app.NotificationManager;
 //import android.support.v4.app.TaskStackBuilder;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -38,7 +40,8 @@ public class AudioService extends Service {
 	int curTrack = R.raw.groove;
 	MediaPlayer mp;
 	BroadcastReceiver receiver; //For Intents
-//	SharedPreferences.Editor prefEditor = getSharedPreferences(DataManager.PREFS_NAME, MODE_PRIVATE).edit();
+	SharedPreferences preferences;
+	SharedPreferences.Editor prefEditor;
 	int notificationId = -1; //notificationID allows you to update the notification later on.
 
 	int resumeTime = 0; // Resume time
@@ -70,7 +73,8 @@ public class AudioService extends Service {
 //		prefEditor = getSharedPreferences(DataManager.PREFS_NAME, MODE_PRIVATE).edit();
 //		prefEditor.putString("name", "Elena");
 //		prefEditor.commit();
-
+		preferences = getSharedPreferences(DataManager.PREFS_NAME, MODE_PRIVATE);
+		prefEditor = preferences.edit();
 
 	}
 
@@ -86,23 +90,22 @@ public class AudioService extends Service {
 	//Cleanup the service
 	public void onDestroy() {
 		super.onDestroy();
-		Toast.makeText(this, "Audio Service Destroyed ", Toast.LENGTH_LONG).show();
 
 		resumeTime = mp.getCurrentPosition() - RESUME_REWIND_LENGTH;
+		prefEditor.putInt(DataManager.PREF_RESUME_TIME, resumeTime);
+		prefEditor.commit();
 
-//		prefEditor.putInt(DataManager.PREF_RESUME_TIME, resumeTime);
-//		prefEditor.commit();
-
-		mp.stop();
+		mp.release();
+//		sendBroadcast(new Intent(STOP_ACTION));
 		removeNotification();
 		unregisterReceiver(receiver);
+		Log.d("as", "AudioService destroyed");
 	}
 
 	public void playAudio() {
 		if (mp == null) {
 			mp = MediaPlayer.create(this, curTrack);
-//			SharedPreferences preferences = getSharedPreferences(DataManager.PREFS_NAME, MODE_PRIVATE);
-//			resumeTime = ore
+			resumeTime = preferences.getInt(DataManager.PREF_RESUME_TIME, 0);
 
 			//Listeners
 			mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -110,7 +113,9 @@ public class AudioService extends Service {
 //					stopAudio(); //Use broadcast STOP_ACTION here instead
 					mp.seekTo(0);
 					pauseAudio();
-					Toast.makeText(getApplicationContext(), "Hello World", Toast.LENGTH_SHORT).show();
+					Log.d("as", "End of Audio reached");
+					sendBroadcast(new Intent(STOP_ACTION));
+//					Toast.makeText(getApplicationContext(), "Hello World", Toast.LENGTH_SHORT).show();
 				}
 			});
 		}
@@ -121,11 +126,17 @@ public class AudioService extends Service {
 
 	public void pauseAudio() {
 		mp.pause();
+		resumeTime = mp.getCurrentPosition() - RESUME_REWIND_LENGTH;
+		prefEditor.putInt(DataManager.PREF_RESUME_TIME, resumeTime);
+		prefEditor.commit();
 		showNotification();
 	}
 
 	public void stopAudio() {
 		mp.stop();
+		resumeTime = mp.getCurrentPosition() - RESUME_REWIND_LENGTH;
+		prefEditor.putInt(DataManager.PREF_RESUME_TIME, resumeTime);
+		prefEditor.commit();
 		showNotification();
 	}
 
@@ -202,6 +213,7 @@ public class AudioService extends Service {
 
 	private void performAction(Intent intent) {
 		String action = intent.getAction();
+		Log.d("as", "AudioService received Intent: " + action);
 		if (action == null) {
 			playAudio();
 		}
@@ -218,7 +230,7 @@ public class AudioService extends Service {
 			rewindAudio();
 		}
 		else if (action.equals(STOP_ACTION)) {
-			stopAudio();
+//			stopAudio();
 		}else if (action.equals(DESTROY_ACTION)) {
 //			Toast.makeText(this, "Destroy Action", Toast.LENGTH_LONG).show();
 			stopSelf(); //Ends the service
