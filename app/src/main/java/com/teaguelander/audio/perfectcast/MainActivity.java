@@ -27,6 +27,9 @@ import com.teaguelander.audio.perfectcast.PodcastInfoPull;
 
 public class MainActivity extends AppCompatActivity { //implements SearchView.OnQueryTextListener, SearchView.OnCloseListener
 
+	//Useful everywhere
+	//Toast.makeText(getApplicationContext(), "Hello World", Toast.LENGTH_SHORT).show();
+
 	boolean isAudioPlaying = false;
 	BroadcastReceiver receiver;
 	AppCompatActivity thisActivity = this;
@@ -78,7 +81,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 			public void onClick(View view) {
 				//PodcastInfoPull pull = new PodcastInfoPull();
 				(new PodcastInfoPull()).pull(thisActivity);
-				podcastInfoPull();
+//				podcastInfoPull();
 			}
 		});
 
