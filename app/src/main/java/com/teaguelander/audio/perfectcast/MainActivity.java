@@ -64,12 +64,10 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 
 //				Toast.makeText(getApplicationContext(), "Action Received: " + action, Toast.LENGTH_SHORT).show();
 				if (action.equals(AudioService.PAUSE_ACTION) || action.equals(AudioService.STOP_ACTION) || action.equals(AudioService.DESTROY_ACTION)) {
-					playPauseButton.setBackgroundResource(android.R.drawable.ic_media_play);
-					isAudioPlaying = false;
+					setPlayButton(false);
 				}
 				else if (action.equals(AudioService.PLAY_ACTION)) {
-					playPauseButton.setBackgroundResource(android.R.drawable.ic_media_pause);
-					isAudioPlaying = true;
+					setPlayButton(true);
 				}
 			}
 		};
@@ -139,15 +137,11 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 
 	public void startAudioService() {
 		startService(new Intent(getBaseContext(), AudioService.class));
-		isAudioPlaying = true;
-		ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
-		playPauseButton.setBackgroundResource(android.R.drawable.ic_media_pause);
+		setPlayButton(true);
 	}
 	public void stopAudioService() {
 		stopService(new Intent(getBaseContext(), AudioService.class));
-		isAudioPlaying = false;
-		ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
-		playPauseButton.setBackgroundResource(android.R.drawable.ic_media_play);
+		setPlayButton(false);
 	}
 
 	//Ideally the button would have a pending intent on it instead.  That way an intent is sent to the service and the service returns an intent which changes the icon
@@ -155,14 +149,21 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		if(isAudioPlaying){
 //			startService(new Intent(AudioService.PAUSE_ACTION, null, getBaseContext(), AudioService.class));
 			sendBroadcast(new Intent(AudioService.PAUSE_ACTION));
-			ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
-			playPauseButton.setBackgroundResource(android.R.drawable.ic_media_play);
 			isAudioPlaying = false;
 		}else {
 			startService(new Intent(AudioService.PLAY_ACTION, null, getBaseContext(), AudioService.class));
-			ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
-			playPauseButton.setBackgroundResource(android.R.drawable.ic_media_pause);
 			isAudioPlaying = true;
+		}
+		setPlayButton(isAudioPlaying);
+	}
+
+	//Controls the play/pause button
+	private void setPlayButton(boolean playing) {
+		ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+		if (playing) {
+			playPauseButton.setImageResource(android.R.drawable.ic_media_pause);
+		}else {
+			playPauseButton.setImageResource(android.R.drawable.ic_media_play);
 		}
 	}
 

@@ -8,4 +8,7 @@
     <string name="pause">Pause</string>
     <string name="search">Search</string>
 
+    <!-- Content Description Strings-->
+    <string name="cd_play_pause_button">Play/Pause Button</string>
+
 </resources>
