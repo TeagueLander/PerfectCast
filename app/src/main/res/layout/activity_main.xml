@@ -8,6 +8,16 @@
 	tools:context="com.teaguelander.audio.perfectcast.MainActivity"
 	android:background="@color/colorPrimary">
 
+	<!-- SEARCH BAR -->
+	<com.arlib.floatingsearchview.FloatingSearchView
+		android:id="@+id/searchView"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		app:floatingSearch_leftActionMode="showHamburger"
+		app:floatingSearch_searchHint="@string/app_name"
+		>
+	</com.arlib.floatingsearchview.FloatingSearchView>
+
 	<android.support.design.widget.CoordinatorLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
@@ -19,23 +29,9 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:background="@color/colorPrimary">
-
 		</android.support.design.widget.AppBarLayout>
 
-		<!--<android.support.v4.widget.NestedScrollView-->
-			<!--android:layout_width="match_parent"-->
-			<!--android:layout_height="match_parent"-->
-			<!--android:clipToPadding="false"-->
-			<!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
-			<!--&gt;-->
-
-			<!--<TextView-->
-				<!--android:clipToPadding="false"-->
-				<!--android:layout_width="wrap_content"-->
-				<!--android:layout_height="wrap_content"-->
-				<!--android:text="@string/lorem"-->
-				<!--android:textSize="18sp"/>-->
-		<!--</android.support.v4.widget.NestedScrollView>-->
+		<!-- TABS -->
 		<android.support.design.widget.TabLayout
 			android:id="@+id/tabs"
 			android:layout_width="match_parent"
@@ -45,7 +41,7 @@
 			android:background="@color/colorPrimary"
 			app:tabTextColor="@color/textColorPrimary"
 			app:tabSelectedTextColor="@color/textColorPrimaryDark"/>
-		<!-- TABS -->
+		<!-- PAGER (controlled by TABS) -->
 		<android.support.v4.view.ViewPager
 			android:id="@+id/viewpager"
 			android:layout_width="match_parent"
@@ -53,6 +49,8 @@
 			android:background="@android:color/white"
 			android:layout_marginTop="@dimen/viewpager_margin_top"
 			/>
+
+		<!-- BOTTOM TOOLBAR -->
 		<android.support.design.widget.AppBarLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
@@ -64,18 +62,8 @@
 				layout="@layout/control_toolbar" />
 
 		</android.support.design.widget.AppBarLayout>
+
 	</android.support.design.widget.CoordinatorLayout>
-
-	<!-- SEARCH BAR -->
-	<com.arlib.floatingsearchview.FloatingSearchView
-		android:id="@+id/searchView"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		>
-
-
-		<!--@dimen/viewpager_margin_top-->
-	</com.arlib.floatingsearchview.FloatingSearchView>
 
 
 </RelativeLayout>

@@ -29,6 +29,8 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.teaguelander.audio.perfectcast.PodcastInfoPull;
 import com.teaguelander.audio.perfectcast.fragments.FavouritesFragment;
 import com.teaguelander.audio.perfectcast.fragments.NowPlayingFragment;
@@ -55,8 +57,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		StrictMode.setThreadPolicy(policy);
 
 		//The top bar with search
-//		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//		setSupportActionBar(toolbar);
+		FloatingSearchView searchView = (FloatingSearchView) findViewById(R.id.searchView);
 		//The bottom toolbar which has audio controls
 		Toolbar controlToolbar = (Toolbar) findViewById(R.id.control_toolbar);
 		ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
@@ -98,6 +99,18 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		filter.addAction(AudioService.DESTROY_ACTION);
 		registerReceiver(receiver, filter);
 
+
+		//Event Listenters
+		searchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
+			@Override
+			public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
+			}
+			@Override
+			public void onSearchAction(String currentQuery) {
+				Log.d("ma", currentQuery);
+			}
+		});
+
 		Button retrieveButton = (Button) findViewById(R.id.retrieveButton);
 		if (retrieveButton != null)
 		retrieveButton.setOnClickListener(new View.OnClickListener() {
@@ -112,23 +125,6 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 				}
 			}
 		});
-
-
-
-		/*Button button = (Button) findViewById(R.id.button);
-		button.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				startAudioService();
-			}
-		});
-		Button button2 = (Button) findViewById(R.id.button2);
-		button2.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				stopAudioService();
-			}
-		});*/
 	}
 
 	private void podcastInfoPull() {
