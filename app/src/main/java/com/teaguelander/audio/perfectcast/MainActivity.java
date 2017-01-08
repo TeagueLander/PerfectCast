@@ -9,6 +9,7 @@ import android.os.Bundle;
 //import android.support.design.widget.FloatingActionButton;
 //import android.support.design.widget.Snackbar;
 import android.os.StrictMode;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -28,8 +29,10 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.astuetz.PagerSlidingTabStrip;
 import com.teaguelander.audio.perfectcast.PodcastInfoPull;
+import com.teaguelander.audio.perfectcast.fragments.FavouritesFragment;
+import com.teaguelander.audio.perfectcast.fragments.NowPlayingFragment;
+import com.teaguelander.audio.perfectcast.fragments.UpNextFragment;
 
 import org.json.JSONException;
 
@@ -57,12 +60,17 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		//The bottom toolbar which has audio controls
 		Toolbar controlToolbar = (Toolbar) findViewById(R.id.control_toolbar);
 		ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+		//Tabs
+		FragmentAdapter adapter = new FragmentAdapter(getSupportFragmentManager());
+		adapter.addFragment(new FavouritesFragment(), getString(R.string.tab_favourites));
+		adapter.addFragment(new NowPlayingFragment(), getString(R.string.tab_now_playing));
+		adapter.addFragment(new UpNextFragment(), getString(R.string.tab_up_next));
 		//View Pager
 		ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-		viewPager.setAdapter(new CustomPagerAdapter(this));
+		viewPager.setAdapter(adapter);
 		//Bind tabs to the ViewPager
-		PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-		tabs.setViewPager(viewPager);
+		TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+		tabLayout.setupWithViewPager(viewPager);
 
 
 		//BroadcastReceiver and filter - recieves actions like play and pause from the notification tray
