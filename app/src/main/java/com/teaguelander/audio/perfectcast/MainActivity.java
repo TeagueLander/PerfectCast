@@ -52,8 +52,8 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		StrictMode.setThreadPolicy(policy);
 
 		//The top bar with search
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
+//		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//		setSupportActionBar(toolbar);
 		//The bottom toolbar which has audio controls
 		Toolbar controlToolbar = (Toolbar) findViewById(R.id.control_toolbar);
 		ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
@@ -95,14 +95,13 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		retrieveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				//PodcastInfoPull pull = new PodcastInfoPull();
+
 				try {
 					(new PodcastInfoPull()).pull(thisActivity);
 				}
 				catch (Exception e){
 					Log.d("ma", e.toString());
 				}
-//				podcastInfoPull();
 			}
 		});
 

@@ -7,14 +7,35 @@
 	android:fitsSystemWindows="true"
 	tools:context="com.teaguelander.audio.perfectcast.MainActivity">
 
+	<android.support.design.widget.AppBarLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:theme="@style/AppTheme.AppBarOverlay">
+
+		<include
+			android:id="@+id/search_toolbar"
+			layout="@layout/search_toolbar" />
+
+		<com.astuetz.PagerSlidingTabStrip
+			android:id="@+id/tabs"
+			android:layout_width="match_parent"
+			android:layout_height="@dimen/tabstrip"
+			android:background="?attr/colorPrimaryDark"
+			android:textColor="@color/textColorPrimary"
+			app:pstsIndicatorColor="@color/textColorPrimary"
+			app:pstsIndicatorHeight="2dp"
+			/>
+
+		<!--May add pstsIndicatorColor pstsUnderlineColor pstsDividerColor -->
+	</android.support.design.widget.AppBarLayout>
 
 	<android.support.v4.view.ViewPager
-			android:id="@+id/viewpager"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:background="@android:color/white"
-			android:layout_marginTop="@dimen/viewpager_margin_top"
-			/>
+		android:id="@+id/viewpager"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="@android:color/white"
+		android:layout_marginTop="@dimen/viewpager_margin_top"
+		/>
 	<!--<include layout="@layout/content_main" />-->
 	<!--<include layout="@layout/podcast_info_view" />-->
 
@@ -28,31 +49,6 @@
 			android:id="@+id/control_toolbar"
 			layout="@layout/control_toolbar" />
 
-	</android.support.design.widget.AppBarLayout>
-
-	<android.support.design.widget.AppBarLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:theme="@style/AppTheme.AppBarOverlay">
-
-		<android.support.v7.widget.Toolbar
-			android:id="@+id/toolbar"
-			android:layout_width="match_parent"
-			android:layout_height="@dimen/toolbar"
-			android:background="?attr/colorPrimaryDark"
-			app:popupTheme="@style/AppTheme.PopupOverlay"
-			/>
-
-		<com.astuetz.PagerSlidingTabStrip
-			android:id="@+id/tabs"
-			android:layout_width="match_parent"
-			android:layout_height="@dimen/tabstrip"
-			android:background="?attr/colorPrimary"
-			android:textColor="@color/textColorPrimary"
-			app:pstsIndicatorColor="@color/textColorPrimary"
-			app:pstsIndicatorHeight="2dp"
-			/>
-		<!--May add pstsIndicatorColor pstsUnderlineColor pstsDividerColor -->
 	</android.support.design.widget.AppBarLayout>
 
 	<!--android.support.design.widget.FloatingActionButton

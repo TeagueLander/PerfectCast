@@ -4,6 +4,7 @@
 	<color name="colorPrimaryDark">#303F9F</color>
 	<color name="colorPrimaryLight">#5468d3</color>
 	<color name="colorAccent">#FF4081</color>
+	<color name="colorDivider">#1A0000</color>
 
 	<!--TextColors -->
 	<color name="textColorPrimary">#FFFFFF</color>
