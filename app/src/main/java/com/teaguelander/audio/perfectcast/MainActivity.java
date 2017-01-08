@@ -24,8 +24,11 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import com.teaguelander.audio.perfectcast.PodcastInfoPull;
+
+import org.json.JSONException;
 
 public class MainActivity extends AppCompatActivity { //implements SearchView.OnQueryTextListener, SearchView.OnCloseListener
 
@@ -84,7 +87,12 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 			@Override
 			public void onClick(View view) {
 				//PodcastInfoPull pull = new PodcastInfoPull();
-				(new PodcastInfoPull()).pull(thisActivity);
+				try {
+					(new PodcastInfoPull()).pull(thisActivity);
+				}
+				catch (Exception e){
+					Log.d("ma", e.toString());
+				}
 //				podcastInfoPull();
 			}
 		});
