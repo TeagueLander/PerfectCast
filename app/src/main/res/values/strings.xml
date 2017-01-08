@@ -1,14 +1,19 @@
 <resources>
-    <!-- Main App Strings -->
-    <string name="app_name">PerfectCast</string>
-    <string name="action_settings">Settings</string>
+	<!-- Main App Strings -->
+	<string name="app_name">PerfectCast</string>
+	<string name="action_settings">Settings</string>
 
-    <!-- Action Strings -->
-    <string name="play">Play</string>
-    <string name="pause">Pause</string>
-    <string name="search">Search</string>
+	<!-- Tabs -->
+	<string name="tab_favourites">Favourites</string>
+	<string name="tab_now_playing">Now Playing</string>
+	<string name="tab_up_next">Up Next</string>
 
-    <!-- Content Description Strings-->
-    <string name="cd_play_pause_button">Play/Pause Button</string>
+	<!-- Action Strings -->
+	<string name="play">Play</string>
+	<string name="pause">Pause</string>
+	<string name="search">Search</string>
+
+	<!-- Content Description Strings-->
+	<string name="cd_play_pause_button">Play/Pause Button</string>
 
 </resources>

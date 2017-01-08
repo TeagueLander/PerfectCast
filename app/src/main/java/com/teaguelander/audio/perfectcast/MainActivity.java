@@ -10,6 +10,7 @@ import android.os.Bundle;
 //import android.support.design.widget.Snackbar;
 import android.os.StrictMode;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -26,6 +27,8 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
+import com.astuetz.PagerSlidingTabStrip;
 import com.teaguelander.audio.perfectcast.PodcastInfoPull;
 
 import org.json.JSONException;
@@ -51,11 +54,16 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		//The top bar with search
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
-
-
 		//The bottom toolbar which has audio controls
 		Toolbar controlToolbar = (Toolbar) findViewById(R.id.control_toolbar);
 		ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+		//View Pager
+		ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+		viewPager.setAdapter(new CustomPagerAdapter(this));
+		//Bind tabs to the ViewPager
+		PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+		tabs.setViewPager(viewPager);
+
 
 		//BroadcastReceiver and filter - recieves actions like play and pause from the notification tray
 		receiver = new BroadcastReceiver() {
@@ -83,6 +91,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		registerReceiver(receiver, filter);
 
 		Button retrieveButton = (Button) findViewById(R.id.retrieveButton);
+		if (retrieveButton != null)
 		retrieveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -96,6 +105,8 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 //				podcastInfoPull();
 			}
 		});
+
+
 
 		/*Button button = (Button) findViewById(R.id.button);
 		button.setOnClickListener(new View.OnClickListener() {
@@ -124,6 +135,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		//Cleanup goes here
 		super.onDestroy();
 		stopAudioService();
+		unregisterReceiver(receiver);
 	}
 
 	@Override
