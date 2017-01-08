@@ -4,14 +4,36 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:paddingLeft="@dimen/activity_horizontal_margin"
-	android:paddingRight="@dimen/activity_horizontal_margin"
+	android:paddingLeft="0dp"
+	android:paddingRight="0dp"
 	android:layout_marginBottom="?attr/actionBarSize"
-	app:layout_behavior="@string/appbar_scrolling_view_behavior"
 	tools:context="com.teaguelander.audio.perfectcast.MainActivity"
-	tools:showIn="@layout/activity_main">
+	tools:showIn="@layout/activity_main"
+	>
+	<!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
 
 
-	<include layout="@layout/podcast_info_view" />
+	<!-- TABS -->
+	<android.support.design.widget.TabLayout
+		android:id="@+id/tabs"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:tabIndicatorColor="@android:color/white"
+		android:layout_marginTop="@dimen/toolbar"
+		android:background="@color/colorPrimary"
+		app:tabTextColor="@color/textColorPrimary"
+		app:tabSelectedTextColor="@color/textColorPrimaryDark"/>
+	<!-- PAGER (controlled by TABS) -->
+	<android.support.v4.view.ViewPager
+		android:id="@+id/viewpager"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="@android:color/white"
+		android:layout_marginTop="@dimen/viewpager_margin_top"
+		/>
+
+
+
+	<!--<include layout="@layout/podcast_info_view" />-->
 
 </RelativeLayout>
