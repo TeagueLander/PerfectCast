@@ -6,9 +6,9 @@
 	android:layout_height="match_parent"
 	android:paddingLeft="0dp"
 	android:paddingRight="0dp"
-	android:layout_marginBottom="?attr/actionBarSize"
 	tools:context="com.teaguelander.audio.perfectcast.MainActivity"
 	tools:showIn="@layout/activity_main"
+	android:id="@+id/contentMain"
 	>
 	<!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
 
@@ -19,7 +19,6 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		app:tabIndicatorColor="@android:color/white"
-		android:layout_marginTop="@dimen/toolbar"
 		android:background="@color/colorPrimary"
 		app:tabTextColor="@color/textColorPrimary"
 		app:tabSelectedTextColor="@color/textColorPrimaryDark"/>
@@ -29,7 +28,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:background="@android:color/white"
-		android:layout_marginTop="@dimen/viewpager_margin_top"
+		android:layout_marginTop="@dimen/tabstrip"
 		/>
 
 

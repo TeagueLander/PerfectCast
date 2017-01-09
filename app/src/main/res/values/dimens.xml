@@ -6,6 +6,6 @@
 
 	<dimen name="toolbar">56dp</dimen>
 	<dimen name="tabstrip">48dp</dimen>
-	<dimen name="viewpager_margin_top">104dp</dimen>
+	<!--<dimen name="viewpager_margin_top">104dp</dimen>-->
 
 </resources>

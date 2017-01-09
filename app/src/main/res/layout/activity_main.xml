@@ -31,8 +31,21 @@
 			android:background="@color/colorPrimary">
 		</android.support.design.widget.AppBarLayout>
 
-		<!-- Main Content -->
-		<include layout="@layout/content_main"/>
+
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_marginTop="@dimen/toolbar"
+			android:layout_marginBottom="@dimen/toolbar"
+			android:background="#FFFFFF">
+
+			<!-- Main Content -->
+			<include layout="@layout/content_main"/>
+			<!-- Search View -->
+			<include layout="@layout/view_search_results" />
+
+		</RelativeLayout>
+
 
 		<!-- BOTTOM TOOLBAR -->
 		<android.support.design.widget.AppBarLayout
@@ -46,23 +59,6 @@
 				layout="@layout/control_toolbar" />
 
 		</android.support.design.widget.AppBarLayout>
-
-		<!-- Search Results here (only show if you searched) -->
-		<!--<LinearLayout-->
-			<!--android:layout_width="match_parent"-->
-			<!--android:layout_height="match_parent"-->
-			<!--android:layout_marginTop="@dimen/toolbar"-->
-			<!--android:background="#FFFFFF"-->
-			<!--&gt;-->
-			<!--<TextView-->
-				<!--android:layout_width="wrap_content"-->
-				<!--android:layout_height="wrap_content"-->
-				<!--android:text="First View"-->
-				<!--android:textSize="100sp"-->
-				<!--android:textColor="@android:color/black"-->
-				<!--android:textStyle="bold"-->
-				<!--/>-->
-		<!--</LinearLayout>-->
 
 	</android.support.design.widget.CoordinatorLayout>
 

@@ -32,6 +32,7 @@ dependencies {
 //    compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
 //    compile 'com.lapism:searchview:4.0'
 	compile 'com.github.arimorty:floatingsearchview:2.0.3'
+	compile 'com.android.volley:volley:1.0.0'
 
 	//JSOUP
 //    compile 'org.jsoup:jsoup:1.7.3'
