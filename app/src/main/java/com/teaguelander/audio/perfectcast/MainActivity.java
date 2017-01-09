@@ -15,6 +15,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +26,7 @@ import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,6 +68,8 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		//The bottom toolbar which has audio controls
 		Toolbar controlToolbar = (Toolbar) findViewById(R.id.control_toolbar);
 		ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+		//Main Content View (contains everything not in toolbars)
+		RelativeLayout mainContentView = (RelativeLayout) findViewById(R.id.activity_main_content);
 		//Tabs
 		FragmentAdapter adapter = new FragmentAdapter(getSupportFragmentManager());
 		adapter.addFragment(new FavouritesFragment(), getString(R.string.tab_favourites));

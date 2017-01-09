@@ -8,16 +8,6 @@
 	tools:context="com.teaguelander.audio.perfectcast.MainActivity"
 	android:background="@color/colorPrimary">
 
-	<!-- SEARCH BAR -->
-	<com.arlib.floatingsearchview.FloatingSearchView
-		android:id="@+id/searchView"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		app:floatingSearch_leftActionMode="showHamburger"
-		app:floatingSearch_searchHint="@string/app_name"
-		>
-	</com.arlib.floatingsearchview.FloatingSearchView>
-
 	<android.support.design.widget.CoordinatorLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
@@ -33,6 +23,7 @@
 
 
 		<RelativeLayout
+			android:id="@+id/activity_main_content"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_marginTop="@dimen/toolbar"
@@ -43,9 +34,28 @@
 			<include layout="@layout/content_main"/>
 			<!-- Search View -->
 			<include layout="@layout/view_search_results" />
+			<!-- Transparent Black Layer FOR LATER ;) -->
+			<View
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:background="#AA000000"
+				android:visibility="gone"
+				/>
 
 		</RelativeLayout>
 
+
+		<!-- SEARCH BAR -->
+		<com.arlib.floatingsearchview.FloatingSearchView
+			android:id="@+id/searchView"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			app:floatingSearch_leftActionMode="showHamburger"
+			app:floatingSearch_searchHint="@string/app_name"
+			app:floatingSearch_close_search_on_keyboard_dismiss="true"
+			app:floatingSearch_dismissOnOutsideTouch="true"
+			app:floatingSearch_dimBackground="true"
+			/>
 
 		<!-- BOTTOM TOOLBAR -->
 		<android.support.design.widget.AppBarLayout
