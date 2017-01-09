@@ -9,28 +9,45 @@ import android.os.Bundle;
 //import android.support.design.widget.FloatingActionButton;
 //import android.support.design.widget.Snackbar;
 import android.os.StrictMode;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Intent;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import com.teaguelander.audio.perfectcast.PodcastInfoPull;
+
+import com.android.volley.Response;
+import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.teaguelander.audio.perfectcast.DataService;
+import com.teaguelander.audio.perfectcast.fragments.FavouritesFragment;
+import com.teaguelander.audio.perfectcast.fragments.NowPlayingFragment;
+import com.teaguelander.audio.perfectcast.fragments.UpNextFragment;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity { //implements SearchView.OnQueryTextListener, SearchView.OnCloseListener
 
 	//Useful everywhere
-
 	boolean isAudioPlaying = false;
 	BroadcastReceiver receiver;
 	AppCompatActivity thisActivity = this;
@@ -44,15 +61,30 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		//Allow Internet Access
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy);
-
 		//The top bar with search
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
-
-
+		final FloatingSearchView searchView = (FloatingSearchView) findViewById(R.id.searchView);
+		final LinearLayout searchResultsView = (LinearLayout) findViewById(R.id.searchResultsView);
+		final SearchResultsController searchResultsViewController = new SearchResultsController(getBaseContext(), searchResultsView);
 		//The bottom toolbar which has audio controls
 		Toolbar controlToolbar = (Toolbar) findViewById(R.id.control_toolbar);
 		ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+		//Main Content View (contains everything not in toolbars)
+		RelativeLayout mainContentView = (RelativeLayout) findViewById(R.id.activity_main_content);
+		//Tabs
+		FragmentAdapter adapter = new FragmentAdapter(getSupportFragmentManager());
+		adapter.addFragment(new FavouritesFragment(), getString(R.string.tab_favourites));
+		adapter.addFragment(new NowPlayingFragment(), getString(R.string.tab_now_playing));
+		adapter.addFragment(new UpNextFragment(), getString(R.string.tab_up_next));
+		//View Pager
+		ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+		viewPager.setAdapter(adapter);
+		//Bind tabs to the ViewPager
+		TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+		tabLayout.setupWithViewPager(viewPager);
+
+		//GetViews
+//		LinearLayout searchResultsView = (LinearLayout) findViewById(R.id.searchResultsView);
+
 
 		//BroadcastReceiver and filter - recieves actions like play and pause from the notification tray
 		receiver = new BroadcastReceiver() {
@@ -79,30 +111,66 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		filter.addAction(AudioService.DESTROY_ACTION);
 		registerReceiver(receiver, filter);
 
-		Button retrieveButton = (Button) findViewById(R.id.retrieveButton);
-		retrieveButton.setOnClickListener(new View.OnClickListener() {
+
+		/*EVENT LISTENERS*/
+		//Search Submitted
+		searchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
 			@Override
-			public void onClick(View view) {
-				//PodcastInfoPull pull = new PodcastInfoPull();
-				(new PodcastInfoPull()).pull(thisActivity);
-//				podcastInfoPull();
+			public void onSuggestionClicked(SearchSuggestion searchSuggestion) {}
+			@Override
+			public void onSearchAction(String currentQuery) {
+				searchResultsViewController.sendSearchQuery(currentQuery);
+				//Maybe move this stuff into (searchResultsViewController.sendSearchQuery)
+				if (searchResultsView.getVisibility() != View.VISIBLE) {
+					Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_in_from_top);
+					animation.setFillAfter(false);
+					searchResultsView.startAnimation(animation);
+					searchResultsView.setVisibility(View.VISIBLE);
+					searchView.setLeftActionMode(FloatingSearchView.LEFT_ACTION_MODE_SHOW_HOME);
+				}
+			}
+		});
+		//Back Arrow
+		searchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() {
+			@Override
+			public void onHomeClicked() {
+				//Close searchquerycontroller
+				LinearLayout searchResultsView = (LinearLayout) findViewById(R.id.searchResultsView);
+				if (searchResultsView.getVisibility() == View.VISIBLE) {
+					Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_out_top);
+					animation.setAnimationListener(new Animation.AnimationListener() {
+						@Override
+						public void onAnimationStart(Animation animation) {}
+						@Override
+						public void onAnimationEnd(Animation animation) {
+							LinearLayout searchResultsView = (LinearLayout) findViewById(R.id.searchResultsView);
+							searchResultsView.setVisibility(View.GONE);
+						}
+						@Override
+						public void onAnimationRepeat(Animation animation) {}
+					});
+					searchResultsView.startAnimation(animation);
+					searchResultsView.setVisibility(View.GONE);
+					searchView.setLeftActionMode(FloatingSearchView.LEFT_ACTION_MODE_SHOW_HAMBURGER);
+					searchView.clearSearchFocus();
+				}
 			}
 		});
 
-		/*Button button = (Button) findViewById(R.id.button);
-		button.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				startAudioService();
-			}
-		});
-		Button button2 = (Button) findViewById(R.id.button2);
-		button2.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				stopAudioService();
-			}
-		});*/
+//		Button retrieveButton = (Button) findViewById(R.id.retrieveButton);
+//		if (retrieveButton != null)
+//		retrieveButton.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View view) {
+//
+//				try {
+//					(new DataService()).pull(thisActivity);
+//				}
+//				catch (Exception e){
+//					Log.d("ma", e.toString());
+//				}
+//			}
+//		});
 	}
 
 	private void podcastInfoPull() {
@@ -116,6 +184,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		//Cleanup goes here
 		super.onDestroy();
 		stopAudioService();
+		unregisterReceiver(receiver);
 	}
 
 	@Override
