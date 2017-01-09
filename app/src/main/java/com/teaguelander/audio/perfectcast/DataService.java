@@ -83,7 +83,7 @@ public class DataService {
 
 
 	//OLD METHODS
-	public static void searchPodcasts(String searchTerm) {
+	public static void searchPodcasts(String searchTerm, Response.Listener<String> listener) {
 
 
 		String strParams = "";
@@ -100,13 +100,8 @@ public class DataService {
 			Log.d("ds", "Failed to parse JSON");
 		}
 
-		StringRequest stringRequest = new StringRequest(Request.Method.GET, ITUNES_URL + strParams, new Response.Listener<String>() {
-			@Override
-			public void onResponse(String response) {
-				Log.d("ds", "Got response!");
-				Log.d("ds", response);
-			}
-		}, new Response.ErrorListener() {
+		Log.d("ds", ITUNES_URL + strParams);
+		StringRequest stringRequest = new StringRequest(Request.Method.GET, ITUNES_URL + strParams, listener, new Response.ErrorListener() {
 			@Override
 			public void onErrorResponse(VolleyError error) {
 				Log.e("ds", "Some went wrong with Volley Request");
@@ -115,26 +110,6 @@ public class DataService {
 		});
 		Volley.newRequestQueue(ctx).add(stringRequest);
 	}
-
-	/*private static JSONObject readJsonFromUrl(String url, String strParams) throws IOException, JSONException {
-
-		InputStream is = new URL(url + strParams).openStream();
-		try {
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-
-			StringBuilder sb = new StringBuilder();
-			int cp;
-			while ((cp = rd.read()) != -1) {
-				sb.append((char) cp);
-			}
-			String jsonText = sb.toString();
-			JSONObject json = new JSONObject(jsonText);
-			return json;
-		} finally {
-			is.close();
-			Log.d("ds", "JSON read from URL: " + url);
-		}
-	}*/
 
 	private static String paramSerializer(JSONObject params) throws JSONException {
 

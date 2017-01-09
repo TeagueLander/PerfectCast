@@ -32,6 +32,7 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.android.volley.Response;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.teaguelander.audio.perfectcast.DataService;
@@ -58,9 +59,10 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		//Allow Internet Access
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy);
-
 		//The top bar with search
 		final FloatingSearchView searchView = (FloatingSearchView) findViewById(R.id.searchView);
+		final LinearLayout searchResultsView = (LinearLayout) findViewById(R.id.searchResultsView);
+		final SearchResultsController searchResultsViewController = new SearchResultsController(getBaseContext(), searchResultsView);
 		//The bottom toolbar which has audio controls
 		Toolbar controlToolbar = (Toolbar) findViewById(R.id.control_toolbar);
 		ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
@@ -113,9 +115,8 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 			public void onSuggestionClicked(SearchSuggestion searchSuggestion) {}
 			@Override
 			public void onSearchAction(String currentQuery) {
-				DataService.getInstance(getBaseContext()).searchPodcasts(currentQuery);
-
-				LinearLayout searchResultsView = (LinearLayout) findViewById(R.id.searchResultsView);
+				searchResultsViewController.sendSearchQuery(currentQuery);
+				//Maybe move this stuff into (searchResultsViewController.sendSearchQuery)
 				if (searchResultsView.getVisibility() != View.VISIBLE) {
 					Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_in_from_top);
 					animation.setFillAfter(false);
@@ -129,23 +130,20 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		searchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() {
 			@Override
 			public void onHomeClicked() {
+				//Close searchquerycontroller
 				LinearLayout searchResultsView = (LinearLayout) findViewById(R.id.searchResultsView);
 				if (searchResultsView.getVisibility() == View.VISIBLE) {
 					Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_out_top);
 					animation.setAnimationListener(new Animation.AnimationListener() {
 						@Override
-						public void onAnimationStart(Animation animation) {
-
-						}
+						public void onAnimationStart(Animation animation) {}
 						@Override
 						public void onAnimationEnd(Animation animation) {
 							LinearLayout searchResultsView = (LinearLayout) findViewById(R.id.searchResultsView);
 							searchResultsView.setVisibility(View.GONE);
 						}
 						@Override
-						public void onAnimationRepeat(Animation animation) {
-
-						}
+						public void onAnimationRepeat(Animation animation) {}
 					});
 					searchResultsView.startAnimation(animation);
 					searchResultsView.setVisibility(View.GONE);
