@@ -52,6 +52,11 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 	BroadcastReceiver receiver;
 	AppCompatActivity thisActivity = this;
 
+	//Views
+	FloatingSearchView searchView;
+	LinearLayout searchResultsView;
+	SearchResultsController searchResultsViewController;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
@@ -62,9 +67,9 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy);
 		//The top bar with search
-		final FloatingSearchView searchView = (FloatingSearchView) findViewById(R.id.searchView);
-		final LinearLayout searchResultsView = (LinearLayout) findViewById(R.id.searchResultsView);
-		final SearchResultsController searchResultsViewController = new SearchResultsController(getBaseContext(), searchResultsView);
+		searchView = (FloatingSearchView) findViewById(R.id.searchView);
+		searchResultsView = (LinearLayout) findViewById(R.id.searchResultsView);
+		searchResultsViewController = new SearchResultsController(getBaseContext(), searchView, searchResultsView);
 		//The bottom toolbar which has audio controls
 		Toolbar controlToolbar = (Toolbar) findViewById(R.id.control_toolbar);
 		ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
@@ -120,40 +125,14 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 			@Override
 			public void onSearchAction(String currentQuery) {
 				searchResultsViewController.sendSearchQuery(currentQuery);
-				//Maybe move this stuff into (searchResultsViewController.sendSearchQuery)
-				if (searchResultsView.getVisibility() != View.VISIBLE) {
-					Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_in_from_top);
-					animation.setFillAfter(false);
-					searchResultsView.startAnimation(animation);
-					searchResultsView.setVisibility(View.VISIBLE);
-					searchView.setLeftActionMode(FloatingSearchView.LEFT_ACTION_MODE_SHOW_HOME);
-				}
+				searchResultsViewController.showSearchResultsView();
 			}
 		});
 		//Back Arrow
 		searchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() {
 			@Override
 			public void onHomeClicked() {
-				//Close searchquerycontroller
-				LinearLayout searchResultsView = (LinearLayout) findViewById(R.id.searchResultsView);
-				if (searchResultsView.getVisibility() == View.VISIBLE) {
-					Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_out_top);
-					animation.setAnimationListener(new Animation.AnimationListener() {
-						@Override
-						public void onAnimationStart(Animation animation) {}
-						@Override
-						public void onAnimationEnd(Animation animation) {
-							LinearLayout searchResultsView = (LinearLayout) findViewById(R.id.searchResultsView);
-							searchResultsView.setVisibility(View.GONE);
-						}
-						@Override
-						public void onAnimationRepeat(Animation animation) {}
-					});
-					searchResultsView.startAnimation(animation);
-					searchResultsView.setVisibility(View.GONE);
-					searchView.setLeftActionMode(FloatingSearchView.LEFT_ACTION_MODE_SHOW_HAMBURGER);
-					searchView.clearSearchFocus();
-				}
+				searchResultsViewController.hideSearchResultsView();
 			}
 		});
 
@@ -173,10 +152,14 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 //		});
 	}
 
-	private void podcastInfoPull() {
-		//TextView textView = (TextView) findViewById(R.id.testText);
-		//textView.setText("Working!");
-		//(new PodcastInfoPull()).pull(findViewById(R.id.testText), this);
+
+	@Override
+	public void onBackPressed() {
+		if (searchResultsView.getVisibility() == View.VISIBLE) {
+			searchResultsViewController.hideSearchResultsView();
+			return;
+		}
+		super.onBackPressed();
 	}
 
 	@Override()

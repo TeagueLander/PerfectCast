@@ -8,13 +8,24 @@
 	android:visibility="gone"
 	>
 
-	<TextView
-		android:id="@+id/searchQuery"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="Search View"
-		android:textColor="@android:color/black"
-		android:textStyle="bold"
-	/>
+	<android.support.v7.widget.RecyclerView
+		android:id="@+id/search_results_recycler_view"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:scrollbars="vertical"
+		xmlns:app="http://schemas.android.com/apk/res-auto"
+		app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+		>
+
+	</android.support.v7.widget.RecyclerView>
+
+	<!--<TextView-->
+		<!--android:id="@+id/searchQuery"-->
+		<!--android:layout_width="wrap_content"-->
+		<!--android:layout_height="wrap_content"-->
+		<!--android:text="Search View"-->
+		<!--android:textColor="@android:color/black"-->
+		<!--android:textStyle="bold"-->
+	<!--/>-->
 
 </LinearLayout>
