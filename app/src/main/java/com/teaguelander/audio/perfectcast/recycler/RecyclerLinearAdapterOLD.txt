@@ -1,0 +1,60 @@
+package com.teaguelander.audio.perfectcast.recycler;
+
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.teaguelander.audio.perfectcast.R;
+
+/**
+ * Created by Teague-Win10 on 1/9/2017.
+ */
+
+public class RecyclerLinearAdapter extends RecyclerView.Adapter<RecyclerLinearAdapter.PhotoHolder> {
+	private ArrayList<Photo> mPhotos;
+
+	public RecyclerLinearAdapter(ArrayList<Photo> photos) {
+		mPhotos = photos;
+	}
+
+	@Override
+	public RecyclerLinearAdapter.PhotoHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+		return null;
+	}
+
+	@Override
+	public void onBindViewHolder(RecyclerLinearAdapter.PhotoHolder holder, int position) {
+
+	}
+
+	@Override
+	public int getItemCount() {
+		return mPhotos.size();
+	}
+
+	public static class PhotoHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+		private ImageView mItemImage;
+		private TextView mItemTitle;
+		private Photo mPhoto;
+
+		private static final String PHOTO_KEY = "PHOTO";
+
+		public PhotoHolder(View v) {
+			super(v);
+
+			mItemImage = (ImageView) v.findViewById(R.id.item_image);
+			mItemImage = (ImageView) v.findViewById(R.id.item_title);
+			v.setOnClickListener(this);
+		}
+
+		@Override
+		public void onClick(View v) {
+			Log.d("RecyclerView", "CLICK!");
+		}
+	}
+
+}
