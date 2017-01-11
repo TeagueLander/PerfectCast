@@ -5,8 +5,18 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:background="@color/white"
-	android:visibility="gone"
 	>
+
+	<TextView
+	android:id="@+id/searchQuery"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:text="Search View"
+	android:textColor="@android:color/black"
+	android:textStyle="bold"
+	android:textSize="100dp"
+	/>
+
 
 	<android.support.v7.widget.RecyclerView
 		android:id="@+id/search_results_recycler_view"

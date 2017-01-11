@@ -10,6 +10,7 @@ import android.os.Bundle;
 //import android.support.design.widget.Snackbar;
 import android.os.StrictMode;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +25,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -33,13 +35,16 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Stack;
 
 import com.android.volley.Response;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.teaguelander.audio.perfectcast.DataService;
 import com.teaguelander.audio.perfectcast.fragments.FavouritesFragment;
+import com.teaguelander.audio.perfectcast.fragments.MainFragment;
 import com.teaguelander.audio.perfectcast.fragments.NowPlayingFragment;
+import com.teaguelander.audio.perfectcast.fragments.SearchResultsFragment;
 import com.teaguelander.audio.perfectcast.fragments.UpNextFragment;
 
 import org.json.JSONException;
@@ -52,10 +57,9 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 	BroadcastReceiver receiver;
 	AppCompatActivity thisActivity = this;
 
-	//Views
 	FloatingSearchView searchView;
-	LinearLayout searchResultsView;
-	SearchResultsController searchResultsViewController;
+	//LinearLayout searchResultsView;
+	//SearchResultsController searchResultsViewController;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,30 +70,14 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		//Allow Internet Access
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy);
+		//FrameLayout (For Fragments)
+		FrameLayout fl = (FrameLayout) findViewById(R.id.fragment_container);
+		MainFragment mainFragment = new MainFragment();
+		getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, mainFragment).commit();
+//					SearchResultsFragment searchResultsFragment = new SearchResultsFragment();
+//					getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, searchResultsFragment).commit();
 		//The top bar with search
 		searchView = (FloatingSearchView) findViewById(R.id.searchView);
-		searchResultsView = (LinearLayout) findViewById(R.id.searchResultsView);
-		searchResultsViewController = new SearchResultsController(getBaseContext(), searchView, searchResultsView);
-		//The bottom toolbar which has audio controls
-		Toolbar controlToolbar = (Toolbar) findViewById(R.id.control_toolbar);
-		ImageButton playPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
-		//Main Content View (contains everything not in toolbars)
-		RelativeLayout mainContentView = (RelativeLayout) findViewById(R.id.activity_main_content);
-		//Tabs
-		FragmentAdapter adapter = new FragmentAdapter(getSupportFragmentManager());
-		adapter.addFragment(new FavouritesFragment(), getString(R.string.tab_favourites));
-		adapter.addFragment(new NowPlayingFragment(), getString(R.string.tab_now_playing));
-		adapter.addFragment(new UpNextFragment(), getString(R.string.tab_up_next));
-		//View Pager
-		ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-		viewPager.setAdapter(adapter);
-		//Bind tabs to the ViewPager
-		TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-		tabLayout.setupWithViewPager(viewPager);
-
-		//GetViews
-//		LinearLayout searchResultsView = (LinearLayout) findViewById(R.id.searchResultsView);
-
 
 		//BroadcastReceiver and filter - recieves actions like play and pause from the notification tray
 		receiver = new BroadcastReceiver() {
@@ -116,7 +104,6 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		filter.addAction(AudioService.DESTROY_ACTION);
 		registerReceiver(receiver, filter);
 
-
 		/*EVENT LISTENERS*/
 		//Search Submitted
 		searchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
@@ -124,42 +111,31 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 			public void onSuggestionClicked(SearchSuggestion searchSuggestion) {}
 			@Override
 			public void onSearchAction(String currentQuery) {
-				searchResultsViewController.sendSearchQuery(currentQuery);
-				searchResultsViewController.showSearchResultsView();
+				SearchResultsFragment searchFragment = new SearchResultsFragment();
+				Bundle args = new Bundle();
+				args.putString("currentQuery", currentQuery);
+				searchFragment.setArguments(args);
+
+				FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+				//Replace whatever is in the fragment view with this fragment and add the transaction to the back stack
+				transaction.replace(R.id.fragment_container, searchFragment);
+				transaction.addToBackStack(null);
+
+				transaction.commit();
 			}
 		});
 		//Back Arrow
 		searchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() {
 			@Override
 			public void onHomeClicked() {
-				searchResultsViewController.hideSearchResultsView();
+
 			}
 		});
 
-//		Button retrieveButton = (Button) findViewById(R.id.retrieveButton);
-//		if (retrieveButton != null)
-//		retrieveButton.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View view) {
-//
-//				try {
-//					(new DataService()).pull(thisActivity);
-//				}
-//				catch (Exception e){
-//					Log.d("ma", e.toString());
-//				}
-//			}
-//		});
 	}
 
-
-	@Override
-	public void onBackPressed() {
-		if (searchResultsView.getVisibility() == View.VISIBLE) {
-			searchResultsViewController.hideSearchResultsView();
-			return;
-		}
-		super.onBackPressed();
+	public FloatingSearchView getSearchView() {
+		return searchView;
 	}
 
 	@Override()

@@ -31,17 +31,16 @@
 			android:background="#FFFFFF">
 
 			<!-- Main Content -->
-			<include layout="@layout/content_main"/>
+			<!--<include layout="@layout/content_main"/>-->
 			<!-- Search View -->
-			<include layout="@layout/view_search_results" />
-			<!-- Transparent Black Layer FOR LATER ;) -->
-			<View
+			<!--<include layout="@layout/view_search_results" />-->
+			<FrameLayout
+				android:id="@+id/fragment_container"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
-				android:background="#AA000000"
-				android:visibility="gone"
-				/>
+				>
 
+			</FrameLayout>
 		</RelativeLayout>
 
 

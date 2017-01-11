@@ -78,8 +78,6 @@ public class SearchResultsController {
 	}
 
 
-
-
 	public void hideSearchResultsView() {
 		if (mView.getVisibility() == View.VISIBLE) {
 			Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.slide_out_top);
