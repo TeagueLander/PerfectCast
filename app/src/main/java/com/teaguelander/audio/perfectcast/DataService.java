@@ -82,9 +82,7 @@ public class DataService {
 	}
 
 
-	//OLD METHODS
 	public static void searchPodcasts(String searchTerm, Response.Listener<String> listener) {
-
 
 		String strParams = "";
 		try {
