@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.LruCache;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -77,10 +78,13 @@ public class DataService {
 		getRequestQueue().add(req);
 	}
 
-	public ImageLoader getImageLoader() {
+	private ImageLoader getImageLoader() {
 		return imageLoader;
 	}
 
+	public void loadImageIntoView(String url, ImageView imageView) {
+		imageLoader.get(url, imageLoader.getImageListener(imageView, R.drawable.image_not_loaded, 0));
+	}
 
 	public static void searchPodcasts(String searchTerm, Response.Listener<String> listener) {
 
@@ -90,6 +94,7 @@ public class DataService {
 			params.put("term", searchTerm);
 //			params.put("country", "CA");
 			params.put("media", "podcast");
+			params.put("limit", 25);
 
 			strParams = paramSerializer(params);
 		}
