@@ -109,7 +109,7 @@ public class DataService {
 		return sb.toString().replaceAll(" ", "+");
 	}
 
-	private static void makeStringRequest(String url, Response.Listener<String> listener) {
+	private static void makeStringUrlRequest(String url, Response.Listener<String> listener) {
 		Log.d("ds", url);
 		StringRequest stringRequest = new StringRequest(Request.Method.GET, url, listener, new Response.ErrorListener() {
 			@Override
@@ -138,20 +138,11 @@ public class DataService {
 			Log.d("ds", "Failed to parse JSON");
 		}
 
-		makeStringRequest(ITUNES_URL + strParams, listener);
+		makeStringUrlRequest(ITUNES_URL + strParams, listener);
 	}
 
-	public static void getPodcastFeed(String url) {
-		Log.d("ds", url);
-		Response.Listener<String> listener = new Response.Listener<String>() {
-			@Override
-			public void onResponse(String response) {
-				Log.d("ds", "Got XML!");
-				Log.d("ds", response);
-			}
-		};
-
-		makeStringRequest(url, listener);
+	public static void getPodcastFeed(String url, Response.Listener<String> listener) {
+		makeStringUrlRequest(url, listener);
 	}
 
 

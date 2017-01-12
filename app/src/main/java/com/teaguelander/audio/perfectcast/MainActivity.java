@@ -124,13 +124,6 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 				transaction.commit();
 			}
 		});
-		//Back Arrow
-		searchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() {
-			@Override
-			public void onHomeClicked() {
-
-			}
-		});
 
 	}
 
