@@ -86,34 +86,6 @@ public class DataService {
 		imageLoader.get(url, imageLoader.getImageListener(imageView, R.drawable.image_not_loaded, 0));
 	}
 
-	public static void searchPodcasts(String searchTerm, Response.Listener<String> listener) {
-
-		String strParams = "";
-		try {
-			JSONObject params = new JSONObject();
-			params.put("term", searchTerm);
-//			params.put("country", "CA");
-			params.put("media", "podcast");
-			params.put("limit", 25);
-
-			strParams = paramSerializer(params);
-		}
-		catch (Exception e) {
-			Log.d("ds", e.toString());
-			Log.d("ds", "Failed to parse JSON");
-		}
-
-		Log.d("ds", ITUNES_URL + strParams);
-		StringRequest stringRequest = new StringRequest(Request.Method.GET, ITUNES_URL + strParams, listener, new Response.ErrorListener() {
-			@Override
-			public void onErrorResponse(VolleyError error) {
-				Log.e("ds", "Some went wrong with Volley Request");
-				Log.e("ds", error.toString());
-			}
-		});
-		Volley.newRequestQueue(ctx).add(stringRequest);
-	}
-
 	private static String paramSerializer(JSONObject params) throws JSONException {
 
 		if (params == null) { return ""; }
@@ -136,5 +108,51 @@ public class DataService {
 
 		return sb.toString().replaceAll(" ", "+");
 	}
+
+	private static void makeStringRequest(String url, Response.Listener<String> listener) {
+		Log.d("ds", url);
+		StringRequest stringRequest = new StringRequest(Request.Method.GET, url, listener, new Response.ErrorListener() {
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				Log.e("ds", "Some went wrong with Volley Request");
+				Log.e("ds", error.toString());
+			}
+		});
+		Volley.newRequestQueue(ctx).add(stringRequest);
+	}
+
+	public static void searchPodcasts(String searchTerm, Response.Listener<String> listener) {
+
+		String strParams = "";
+		try {
+			JSONObject params = new JSONObject();
+			params.put("term", searchTerm);
+//			params.put("country", "CA");
+			params.put("media", "podcast");
+			params.put("limit", 25);
+
+			strParams = paramSerializer(params);
+		}
+		catch (Exception e) {
+			Log.d("ds", e.toString());
+			Log.d("ds", "Failed to parse JSON");
+		}
+
+		makeStringRequest(ITUNES_URL + strParams, listener);
+	}
+
+	public static void getPodcastFeed(String url) {
+		Log.d("ds", url);
+		Response.Listener<String> listener = new Response.Listener<String>() {
+			@Override
+			public void onResponse(String response) {
+				Log.d("ds", "Got XML!");
+				Log.d("ds", response);
+			}
+		};
+
+		makeStringRequest(url, listener);
+	}
+
 
 }
