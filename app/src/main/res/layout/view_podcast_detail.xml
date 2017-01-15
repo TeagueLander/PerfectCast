@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@android:color/white"
+	>
+
+	<TableLayout
+		android:layout_width="match_parent"
+		android:layout_height="100dp"
+		android:background="@android:color/darker_gray"
+		android:stretchColumns="*"
+		android:collapseColumns="*"
+		>
+
+		<TableRow
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			>
+			<ImageView
+				android:id="@+id/podcast_detail_image"
+				android:padding="10dp"
+				android:layout_span="1"
+				/>
+			<TextView
+				android:id="@+id/podcast_detail_title"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_span="2"
+				android:layout_gravity="center"
+				android:textSize="@dimen/h1"
+				android:textColor="@color/white"
+				android:ellipsize="end"
+				android:maxLines="1"
+				/>
+		</TableRow>
+
+	</TableLayout>
+
+	<!--<ImageView
+		android:layout_width="50"
+		android:layout_height=""/>
+	
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="PODCAST DETAIL"
+		android:layout_gravity="center_horizontal"
+		android:textSize="28sp"
+		android:textColor="@android:color/black"
+		android:textStyle="bold"
+		android:layout_centerVertical="true"
+		android:layout_centerHorizontal="true"
+		android:id="@+id/textView" />-->
+
+</RelativeLayout>

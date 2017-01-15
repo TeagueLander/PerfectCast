@@ -15,4 +15,6 @@
 	<color name="textColorPrimary">#FFFFFF</color>
 	<color name="textColorPrimaryDark">#F5F5F5</color>
 
+	<color name="colorDarkGrey">#3F3F3F</color>
+
 </resources>
