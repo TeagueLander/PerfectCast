@@ -49,7 +49,7 @@
 				android:resource="@xml/searchable" />
 		</activity>
 		-->
-		<service android:name=".AudioService" />
+		<service android:name=".services.AudioService" />
 
 
 	</application>

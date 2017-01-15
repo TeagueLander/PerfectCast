@@ -1,4 +1,4 @@
-package com.teaguelander.audio.perfectcast;
+package com.teaguelander.audio.perfectcast.services;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -9,16 +9,16 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.IBinder;
 import android.media.MediaPlayer;
-import android.provider.ContactsContract;
-import android.support.v4.content.SharedPreferencesCompat;
 import android.support.v7.app.NotificationCompat;
 import android.app.NotificationManager;
 //import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
-import android.widget.Toast;
+
+import com.teaguelander.audio.perfectcast.database.DataManager;
+import com.teaguelander.audio.perfectcast.MainActivity;
+import com.teaguelander.audio.perfectcast.R;
 
 /**
  * Created by Teague-Win10 on 7/9/2016.
