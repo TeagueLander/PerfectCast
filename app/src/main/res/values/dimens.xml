@@ -17,4 +17,6 @@
 	<dimen name="h5">12dp</dimen>
 	<dimen name="h6">10dp</dimen>
 
+	<dimen name="smallPadding">10dp</dimen>
+
 </resources>

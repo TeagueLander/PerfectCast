@@ -12,6 +12,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.teaguelander.audio.perfectcast.R;
@@ -72,8 +73,9 @@ public class DataService {
 		return imageLoader;
 	}
 
-	public void loadImageIntoView(String url, ImageView imageView) {
-		imageLoader.get(url, imageLoader.getImageListener(imageView, R.drawable.image_not_loaded, 0));
+	public void loadImageIntoView(String url, NetworkImageView imageView) {
+		//imageLoader.get(url, imageLoader.getImageListener(imageView, R.drawable.image_not_loaded, 0));
+		imageView.setImageUrl(url, imageLoader);
 	}
 
 	private static String paramSerializer(JSONObject params) throws JSONException {

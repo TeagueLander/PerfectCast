@@ -25,4 +25,7 @@ Aliquam porttitor maximus elit, ut malesuada erat vestibulum sit amet. Quisque n
 	<!-- Content Description Strings-->
 	<string name="cd_play_pause_button">Play/Pause Button</string>
 
+	<!-- Podcast Detail -->
+	<string name="button_subscribe">Subscribe</string>
+
 </resources>
