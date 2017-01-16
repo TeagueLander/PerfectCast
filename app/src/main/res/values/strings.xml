@@ -27,5 +27,8 @@ Aliquam porttitor maximus elit, ut malesuada erat vestibulum sit amet. Quisque n
 
 	<!-- Podcast Detail -->
 	<string name="button_subscribe">Subscribe</string>
+	<string name="button_subscribed">Subscribed \u2713</string>
+	<string name="description">Description</string>
+	<string name="no_description">No description available.</string>
 
 </resources>
