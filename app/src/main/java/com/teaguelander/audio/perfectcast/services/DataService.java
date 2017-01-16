@@ -1,33 +1,25 @@
-package com.teaguelander.audio.perfectcast;
+package com.teaguelander.audio.perfectcast.services;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.provider.ContactsContract;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.LruCache;
-import android.view.View;
-import android.widget.TextView;
+import android.widget.ImageView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.teaguelander.audio.perfectcast.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.Iterator;
 
 /**
@@ -77,36 +69,13 @@ public class DataService {
 		getRequestQueue().add(req);
 	}
 
-	public ImageLoader getImageLoader() {
+	private ImageLoader getImageLoader() {
 		return imageLoader;
 	}
 
-
-	public static void searchPodcasts(String searchTerm, Response.Listener<String> listener) {
-
-		String strParams = "";
-		try {
-			JSONObject params = new JSONObject();
-			params.put("term", searchTerm);
-//			params.put("country", "CA");
-			params.put("media", "podcast");
-
-			strParams = paramSerializer(params);
-		}
-		catch (Exception e) {
-			Log.d("ds", e.toString());
-			Log.d("ds", "Failed to parse JSON");
-		}
-
-		Log.d("ds", ITUNES_URL + strParams);
-		StringRequest stringRequest = new StringRequest(Request.Method.GET, ITUNES_URL + strParams, listener, new Response.ErrorListener() {
-			@Override
-			public void onErrorResponse(VolleyError error) {
-				Log.e("ds", "Some went wrong with Volley Request");
-				Log.e("ds", error.toString());
-			}
-		});
-		Volley.newRequestQueue(ctx).add(stringRequest);
+	public void loadImageIntoView(String url, NetworkImageView imageView) {
+		//imageLoader.get(url, imageLoader.getImageListener(imageView, R.drawable.image_not_loaded, 0));
+		imageView.setImageUrl(url, imageLoader);
 	}
 
 	private static String paramSerializer(JSONObject params) throws JSONException {
@@ -131,5 +100,42 @@ public class DataService {
 
 		return sb.toString().replaceAll(" ", "+");
 	}
+
+	private static void makeStringUrlRequest(String url, Response.Listener<String> listener) {
+		Log.d("ds", url);
+		StringRequest stringRequest = new StringRequest(Request.Method.GET, url, listener, new Response.ErrorListener() {
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				Log.e("ds", "Some went wrong with Volley Request");
+				Log.e("ds", error.toString());
+			}
+		});
+		Volley.newRequestQueue(ctx).add(stringRequest);
+	}
+
+	public static void searchPodcasts(String searchTerm, Response.Listener<String> listener) {
+
+		String strParams = "";
+		try {
+			JSONObject params = new JSONObject();
+			params.put("term", searchTerm);
+//			params.put("country", "CA");
+			params.put("media", "podcast");
+			params.put("limit", 25);
+
+			strParams = paramSerializer(params);
+		}
+		catch (Exception e) {
+			Log.d("ds", e.toString());
+			Log.d("ds", "Failed to parse JSON");
+		}
+
+		makeStringUrlRequest(ITUNES_URL + strParams, listener);
+	}
+
+	public static void getPodcastFeed(String url, Response.Listener<String> listener) {
+		makeStringUrlRequest(url, listener);
+	}
+
 
 }

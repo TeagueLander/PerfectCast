@@ -6,8 +6,15 @@
 	<color name="colorPrimaryLight">#5468d3</color>
 	<color name="colorAccent">#FF4081</color>
 	<color name="colorDivider">#1A0000</color>
+	<color name="colorRowDivider">#D3D3D3</color>
+
+	<color name="colorBackgroundPrimary">#FFFFFFFF</color>
+	<color name="colorBackgroundSelected">#FFD3D3D3</color>
 
 	<!--TextColors -->
 	<color name="textColorPrimary">#FFFFFF</color>
 	<color name="textColorPrimaryDark">#F5F5F5</color>
+
+	<color name="colorDarkGrey">#3F3F3F</color>
+
 </resources>

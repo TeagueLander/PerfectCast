@@ -1,7 +1,5 @@
 package com.teaguelander.audio.perfectcast;
 
-import android.app.Activity;
-import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
@@ -9,46 +7,21 @@ import android.os.Bundle;
 //import android.support.design.widget.FloatingActionButton;
 //import android.support.design.widget.Snackbar;
 import android.os.StrictMode;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Intent;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.ExpandableListView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.SearchView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Stack;
-
-import com.android.volley.Response;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
-import com.teaguelander.audio.perfectcast.DataService;
-import com.teaguelander.audio.perfectcast.fragments.FavouritesFragment;
 import com.teaguelander.audio.perfectcast.fragments.MainFragment;
-import com.teaguelander.audio.perfectcast.fragments.NowPlayingFragment;
 import com.teaguelander.audio.perfectcast.fragments.SearchResultsFragment;
-import com.teaguelander.audio.perfectcast.fragments.UpNextFragment;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.teaguelander.audio.perfectcast.services.AudioService;
 
 public class MainActivity extends AppCompatActivity { //implements SearchView.OnQueryTextListener, SearchView.OnCloseListener
 
@@ -78,6 +51,8 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 //					getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, searchResultsFragment).commit();
 		//The top bar with search
 		searchView = (FloatingSearchView) findViewById(R.id.searchView);
+		//TODO remove
+		searchView.setSearchText("zelda");
 
 		//BroadcastReceiver and filter - recieves actions like play and pause from the notification tray
 		receiver = new BroadcastReceiver() {
@@ -122,13 +97,6 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 				transaction.addToBackStack(null);
 
 				transaction.commit();
-			}
-		});
-		//Back Arrow
-		searchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() {
-			@Override
-			public void onHomeClicked() {
-
 			}
 		});
 

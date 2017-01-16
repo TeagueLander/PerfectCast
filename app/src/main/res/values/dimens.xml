@@ -8,4 +8,15 @@
 	<dimen name="tabstrip">48dp</dimen>
 	<!--<dimen name="viewpager_margin_top">104dp</dimen>-->
 
+	<dimen name="podcast_item_row_height">80dp</dimen>
+
+	<dimen name="h1">24dp</dimen>
+	<dimen name="h2">22dp</dimen>
+	<dimen name="h3">18dp</dimen>
+	<dimen name="h4">16dp</dimen>
+	<dimen name="h5">12dp</dimen>
+	<dimen name="h6">10dp</dimen>
+
+	<dimen name="smallPadding">10dp</dimen>
+
 </resources>
