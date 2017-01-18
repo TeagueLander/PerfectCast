@@ -10,7 +10,7 @@
 	<!-- Name and Image area -->
 	<LinearLayout
 		android:layout_width="match_parent"
-		android:layout_height="100dp"
+		android:layout_height="@dimen/podcast_detail_title_height"
 		android:background="@color/colorDarkGrey"
 		android:weightSum="12"
 		>
@@ -64,7 +64,7 @@
 		<!-- Description -->
 		<ScrollView
 			android:layout_width="match_parent"
-			android:layout_height="100dp"
+			android:layout_height="@dimen/podcast_detail_title_height"
 			android:orientation="vertical"
 			android:background="@color/colorBackgroundPrimary"
 

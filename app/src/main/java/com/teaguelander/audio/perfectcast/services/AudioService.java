@@ -20,6 +20,8 @@ import com.teaguelander.audio.perfectcast.database.DataManager;
 import com.teaguelander.audio.perfectcast.MainActivity;
 import com.teaguelander.audio.perfectcast.R;
 
+import java.io.IOException;
+
 /**
  * Created by Teague-Win10 on 7/9/2016.
  */
@@ -38,6 +40,7 @@ public class AudioService extends Service {
 
 	//Uri curTrack = R.raw.groove;//Uri.parse("https://api.spreaker.com/download/episode/8950331/episode_28_mixdown.mp3"); //
 	int curTrack = R.raw.groove;
+	String curWebTrack = "http://www.archive.org/download/ZeldaDungeonChristmasSpecialPodcast/Z-talkChristmas.mp3";
 	MediaPlayer mp;
 	BroadcastReceiver receiver; //For Intents
 	SharedPreferences preferences;
@@ -104,7 +107,14 @@ public class AudioService extends Service {
 
 	public void playAudio() {
 		if (mp == null) {
-			mp = MediaPlayer.create(this, curTrack);
+			//mp = MediaPlayer.create(this, curTrack); //From Local
+			mp = new MediaPlayer();
+			try {
+				mp.setDataSource(curWebTrack);
+				mp.prepare();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			resumeTime = preferences.getInt(DataManager.PREF_RESUME_TIME, 0);
 
 			//Listeners
@@ -123,6 +133,13 @@ public class AudioService extends Service {
 		mp.start();
 		showNotification();
 	}
+
+//	private void playAudioFromWeb() {
+//		if (mp == null) {
+//			mp = new MediaPlayer();
+//		}
+//		try
+//	}
 
 	public void pauseAudio() {
 		mp.pause();

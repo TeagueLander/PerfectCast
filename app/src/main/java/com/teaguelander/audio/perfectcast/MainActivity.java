@@ -47,8 +47,6 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		FrameLayout fl = (FrameLayout) findViewById(R.id.fragment_container);
 		MainFragment mainFragment = new MainFragment();
 		getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, mainFragment).commit();
-//					SearchResultsFragment searchResultsFragment = new SearchResultsFragment();
-//					getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, searchResultsFragment).commit();
 		//The top bar with search
 		searchView = (FloatingSearchView) findViewById(R.id.searchView);
 		//TODO remove
