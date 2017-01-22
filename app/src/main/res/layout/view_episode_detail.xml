@@ -1,84 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:layout_marginTop="@dimen/podcast_detail_title_height"
-	android:background="@color/white"
+	android:clickable="true"
 	>
+	<!--android:layout_marginTop="@dimen/podcast_detail_title_height"-->
 
-	<ScrollView
-		android:layout_width="match_parent"
-		android:layout_height="200dp"
-		android:orientation="vertical"
-		android:background="@color/colorBackgroundPrimary"
-
-		>
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:orientation="vertical"
-			android:padding="@dimen/smallPadding"
-			>
-			<TextView
-				android:id="@+id/episode_title"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:gravity="center_horizontal"
-				android:textSize="@dimen/h4"
-				android:maxLines="1"
-				/>
-			<TextView
-				android:id="@+id/episode_description"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/no_episode_description"
-				/>
-		</LinearLayout>
-
-	</ScrollView>
-
-	<!--Divider Line-->
 	<View
 		android:layout_width="match_parent"
-		android:layout_height="2dp"
-		android:background="@color/colorDivider"
+		android:layout_height="match_parent"
+		android:background="#CC000000"
 		/>
 
-	<!-- Other stuff here -->
-	<RelativeLayout
+	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
+		android:layout_margin="@dimen/mediumPadding"
+		android:layout_marginTop="120dp"
+		android:orientation="vertical"
 		android:background="@color/white"
 		>
-		<LinearLayout
+
+		<ScrollView
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_alignParentBottom="true"
-			android:layout_centerHorizontal="true"
-			android:orientation="horizontal"
-			android:background="@color/colorDarkGrey"
+			android:layout_height="200dp"
+			android:orientation="vertical"
+			android:background="@color/colorBackgroundPrimary"
+
 			>
-			<Button
-				android:layout_width="0dp"
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:orientation="vertical"
+				android:padding="@dimen/smallPadding"
+				>
+				<TextView
+					android:id="@+id/episode_title"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center_horizontal"
+					android:textSize="@dimen/h4"
+					android:maxLines="1"
+					/>
+				<TextView
+					android:id="@+id/episode_description"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="@string/no_episode_description"
+					/>
+			</LinearLayout>
+
+		</ScrollView>
+
+		<!--Divider Line-->
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="2dp"
+			android:background="@color/colorDivider"
+			/>
+
+		<!-- Other stuff here -->
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="@color/white"
+			>
+			<LinearLayout
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_weight="0.6"
-				android:drawableTop="@android:drawable/ic_media_play"
-				android:contentDescription="Play/Pause Button"
-				android:text="Play Episode"
-				/>
-			<Button
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="0.4"
-				android:drawableTop="@android:drawable/ic_menu_add"
-				android:contentDescription="Add to Queue Button"
-				android:text="Add to Queue"
-				/>
-		</LinearLayout>
+				android:layout_alignParentBottom="true"
+				android:layout_centerHorizontal="true"
+				android:orientation="horizontal"
+				android:background="@color/colorDarkGrey"
+				>
+				<Button
+					android:id="@+id/playEpisodeButton"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="0.6"
+					android:drawableTop="@android:drawable/ic_media_play"
+					android:contentDescription="Play/Pause Button"
+					android:text="Play Episode"
+					/>
+				<Button
+					android:id="@+id/addtoQueueButton"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="0.4"
+					android:drawableTop="@android:drawable/ic_menu_add"
+					android:contentDescription="Add to Queue Button"
+					android:text="Add to Queue"
+					/>
+			</LinearLayout>
 
+		</RelativeLayout>
 
+	</LinearLayout>
 
-	</RelativeLayout>
-
-</LinearLayout>
+</RelativeLayout>

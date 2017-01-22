@@ -13,6 +13,7 @@ public class DataManager {
 
 	//Preferences
 	public static final String PREF_RESUME_TIME = "resumeTime";
+	public static final String PREF_RESUME_URL = "resumeUrl";
 
 
 }

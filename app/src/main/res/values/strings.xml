@@ -32,4 +32,12 @@ Aliquam porttitor maximus elit, ut malesuada erat vestibulum sit amet. Quisque n
 	<string name="no_podcast_description">No podcast description available.</string>
 	<string name="no_episode_description">No episode description available.</string>
 
+	<!-- AudioService Statuses -->
+	<string name="playing_status">Playing</string>
+	<string name="preparing_status">Preparing</string>
+	<string name="stopped_status">Stopped</string>
+	<string name="paused_status">Paused</string>
+	<string name="error_status">Error</string>
+	<string name="destroyed_status">Destroyed</string>
+
 </resources>

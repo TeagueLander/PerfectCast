@@ -18,6 +18,7 @@
 	<dimen name="h6">10dp</dimen>
 
 	<dimen name="smallPadding">10dp</dimen>
+	<dimen name="mediumPadding">20dp</dimen>
 
 	<dimen name="podcast_detail_title_height">100dp</dimen>
 

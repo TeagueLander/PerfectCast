@@ -15,12 +15,11 @@ import android.support.v7.app.NotificationCompat;
 import android.app.NotificationManager;
 //import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.teaguelander.audio.perfectcast.database.DataManager;
 import com.teaguelander.audio.perfectcast.MainActivity;
 import com.teaguelander.audio.perfectcast.R;
-
-import java.io.IOException;
 
 /**
  * Created by Teague-Win10 on 7/9/2016.
@@ -34,19 +33,27 @@ public class AudioService extends Service {
 	public static String STOP_ACTION = "com.teaguelander.audio.perfectcast.STOP_ACTION";
 	public static String DESTROY_ACTION = "com.teaguelander.audio.perfectcast.DESTROY_ACTION";
 
+	public static String PLAYING_STATUS = "com.teaguelander.audio.perfectcast.PLAYING_STATUS";
+	public static String PREPARING_STATUS = "com.teaguelander.audio.perfectcast.PREPARING_STATUS";
+	public static String STOPPED_STATUS = "com.teaguelander.audio.perfectcast.STOPPED_STATUS";
+	public static String PAUSED_STATUS = "com.teaguelander.audio.perfectcast.PAUSED_STATUS";
+	public static String ERROR_STATUS = "com.teaguelander.audio.perfectcast.ERROR_STATUS";
+	public static String DESTROYED_STATUS = "com.teaguelander.audio.perfectcast.DESTROYED_STATUS";
+
 	private static int SKIP_LENGTH = 30000;
 	private static int RESUME_REWIND_LENGTH = 2000;
 	private static int ICON_APP = R.mipmap.ic_launcher;
 
 	//Uri curTrack = R.raw.groove;//Uri.parse("https://api.spreaker.com/download/episode/8950331/episode_28_mixdown.mp3"); //
 	int curTrack = R.raw.groove;
-	String curWebTrack = "http://www.archive.org/download/ZeldaDungeonChristmasSpecialPodcast/Z-talkChristmas.mp3";
 	MediaPlayer mp;
+	String currentTrackLocation = null;
 	BroadcastReceiver receiver; //For Intents
 	SharedPreferences preferences;
 	SharedPreferences.Editor prefEditor;
 	int notificationId = -1; //notificationID allows you to update the notification later on.
 
+//	String resumeUrl = "";
 	int resumeTime = 0; // Resume time
 
 	@Override
@@ -94,66 +101,103 @@ public class AudioService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 
-		resumeTime = mp.getCurrentPosition() - RESUME_REWIND_LENGTH;
-		prefEditor.putInt(DataManager.PREF_RESUME_TIME, resumeTime);
-		prefEditor.commit();
-
-		mp.release();
-//		sendBroadcast(new Intent(STOP_ACTION));
+		if (mp != null) {
+			resumeTime = mp.getCurrentPosition() - RESUME_REWIND_LENGTH;
+			savePreferences();
+			mp.release();
+		}
+		sendBroadcast(new Intent(DESTROYED_STATUS));
 		removeNotification();
 		unregisterReceiver(receiver);
 		Log.d("as", "AudioService destroyed");
 	}
 
-	public void playAudio() {
-		if (mp == null) {
-			//mp = MediaPlayer.create(this, curTrack); //From Local
-			mp = new MediaPlayer();
-			try {
-				mp.setDataSource(curWebTrack);
-				mp.prepare();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			resumeTime = preferences.getInt(DataManager.PREF_RESUME_TIME, 0);
-
-			//Listeners
-			mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-				public void onCompletion(MediaPlayer mp) {
-//					stopAudio(); //Use broadcast STOP_ACTION here instead
-					mp.seekTo(0);
-					pauseAudio();
-					Log.d("as", "End of Audio reached");
-					sendBroadcast(new Intent(STOP_ACTION));
-//					Toast.makeText(getApplicationContext(), "Hello World", Toast.LENGTH_SHORT).show();
-				}
-			});
+	public void playAudio(String location) {
+		Log.d("as", "Location " + location);
+		Log.d("as", "CurTrack " + currentTrackLocation);
+		if (location == null && currentTrackLocation == null) {
+			location = preferences.getString(DataManager.PREF_RESUME_URL, null);
 		}
-		mp.seekTo(resumeTime);
-		mp.start();
-		showNotification();
+		Log.d("as", "Location " + location);
+		playAudioFromWeb(location);
 	}
 
-//	private void playAudioFromWeb() {
-//		if (mp == null) {
-//			mp = new MediaPlayer();
-//		}
-//		try
-//	}
+	private void playAudioFromWeb(String location) {
+		if (location != null) {
+			if (mp == null || location.equals(currentTrackLocation) != true) {
+				if (mp == null) {
+					mp = new MediaPlayer();
+				}
+				currentTrackLocation = location;
+				//Set track to beginning
+				resumeTime = 0; //TODO check whether there is a time that needs to be resumed
+				savePreferences();
+
+				try {
+//					if (currentTrackLocation == null) throw new Exception("No url currently");
+					mp.reset();
+					mp.setDataSource(currentTrackLocation);
+					mp.prepareAsync();
+					sendBroadcast(new Intent(PREPARING_STATUS));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				//Listener
+				mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+					@Override
+					public void onPrepared(MediaPlayer mp) {
+						resumeAudio();
+					}
+				});
+				//Listener
+				mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+					public void onCompletion(MediaPlayer mp) {
+//						mp.seekTo(0);
+//						pauseAudio();
+						stopAudio();
+						Log.d("as", "End of Audio reached");
+//						sendBroadcast(new Intent(PAUSED_STATUS));
+					}
+				});
+				mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+					@Override
+					public boolean onError(MediaPlayer mp, int what, int extra) {
+						sendBroadcast(new Intent(ERROR_STATUS));
+						return false;
+					}
+				});
+			} else {
+				resumeAudio();
+			}
+		} else if (currentTrackLocation != null) {
+			resumeAudio();
+		} else {
+			Toast.makeText(this, "Nothing to play", Toast.LENGTH_SHORT).show();
+		}
+	}
+
+	public void resumeAudio() {
+		resumeTime = preferences.getInt(DataManager.PREF_RESUME_TIME, 0);
+		mp.seekTo(resumeTime);
+		mp.start();
+		sendBroadcast(new Intent(PLAYING_STATUS));
+		showNotification();
+	}
 
 	public void pauseAudio() {
 		mp.pause();
 		resumeTime = mp.getCurrentPosition() - RESUME_REWIND_LENGTH;
-		prefEditor.putInt(DataManager.PREF_RESUME_TIME, resumeTime);
-		prefEditor.commit();
+		savePreferences();
+		sendBroadcast(new Intent(PAUSED_STATUS));
 		showNotification();
 	}
 
 	public void stopAudio() {
 		mp.stop();
 		resumeTime = mp.getCurrentPosition() - RESUME_REWIND_LENGTH;
-		prefEditor.putInt(DataManager.PREF_RESUME_TIME, resumeTime);
-		prefEditor.commit();
+		savePreferences();
+		sendBroadcast(new Intent(STOPPED_STATUS));
 		showNotification();
 	}
 
@@ -163,6 +207,14 @@ public class AudioService extends Service {
 
 	public void skipAudio() {
 		mp.seekTo(mp.getCurrentPosition() + SKIP_LENGTH);
+	}
+
+	private void savePreferences() {
+		prefEditor.putString(DataManager.PREF_RESUME_URL, currentTrackLocation);
+		prefEditor.putInt(DataManager.PREF_RESUME_TIME, resumeTime);
+		Log.d("as", "resumeUrl " + currentTrackLocation);
+		Log.d("as", "resumeTime " + resumeTime);
+		prefEditor.commit();
 	}
 
 	//Creates and sends the notification that controls our audio, returns notification id
@@ -232,13 +284,14 @@ public class AudioService extends Service {
 		String action = intent.getAction();
 		Log.d("as", "AudioService received Intent: " + action);
 		if (action == null) {
-			playAudio();
+			//playAudio();
 		}
 		else if (action.equals(PAUSE_ACTION)) {
 			pauseAudio();
 		}
 		else if (action.equals(PLAY_ACTION)) {
-			playAudio();
+			String url = intent.getStringExtra("url");
+			playAudio(url);
 		}
 		else if (action.equals(SKIP_ACTION)) {
 			skipAudio();
@@ -247,7 +300,7 @@ public class AudioService extends Service {
 			rewindAudio();
 		}
 		else if (action.equals(STOP_ACTION)) {
-//			stopAudio();
+			stopAudio();
 		}else if (action.equals(DESTROY_ACTION)) {
 //			Toast.makeText(this, "Destroy Action", Toast.LENGTH_LONG).show();
 			stopSelf(); //Ends the service
