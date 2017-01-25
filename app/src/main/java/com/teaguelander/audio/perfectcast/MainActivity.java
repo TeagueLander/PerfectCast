@@ -238,7 +238,13 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 	private void setControlToolbarImage(PodcastDetail podcast) {
 		Context cxt = getApplicationContext();
 		StorageService ss = StorageService.getInstance(cxt);
-		ss.saveImageToStorageAndView(cxt, podcast.mImageUrl, mPodcastImage);
+
+		try {
+			ss.saveImageToStorageAndView(cxt, podcast.mImageUrl, mPodcastImage);
+		}catch (Exception e){
+			Log.e("ma", "Could not load image");
+			e.printStackTrace();
+		}
 
 //		try {
 //			String filename = URLEncoder.encode(podcast.mImageUrl, StorageService.CHARSET);
