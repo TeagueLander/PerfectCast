@@ -3,6 +3,7 @@ package com.teaguelander.audio.perfectcast;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 //import android.support.design.widget.FloatingActionButton;
 //import android.support.design.widget.Snackbar;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 import android.content.Intent;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -23,8 +25,12 @@ import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.teaguelander.audio.perfectcast.fragments.MainFragment;
 import com.teaguelander.audio.perfectcast.fragments.SearchResultsFragment;
+import com.teaguelander.audio.perfectcast.objects.PodcastDetail;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
 import com.teaguelander.audio.perfectcast.services.AudioService;
+import com.teaguelander.audio.perfectcast.services.StorageService;
+
+import java.net.URLEncoder;
 
 public class MainActivity extends AppCompatActivity { //implements SearchView.OnQueryTextListener, SearchView.OnCloseListener
 
@@ -39,6 +45,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 	ImageButton mPlayPauseButton;
 	TextView mAudioServiceStatusTextView;
 	ProgressBar mProgressCircle;
+	ImageView mPodcastImage;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +67,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		mPlayPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
 		mProgressCircle = (ProgressBar) findViewById(R.id.progressCircle);
 		mAudioServiceStatusTextView = (TextView) findViewById(R.id.audioServiceStatus);
+		mPodcastImage = (ImageView) findViewById(R.id.podcastImage);
 
 		//TODO remove
 		searchView.setSearchText("zelda");
@@ -173,6 +181,10 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		return super.onOptionsItemSelected(item);
 	}
 
+
+
+
+
 	public void startAudioService() {
 		startService(new Intent(getBaseContext(), AudioService.class));
 		setAudioIsPlaying(true);
@@ -215,12 +227,23 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		Intent intent = new Intent(AudioService.PLAY_ACTION, null, getBaseContext(), AudioService.class);
 		intent.putExtra("url", episode.mUrl);
 		Log.d("ma", "Playing: " + episode.mUrl);
+		setControlToolbarImage(episode.mPodcast);
 		startService(intent);
 	}
 
 	private void setAudioServiceStatusText(String status) {
-
 		mAudioServiceStatusTextView.setText(status);
+	}
+
+	private void setControlToolbarImage(PodcastDetail podcast) {
+		Context cxt = getApplicationContext();
+		StorageService ss = StorageService.getInstance(cxt);
+		ss.saveImageToStorageAndView(cxt, podcast.mImageUrl, mPodcastImage);
+
+//		try {
+//			String filename = URLEncoder.encode(podcast.mImageUrl, StorageService.CHARSET);
+//			mPodcastImage.setImageBitmap(BitmapFactory.decodeFile(filename));
+//		}catch(Exception e) {e.printStackTrace();}
 	}
 
 }

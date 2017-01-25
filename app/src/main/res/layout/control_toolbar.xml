@@ -15,7 +15,6 @@
 	<RelativeLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_marginBottom="4dp"
 		>
 
 		<RelativeLayout
@@ -23,15 +22,16 @@
 			android:layout_height="?attr/actionBarSize"
 			android:layout_alignParentTop="true"
 			android:layout_alignParentStart="true"
+			android:layout_margin="@dimen/halfSmallPadding"
 			>
 
-			<ImageButton
+			<ImageView
 				android:id="@+id/podcastImage"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:src="@android:drawable/ic_media_play"
 				android:background="#0000"
-				android:contentDescription="@string/cd_play_pause_button"
+				android:contentDescription="@string/cd_album_art"
 				/>
 
 		</RelativeLayout>
@@ -42,7 +42,9 @@
 			android:layout_height="?attr/actionBarSize"
 			android:layout_alignParentTop="true"
 			android:layout_alignParentStart="false"
-			android:layout_alignParentEnd="true">
+			android:layout_alignParentEnd="true"
+			android:layout_marginBottom="4dp"
+			>
 
 			<ImageButton
 				android:id="@+id/playPauseButton"
