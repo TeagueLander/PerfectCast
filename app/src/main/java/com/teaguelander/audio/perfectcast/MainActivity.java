@@ -28,6 +28,7 @@ import com.teaguelander.audio.perfectcast.fragments.SearchResultsFragment;
 import com.teaguelander.audio.perfectcast.objects.PodcastDetail;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
 import com.teaguelander.audio.perfectcast.services.AudioService;
+import com.teaguelander.audio.perfectcast.services.DatabaseService;
 import com.teaguelander.audio.perfectcast.services.StorageService;
 
 import java.net.URLEncoder;
@@ -229,6 +230,9 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		Log.d("ma", "Playing: " + episode.mUrl);
 		setControlToolbarImage(episode.mPodcast);
 		startService(intent);
+
+//		DatabaseService.getInstance(getApplicationContext()).addUpNext(episode);
+//		DatabaseService.getInstance(getApplicationContext()).getNextEpisode();
 	}
 
 	private void setAudioServiceStatusText(String status) {

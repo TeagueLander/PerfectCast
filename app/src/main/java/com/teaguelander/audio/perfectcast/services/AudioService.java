@@ -44,7 +44,6 @@ public class AudioService extends Service {
 	private static int RESUME_REWIND_LENGTH = 2000;
 	private static int ICON_APP = R.mipmap.ic_launcher;
 
-	//Uri curTrack = R.raw.groove;//Uri.parse("https://api.spreaker.com/download/episode/8950331/episode_28_mixdown.mp3"); //
 	int curTrack = R.raw.groove;
 	MediaPlayer mp;
 	String currentTrackLocation = null;
@@ -53,7 +52,6 @@ public class AudioService extends Service {
 	SharedPreferences.Editor prefEditor;
 	int notificationId = -1; //notificationID allows you to update the notification later on.
 
-//	String resumeUrl = "";
 	int resumeTime = 0; // Resume time
 
 	@Override
@@ -310,12 +308,5 @@ public class AudioService extends Service {
 	private void storePreferences() {
 
 	}
-
-	//Listeners
-	/*mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-		public void onCompletion(MediaPlayer mp) {
-			Toast.makeText(getApplicationContext(), "Hello World", Toast.LENGTH_SHORT).show();
-		}
-	});*/
 
 }

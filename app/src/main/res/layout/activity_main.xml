@@ -45,16 +45,6 @@
 
 
 		<!-- SEARCH BAR -->
-		<com.arlib.floatingsearchview.FloatingSearchView
-			android:id="@+id/searchView"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			app:floatingSearch_leftActionMode="showHamburger"
-			app:floatingSearch_searchHint="@string/app_name"
-			app:floatingSearch_close_search_on_keyboard_dismiss="true"
-			app:floatingSearch_dismissOnOutsideTouch="true"
-			app:floatingSearch_dimBackground="true"
-			/>
 
 		<!-- BOTTOM TOOLBAR -->
 		<android.support.design.widget.AppBarLayout
@@ -68,6 +58,17 @@
 				layout="@layout/control_toolbar" />
 
 		</android.support.design.widget.AppBarLayout>
+
+		<com.arlib.floatingsearchview.FloatingSearchView
+			android:id="@+id/searchView"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			app:floatingSearch_leftActionMode="showHamburger"
+			app:floatingSearch_searchHint="@string/app_name"
+			app:floatingSearch_close_search_on_keyboard_dismiss="true"
+			app:floatingSearch_dismissOnOutsideTouch="true"
+			app:floatingSearch_dimBackground="true"
+			/>
 
 	</android.support.design.widget.CoordinatorLayout>
 
