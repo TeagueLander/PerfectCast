@@ -3,6 +3,7 @@ package com.teaguelander.audio.perfectcast.services;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
@@ -12,6 +13,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -21,6 +23,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
+
+import static com.android.volley.Response.*;
 
 /**
  * Created by Teague-Win10 on 7/28/2016.
@@ -78,6 +82,18 @@ public class DataService {
 		imageView.setImageUrl(url, imageLoader);
 	}
 
+	public void getImage(final String url, Response.Listener<Bitmap> listener) {
+		ImageRequest request = new ImageRequest(url, listener, 0, 0, null, null,
+			new ErrorListener() {
+			   @Override
+			   public void onErrorResponse(VolleyError error) {
+					Log.d("ds", "Error getting image at: " + url);
+			   }
+			}
+		);
+		addToRequestQueue(request);
+	}
+
 	private static String paramSerializer(JSONObject params) throws JSONException {
 
 		if (params == null) { return ""; }
@@ -103,7 +119,7 @@ public class DataService {
 
 	private static void makeStringUrlRequest(String url, Response.Listener<String> listener) {
 		Log.d("ds", url);
-		StringRequest stringRequest = new StringRequest(Request.Method.GET, url, listener, new Response.ErrorListener() {
+		StringRequest stringRequest = new StringRequest(Request.Method.GET, url, listener, new ErrorListener() {
 			@Override
 			public void onErrorResponse(VolleyError error) {
 				Log.e("ds", "Some went wrong with Volley Request");

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="horizontal"
+	android:layout_width="match_parent"
+	android:layout_height="@dimen/podcast_item_row_height"
+	android:clickable="true"
+	android:background="?android:attr/selectableItemBackground"
+	android:paddingTop="1dp"
+	>
+	<com.android.volley.toolbox.NetworkImageView
+		android:id="@+id/item_image"
+		android:layout_width="@dimen/podcast_item_row_height"
+		android:layout_height="@dimen/podcast_item_row_height"
+		/>
+
+	<TextView
+		android:id="@+id/item_title"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerVertical="true"
+		android:layout_toRightOf="@+id/item_image"
+		android:paddingLeft="8dp"
+		android:paddingRight="8dp"
+		android:maxLines="1"
+		android:ellipsize="end"
+		/>
+
+	<View
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:background="@color/colorRowDivider"
+		android:layout_alignParentBottom="true"
+		/>
+
+</RelativeLayout>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="horizontal"
+	android:layout_width="match_parent"
+	android:layout_height="@dimen/podcast_item_row_height"
+	android:clickable="true"
+	android:background="?android:attr/selectableItemBackground"
+	android:paddingTop="1dp"
+	>
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingLeft="@dimen/smallPadding"
+		android:paddingRight="@dimen/smallPadding"
+		android:layout_centerVertical="true"
+		>
+		<TextView
+			android:id="@+id/episode_title"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:maxLines="1"
+			android:ellipsize="end"
+			android:textSize="@dimen/h3"
+			/>
+		<TextView
+			android:id="@+id/episode_duration"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:layout_below="@id/episode_title"
+			/>
+		<TextView
+			android:id="@+id/episode_pubdate"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/episode_duration"
+			/>
+		<!--Put in drawable progressbar here -->
+	</RelativeLayout>
+
+	<View
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:background="@color/colorRowDivider"
+		android:layout_alignParentBottom="true"
+		/>
+
+</RelativeLayout>

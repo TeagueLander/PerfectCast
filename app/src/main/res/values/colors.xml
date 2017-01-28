@@ -17,4 +17,9 @@
 
 	<color name="colorDarkGrey">#3F3F3F</color>
 
+
+	<!-- Button Colors -->
+	<color name="buttonGrey">#FFD3D3D3</color>
+	<color name="buttonSelected">@color/colorPrimary</color>
+
 </resources>

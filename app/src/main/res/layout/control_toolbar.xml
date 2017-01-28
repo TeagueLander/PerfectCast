@@ -1,28 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.Toolbar  xmlns:android="http://schemas.android.com/apk/res/android"
-									xmlns:app="http://schemas.android.com/apk/res-auto"
-									android:layout_width="match_parent"
-									android:layout_height="@dimen/toolbar"
-									xmlns:tools="http://schemas.android.com/tools"
-									android:background="?attr/colorPrimaryDark"
-									app:popupTheme="@style/AppTheme.PopupOverlay"
-									android:layout_gravity="bottom"
-									tools:context="com.teaguelander.audio.perfectcast.MainActivity"
-									tools:showIn="@layout/activity_main"
-									app:contentInsetStart="0dp"
-									>
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="@dimen/toolbar"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:background="?attr/colorPrimaryDark"
+	app:popupTheme="@style/AppTheme.PopupOverlay"
+	android:layout_gravity="bottom"
+	tools:context="com.teaguelander.audio.perfectcast.MainActivity"
+	tools:showIn="@layout/activity_main"
+	app:contentInsetStart="0dp"
+	>
 
-	<ImageButton
-		android:id="@+id/playPauseButton"
-		android:layout_width="?attr/actionBarSize"
-		android:layout_height="?attr/actionBarSize"
-		android:layout_alignParentTop="true"
-		android:layout_alignParentEnd="true"
-		android:onClick="playButtonPressed"
-		android:src="@android:drawable/ic_media_play"
-		android:background="#0000"
-	    android:contentDescription="@string/cd_play_pause_button"
-		/>
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		>
+
+		<RelativeLayout
+			android:layout_width="?attr/actionBarSize"
+			android:layout_height="?attr/actionBarSize"
+			android:layout_alignParentTop="true"
+			android:layout_alignParentStart="true"
+			android:layout_marginTop="@dimen/halfSmallPadding"
+			android:layout_marginBottom="@dimen/halfSmallPadding"
+			>
+
+			<ImageView
+				android:id="@+id/podcastImage"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:src="@android:drawable/ic_media_play"
+				android:background="#0000"
+				android:contentDescription="@string/cd_album_art"
+				/>
+
+		</RelativeLayout>
+
+		<RelativeLayout
+			android:id="@+id/playControl"
+			android:layout_width="?attr/actionBarSize"
+			android:layout_height="?attr/actionBarSize"
+			android:layout_alignParentTop="true"
+			android:layout_alignParentStart="false"
+			android:layout_alignParentEnd="true"
+			android:layout_marginBottom="4dp"
+			>
+
+			<ImageButton
+				android:id="@+id/playPauseButton"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:onClick="playButtonPressed"
+				android:src="@android:drawable/ic_media_play"
+				android:background="#0000"
+				android:contentDescription="@string/cd_play_pause_button"
+				/>
+			<ProgressBar
+				android:id="@+id/progressCircle"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:indeterminateTint="@color/white"
+				android:indeterminate="true"
+				android:layout_margin="14dp"
+				android:visibility="invisible"
+				android:layout_centerHorizontal="true"
+				android:layout_centerVertical="true"
+				/>
+
+			<TextView
+				android:text="@string/destroyed_status"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentBottom="true"
+				android:id="@+id/audioServiceStatus"
+				android:layout_centerHorizontal="true"
+				android:textSize="10dp"
+				/>
+		</RelativeLayout>
+
+	</RelativeLayout>
 
 	<!--<item
 		android:layout_width="wrap_content"
