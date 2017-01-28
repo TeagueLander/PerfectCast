@@ -22,6 +22,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 
 	private static DatabaseService mInstance;
 	private static Context mContext;
+	private static SQLiteDatabase mDatabase;
 
 	private static final int DATABASE_VERSION = 11;
 	private static final String DATABASE_NAME = "PerfectCast";
@@ -31,6 +32,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 	public DatabaseService(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		mContext = context;
+		mDatabase = this.getWritableDatabase();
 	}
 
 	public static synchronized DatabaseService getInstance(Context context) {
@@ -38,6 +40,10 @@ public class DatabaseService extends SQLiteOpenHelper {
 			mInstance = new DatabaseService (context);
 		}
 		return mInstance;
+	}
+
+	public void closeDatabase() {
+		mDatabase.close();
 	}
 
 	@Override
@@ -78,9 +84,8 @@ public class DatabaseService extends SQLiteOpenHelper {
 	public long addPodcast(PodcastDetail podcast) {
 		Log.d("dbs", "Adding podcast " + podcast.mTitle);
 
-		SQLiteDatabase db = this.getWritableDatabase();
-
-		Cursor cursor = db.query(TABLE_PODCASTS,
+		//TODO made this a get by url function
+		Cursor cursor = mDatabase.query(TABLE_PODCASTS,
 								 new String[] {PodcastDetail.KEY_ID},
 								 PodcastDetail.KEY_URL + " = ?",
 								 new String[] { podcast.mUrl },
@@ -90,7 +95,6 @@ public class DatabaseService extends SQLiteOpenHelper {
 			//TODO We should do an update statement
 			cursor.moveToFirst();
 			if (cursor.getCount() > 0) {
-				db.close();
 				return cursor.getLong(0);
 			}
 		}
@@ -105,9 +109,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 		values.put(PodcastDetail.KEY_SUBSCRIBED, podcast.mSubscribed);
 		values.put(PodcastDetail.KEY_XML, podcast.mXml );
 
-		id = db.insert(TABLE_PODCASTS, null, values);
-
-		db.close();
+		id = mDatabase.insert(TABLE_PODCASTS, null, values);
 
 		return id;
 	}
@@ -116,10 +118,9 @@ public class DatabaseService extends SQLiteOpenHelper {
 	public long addEpisode(PodcastEpisode episode) {
 		Log.d("dbs", "Adding episode " + episode.mTitle);
 
-		SQLiteDatabase db = this.getWritableDatabase();
-
 		//Check if episode already exists in database
-		Cursor cursor = db.query(TABLE_EPISODES,
+		//TODO made this a get by url function
+		Cursor cursor = mDatabase.query(TABLE_EPISODES,
 								 new String[] { PodcastEpisode.KEY_ID },
 								 PodcastEpisode.KEY_URL + " = ?",
 								 new String[] { episode.mUrl },
@@ -129,7 +130,6 @@ public class DatabaseService extends SQLiteOpenHelper {
 			//TODO Update with latest podcast episode info (I doubt it has changed...)
 			cursor.moveToFirst();
 			if (cursor.getCount() > 0) {
-				db.close();
 				return cursor.getLong(0);
 			}
 		}
@@ -150,9 +150,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 		values.put(PodcastEpisode.KEY_DESCRIPTION, episode.mDescription);
 		values.put(PodcastEpisode.KEY_URL, episode.mUrl );
 
-		episodeId = db.insert(TABLE_EPISODES, null, values);
-
-		db.close();
+		episodeId = mDatabase.insert(TABLE_EPISODES, null, values); //Problem is here, we've already close the database in call to addPodcast
 
 		return episodeId;
 	}
@@ -161,9 +159,8 @@ public class DatabaseService extends SQLiteOpenHelper {
 
 	//Get episode by id
 	public PodcastEpisode getEpisodeById(Long id) {
-		SQLiteDatabase db = this.getReadableDatabase();
 
-		Cursor cursor = db.query(TABLE_EPISODES,
+		Cursor cursor = mDatabase.query(TABLE_EPISODES,
 								 PodcastEpisode.COLUMNS,
 								 PodcastEpisode.KEY_ID + " = ?",
 								 new String[] { Long.toString(id) },
@@ -203,9 +200,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 	public PodcastDetail getPodcast(long id) { //TODO add a parameter to get XML or not
 		Log.d("dbs", "Requesting podcast by id: " + id);
 
-		SQLiteDatabase db = this.getReadableDatabase();
-
-		Cursor cursor = db.query(TABLE_PODCASTS,
+		Cursor cursor = mDatabase.query(TABLE_PODCASTS,
 								 PodcastDetail.COLUMNS,
 								 PodcastDetail.KEY_ID + " = ?",
 								 new String[] { Long.toString(id) },

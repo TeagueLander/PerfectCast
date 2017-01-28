@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		//Allow Internet Access
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy);
+		//Open Database
+			//Doing in the application on create right now
 		//FrameLayout (For Fragments)
 		FrameLayout fl = (FrameLayout) findViewById(R.id.fragment_container);
 		MainFragment mainFragment = new MainFragment();
@@ -160,6 +162,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		super.onDestroy();
 		stopAudioService();
 		unregisterReceiver(receiver);
+		DatabaseService.getInstance(null).closeDatabase();
 	}
 
 	@Override
