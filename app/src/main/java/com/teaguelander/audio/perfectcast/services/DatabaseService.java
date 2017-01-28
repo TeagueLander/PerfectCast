@@ -72,10 +72,67 @@ public class DatabaseService extends SQLiteOpenHelper {
 		this.onCreate(db);
 	}
 
+	//ADDS
 
-	//UP_NEXT
+	//Add Podcast
+	public long addPodcast(PodcastDetail podcast) {
+		Log.d("dbs", "Adding podcast " + podcast.mTitle);
+
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		Cursor cursor = db.query(TABLE_PODCASTS,
+								 new String[] {PodcastDetail.KEY_ID},
+								 PodcastDetail.KEY_URL + " = ?",
+								 new String[] { podcast.mUrl },
+								 null, null, null);
+		if (cursor != null) { //Podcast already exists
+			Log.d("dbs", "Cursor not null!");
+			//TODO We should do an update statement
+			cursor.moveToFirst();
+			if (cursor.getCount() > 0) {
+				db.close();
+				return cursor.getLong(0);
+			}
+		}
+
+		//Podcast doesnt exist in db, insert statement
+		long id = -1;
+		ContentValues values = new ContentValues();
+		values.put(PodcastDetail.KEY_URL, podcast.mUrl);
+		values.put(PodcastDetail.KEY_TITLE, podcast.mTitle);
+		values.put(PodcastDetail.KEY_IMAGE_URL, podcast.mImageUrl);
+		values.put(PodcastDetail.KEY_DESCRIPTION, podcast.mDescription);
+		values.put(PodcastDetail.KEY_SUBSCRIBED, podcast.mSubscribed);
+		values.put(PodcastDetail.KEY_XML, podcast.mXml );
+
+		id = db.insert(TABLE_PODCASTS, null, values);
+
+		db.close();
+
+		return id;
+	}
+
+	//Add episode
 	public long addEpisode(PodcastEpisode episode) {
 		Log.d("dbs", "Adding episode " + episode.mTitle);
+
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		//Check if episode already exists in database
+		Cursor cursor = db.query(TABLE_EPISODES,
+								 new String[] { PodcastEpisode.KEY_ID },
+								 PodcastEpisode.KEY_URL + " = ?",
+								 new String[] { episode.mUrl },
+								 null, null, null);
+		if (cursor != null) {
+			Log.d("dbs", "Episode cursor not null!");
+			//TODO Update with latest podcast episode info (I doubt it has changed...)
+			cursor.moveToFirst();
+			if (cursor.getCount() > 0) {
+				db.close();
+				return cursor.getLong(0);
+			}
+		}
 
 //		We need the Podcast id and to add it if it hasn't been done yet
 		long podcastId;
@@ -86,8 +143,6 @@ public class DatabaseService extends SQLiteOpenHelper {
 			episode.mPodcastId = podcastId;
 			episode.mPodcast.mId = podcastId;
 		}
-
-		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
 		values.put(PodcastEpisode.KEY_PODCAST_ID, episode.mPodcastId );
@@ -101,6 +156,8 @@ public class DatabaseService extends SQLiteOpenHelper {
 
 		return episodeId;
 	}
+
+//GETS
 
 	//Get episode by id
 	public PodcastEpisode getEpisodeById(Long id) {
@@ -140,45 +197,6 @@ public class DatabaseService extends SQLiteOpenHelper {
 		}
 
 		return episode;
-	}
-
-	//ADD PODCAST
-	public long addPodcast(PodcastDetail podcast) {
-		Log.d("dbs", "Adding podcast " + podcast.mTitle);
-
-		SQLiteDatabase db = this.getWritableDatabase();
-		long id = -1;
-
-		Cursor cursor = db.query(TABLE_PODCASTS,
-								 new String[] {PodcastDetail.KEY_ID},
-								 PodcastDetail.KEY_URL + " = ?",
-								 new String[] { podcast.mUrl },
-								 null, null, null);
-		int rows = 0;
-
-		if (cursor != null) { //Podcast already exists
-			Log.d("dbs", "Cursor not null!");
-			//TODO We should do an update statement
-			cursor.moveToFirst();
-			if (cursor.getCount() > 0) {
-				db.close();
-				return cursor.getLong(0);
-			}
-		}
-		//Podcast doesnt exist in db, insert statement
-		ContentValues values = new ContentValues();
-		values.put(PodcastDetail.KEY_URL, podcast.mUrl);
-		values.put(PodcastDetail.KEY_TITLE, podcast.mTitle);
-		values.put(PodcastDetail.KEY_IMAGE_URL, podcast.mImageUrl);
-		values.put(PodcastDetail.KEY_DESCRIPTION, podcast.mDescription);
-		values.put(PodcastDetail.KEY_SUBSCRIBED, podcast.mSubscribed);
-		values.put(PodcastDetail.KEY_XML, podcast.mXml );
-
-		id = db.insert(TABLE_PODCASTS, null, values);
-
-		db.close();
-
-		return id;
 	}
 
 	//GET PODCAST BY ID
