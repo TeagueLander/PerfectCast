@@ -9,13 +9,17 @@ import java.util.Date;
 public class PodcastEpisode {
 
 	//Database Keys
+	public static final String KEY_ID = "id";
+	public static final String KEY_PODCAST_ID = "podcast_id";
 	public static final String KEY_TITLE = "title";
 	public static final String KEY_DESCRIPTION = "description";
 	public static final String KEY_URL = "url";
 
-	public static final String[] COLUMNS = {KEY_TITLE, KEY_DESCRIPTION, KEY_URL };
+	public static final String[] COLUMNS = { KEY_ID, KEY_PODCAST_ID, KEY_TITLE, KEY_DESCRIPTION, KEY_URL };
 
 	//Object fields
+	public long mId = -1;
+	public long mPodcastId = -1;
 	public String mTitle;
 	public String mDescription;
 	public String mUrl;
@@ -28,6 +32,7 @@ public class PodcastEpisode {
 
 	public PodcastEpisode(String mTitle, String mDescription, String mUrl, String mDuration, Date mPubDate, String mBytes, PodcastDetail mPodcast) {
 		super();
+//		this.mId = mId;
 		this.mTitle = mTitle;
 		this.mDescription = mDescription;
 		this.mUrl = mUrl;
@@ -35,6 +40,11 @@ public class PodcastEpisode {
 		this.mPubDate = mPubDate;
 		this.mBytes = mBytes;
 		this.mPodcast = mPodcast;
+	}
+
+	public void setIds(long id, long podcastId) {
+		mId = id;
+		mPodcastId = podcastId;
 	}
 
 	@Override

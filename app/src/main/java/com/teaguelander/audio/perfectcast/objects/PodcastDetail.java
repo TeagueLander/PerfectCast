@@ -1,8 +1,5 @@
 package com.teaguelander.audio.perfectcast.objects;
 
-import android.content.Context;
-import android.support.annotation.Nullable;
-import android.text.Html;
 import android.util.Log;
 import android.util.Xml;
 
@@ -13,7 +10,6 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -36,7 +32,7 @@ public class PodcastDetail {
 	public static final String[] COLUMNS = { KEY_ID, KEY_URL, KEY_TITLE, KEY_IMAGE_URL, KEY_DESCRIPTION, KEY_SUBSCRIBED, KEY_XML };
 
 	//Object fields
-	public long mId;
+	public long mId = -1;
 	public String mUrl;
 	public String mTitle;
 	public String mImageUrl;
@@ -52,8 +48,7 @@ public class PodcastDetail {
 		parsePodcastXml(xml);
 	}
 
-	public PodcastDetail(long id, String url, String title, String imageUrl, String description, boolean subscribed, String xml) {
-		mId = id;
+	public PodcastDetail(String url, String title, String imageUrl, String description, boolean subscribed, String xml) {
 		mUrl = url;
 		mTitle = title;
 		mImageUrl = imageUrl;
@@ -67,6 +62,10 @@ public class PodcastDetail {
 		mImageUrl = imageUrl;
 		mDescription = description;
 		mEpisodes = episodes;
+	}
+
+	public void setId(long id) {
+		mId = id;
 	}
 
 	private void parsePodcastXml(String xml) throws XmlPullParserException, IOException {
@@ -200,7 +199,10 @@ public class PodcastDetail {
 				skipTag(parser);
 			}
 		}
-		return new PodcastEpisode(title, description, url, duration, pubDate, bytes, this);
+		PodcastEpisode episode = new PodcastEpisode(title, description, url, duration, pubDate, bytes, this);
+		//TODO check if episode already exists and get its ID
+		episode.setIds(-1, mId);
+		return episode;
 	}
 
 	private static String readTagText(XmlPullParser parser, String tag) throws IOException, XmlPullParserException {

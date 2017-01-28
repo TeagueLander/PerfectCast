@@ -3,7 +3,6 @@ package com.teaguelander.audio.perfectcast;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 //import android.support.design.widget.FloatingActionButton;
 //import android.support.design.widget.Snackbar;
@@ -30,8 +29,6 @@ import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
 import com.teaguelander.audio.perfectcast.services.AudioService;
 import com.teaguelander.audio.perfectcast.services.DatabaseService;
 import com.teaguelander.audio.perfectcast.services.StorageService;
-
-import java.net.URLEncoder;
 
 public class MainActivity extends AppCompatActivity { //implements SearchView.OnQueryTextListener, SearchView.OnCloseListener
 
@@ -231,8 +228,8 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		setControlToolbarImage(episode.mPodcast);
 		startService(intent);
 
-//		DatabaseService.getInstance(getApplicationContext()).addUpNext(episode);
-//		DatabaseService.getInstance(getApplicationContext()).getNextEpisode();
+		Long id = DatabaseService.getInstance(getApplicationContext()).addEpisode(episode);
+		DatabaseService.getInstance(getApplicationContext()).getEpisodeById(id); //Get next episode
 	}
 
 	private void setAudioServiceStatusText(String status) {

@@ -18,7 +18,8 @@ public class TrackManager {
 	}
 
 	public PodcastEpisode getCurrentTrack() {
-		return mDatabaseService.getNextEpisode();
+//		return mDatabaseService.getNextEpisode();
+		return null;
 	}
 
 	public PodcastDetail getPodcastDetail(long id) {
