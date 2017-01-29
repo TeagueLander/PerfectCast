@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -31,6 +32,8 @@ import com.teaguelander.audio.perfectcast.services.DatabaseService;
 import com.teaguelander.audio.perfectcast.services.StorageService;
 import com.teaguelander.audio.perfectcast.services.TrackQueueService;
 
+import org.w3c.dom.Text;
+
 public class MainActivity extends AppCompatActivity { //implements SearchView.OnQueryTextListener, SearchView.OnCloseListener
 
 	//Useful everywhere
@@ -42,10 +45,13 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 	FloatingSearchView searchView;
 
 	//Control Toolbar
+	Toolbar mControlToolbar;
 	ImageButton mPlayPauseButton;
 	TextView mAudioServiceStatusTextView;
 	ProgressBar mProgressCircle;
 	ImageView mPodcastImage;
+	TextView mPodcastTitle;
+	TextView mEpisodeTitle;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,10 +72,13 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		searchView = (FloatingSearchView) findViewById(R.id.searchView);
 
 		//Control toolbar
-		mPlayPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
-		mProgressCircle = (ProgressBar) findViewById(R.id.progressCircle);
-		mAudioServiceStatusTextView = (TextView) findViewById(R.id.audioServiceStatus);
-		mPodcastImage = (ImageView) findViewById(R.id.podcastImage);
+		mControlToolbar = (Toolbar) findViewById(R.id.control_toolbar);
+		mPlayPauseButton = (ImageButton) mControlToolbar.findViewById(R.id.playPauseButton);
+		mProgressCircle = (ProgressBar) mControlToolbar.findViewById(R.id.progressCircle);
+		mAudioServiceStatusTextView = (TextView) mControlToolbar.findViewById(R.id.audioServiceStatus);
+		mPodcastImage = (ImageView) mControlToolbar.findViewById(R.id.podcastImage);
+		mPodcastTitle = (TextView) mControlToolbar.findViewById(R.id.podcast_title);
+		mEpisodeTitle = (TextView) mControlToolbar.findViewById(R.id.episode_title);
 
 		updateCurrentTrackInfo();
 
@@ -283,6 +292,8 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 
 		//Updates
 		setControlToolbarImage(episode.mPodcast);
+		mPodcastTitle.setText(episode.mPodcast.mTitle);
+		mEpisodeTitle.setText(episode.mTitle);
 	}
 
 }
