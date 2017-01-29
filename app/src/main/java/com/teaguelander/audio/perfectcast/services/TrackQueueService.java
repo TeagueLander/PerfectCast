@@ -38,17 +38,29 @@ public class TrackQueueService {
 	}
 
 	public void addEpisode(int position, PodcastEpisode episode) {
-		mDatabase.addEpisode(episode);
-
-
-		queueItems.add(position, episode);
-
-		Log.d("dbs", "Queue before database: ");
+		Log.d("tqs", "----------------Queue before insert: ");
 		for (PodcastEpisode item : queueItems) {
 			Log.d("tqs", "Podcast: " + item.mPodcast.mTitle + " Episode: " + item.mTitle);
 		}
+		Log.d("tqs", "----------------");
 
-//		mDatabase.updateTrackQueue(queueItems);
+		mDatabase.addEpisode(episode);
+
+//		Remove episode from the position it was in
+		for (PodcastEpisode item : queueItems) {
+			if (episode.mId == item.mId) {
+				queueItems.remove(item);
+				break;
+			}
+		}
+		queueItems.add(position, episode);
+
+		Log.d("tqs", "Queue before database: ");
+		for (PodcastEpisode item : queueItems) {
+			Log.d("tqs", "Podcast: " + item.mPodcast.mTitle + " Episode: " + item.mTitle + " ID: " + item.mId);
+		}
+
+		mDatabase.updateTrackQueue(queueItems);
 	}
 
 	//TODO may want to remove by PodcastEpisode

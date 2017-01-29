@@ -25,7 +25,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 	private static Context mContext;
 	private static SQLiteDatabase mDatabase;
 
-	private static final int DATABASE_VERSION = 17;
+	private static final int DATABASE_VERSION = 21;
 	private static final String DATABASE_NAME = "PerfectCast";
 	private static final String TABLE_EPISODES = "episodes";
 	private static final String TABLE_PODCASTS = "podcasts";
@@ -152,8 +152,8 @@ public class DatabaseService extends SQLiteOpenHelper {
 
 		if (episode.mPodcastId == -1) {
 			podcastId = addPodcast(episode.mPodcast);
-			episode.mPodcastId = podcastId;
-			episode.mPodcast.mId = podcastId;
+			episode.mPodcastId = podcastId; //Maybe do this outside of here?
+			episode.mPodcast.mId = podcastId; //Maybe do this outside of here?
 		}
 
 		ContentValues values = new ContentValues();
@@ -163,7 +163,9 @@ public class DatabaseService extends SQLiteOpenHelper {
 		values.put(PodcastEpisode.KEY_URL, episode.mUrl );
 
 		episodeId = mDatabase.insert(TABLE_EPISODES, null, values);
+		episode.mId = episodeId; //Maybe do this outside of here?
 
+		Log.d("dbs", "Adding or returning episode id " + episodeId);
 		return episodeId;
 	}
 
