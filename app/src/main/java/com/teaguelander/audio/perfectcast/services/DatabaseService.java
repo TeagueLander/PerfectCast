@@ -11,10 +11,7 @@ import android.util.Log;
 
 import com.teaguelander.audio.perfectcast.objects.PodcastDetail;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
-import com.teaguelander.audio.perfectcast.objects.TrackQueue;
 
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -28,7 +25,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 	private static Context mContext;
 	private static SQLiteDatabase mDatabase;
 
-	private static final int DATABASE_VERSION = 16;
+	private static final int DATABASE_VERSION = 17;
 	private static final String DATABASE_NAME = "PerfectCast";
 	private static final String TABLE_EPISODES = "episodes";
 	private static final String TABLE_PODCASTS = "podcasts";
@@ -71,13 +68,13 @@ public class DatabaseService extends SQLiteOpenHelper {
 											   PodcastEpisode.KEY_URL + " TEXT UNIQUE," +
 											   "FOREIGN KEY(" + PodcastEpisode.KEY_PODCAST_ID + ") REFERENCES " + TABLE_PODCASTS + "(" + PodcastDetail.KEY_ID + ") )";
 		String CREATE_TABLE_TRACK_QUEUE = "CREATE TABLE " + TABLE_TRACK_QUEUE + " ( " +
-												  TrackQueue.KEY_EPISODE_ID + " INTEGER UNIQUE, " +
-												  TrackQueue.KEY_ORDER_NUMBER + " INTEGER, " +
-												  "FOREIGN KEY(" + TrackQueue.KEY_EPISODE_ID + ") REFERENCES " + TABLE_EPISODES + "(" + PodcastEpisode.KEY_ID + ") )";
+												  TrackQueueService.KEY_EPISODE_ID + " INTEGER UNIQUE, " +
+												  TrackQueueService.KEY_ORDER_NUMBER + " INTEGER, " +
+												  "FOREIGN KEY(" + TrackQueueService.KEY_EPISODE_ID + ") REFERENCES " + TABLE_EPISODES + "(" + PodcastEpisode.KEY_ID + ") )";
 		String CREATE_VIEW_TRACK_QUEUE = "CREATE VIEW " + VIEW_TRACK_QUEUE + " AS " +
-												 "SELECT " + TrackQueue.KEY_ORDER_NUMBER + ", " + TextUtils.join(",", PodcastEpisode.COLUMNS) +
+												 "SELECT " + TrackQueueService.KEY_ORDER_NUMBER + ", " + TextUtils.join(",", PodcastEpisode.COLUMNS) +
 												 " FROM " + TABLE_EPISODES + " ep, " + TABLE_TRACK_QUEUE + " q " +
-												 "WHERE ep." + PodcastEpisode.KEY_ID + " = q." + TrackQueue.KEY_EPISODE_ID;
+												 "WHERE ep." + PodcastEpisode.KEY_ID + " = q." + TrackQueueService.KEY_EPISODE_ID;
 		db.execSQL(CREATE_TABLE_EPISODES);
 		db.execSQL(CREATE_TABLE_PODCASTS);
 		db.execSQL(CREATE_TABLE_TRACK_QUEUE);
@@ -129,7 +126,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 		return id;
 	}
 
-	//Add episode
+	//Adds episode if it doesnt exists and returns its ID
 	public long addEpisode(PodcastEpisode episode) {
 		Log.d("dbs", "Adding episode " + episode.mTitle);
 
@@ -174,12 +171,13 @@ public class DatabaseService extends SQLiteOpenHelper {
 		mDatabase.beginTransaction();
 
 		mDatabase.delete(TABLE_TRACK_QUEUE, null, null);
+//		mDatabase.execSQL("DELETE FROM " + TABLE_TRACK_QUEUE);
 
 		int currentItemNumber = 0;
 		for (PodcastEpisode item : queue) {
 			ContentValues values = new ContentValues();
-			values.put(TrackQueue.KEY_EPISODE_ID, item.mId);
-			values.put(TrackQueue.KEY_ORDER_NUMBER, currentItemNumber);
+			values.put(TrackQueueService.KEY_EPISODE_ID, item.mId);
+			values.put(TrackQueueService.KEY_ORDER_NUMBER, currentItemNumber);
 
 			mDatabase.insert(TABLE_TRACK_QUEUE, null, values);
 
@@ -188,6 +186,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 
 		mDatabase.setTransactionSuccessful();
 		mDatabase.endTransaction();
+		Log.d("dbs", "Updated Track Queue in Database");
 	}
 
 //GETS
@@ -262,7 +261,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 		Cursor cursor = mDatabase.query(VIEW_TRACK_QUEUE,
 										PodcastEpisode.COLUMNS,
 										null, null, null, null,
-										TrackQueue.KEY_ORDER_NUMBER + " asc");
+										TrackQueueService.KEY_ORDER_NUMBER + " asc");
 		if (cursor == null) {
 			return null;
 		}
@@ -273,7 +272,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 
 			PodcastEpisode episode = getPodcastFromCursor(cursor);
 			trackQueue[cursor.getPosition()] = episode;
-
+			Log.d("dbs", "Queue item " + cursor.getPosition() + ". Episode: " + episode.toString());
 		}
 
 		return new ArrayList<PodcastEpisode>(Arrays.asList(trackQueue));
