@@ -29,10 +29,12 @@ import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
 import com.teaguelander.audio.perfectcast.services.AudioService;
 import com.teaguelander.audio.perfectcast.services.DatabaseService;
 import com.teaguelander.audio.perfectcast.services.StorageService;
+import com.teaguelander.audio.perfectcast.services.TrackQueueService;
 
 public class MainActivity extends AppCompatActivity { //implements SearchView.OnQueryTextListener, SearchView.OnCloseListener
 
 	//Useful everywhere
+	TrackQueueService queueService;
 	boolean isAudioPlaying = false;
 	BroadcastReceiver receiver;
 	AppCompatActivity thisActivity = this;
@@ -54,8 +56,8 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		//Allow Internet Access
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy);
-		//Open Database
-			//Doing in the application on create right now
+		//Track Queue Access
+		queueService = TrackQueueService.getInstance();
 		//FrameLayout (For Fragments)
 		FrameLayout fl = (FrameLayout) findViewById(R.id.fragment_container);
 		MainFragment mainFragment = new MainFragment();
@@ -69,8 +71,10 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		mAudioServiceStatusTextView = (TextView) findViewById(R.id.audioServiceStatus);
 		mPodcastImage = (ImageView) findViewById(R.id.podcastImage);
 
-		//TODO remove
-		searchView.setSearchText("zelda");
+		updateCurrentTrackInfo();
+
+		//TODO remove and not working (why?)
+//		searchView.setSearchText("zelda");
 
 		/*EVENT LISTENERS*/
 		//Search Submitted
@@ -128,6 +132,8 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 				} else if (action.equals(AudioService.PLAYING_STATUS)) {
 					setAudioIsPlaying(true);
 					setAudioServiceStatusText(getResources().getString(R.string.playing_status));
+				} else if (action.equals(AudioService.NEW_TRACK_STATUS)) {
+					updateCurrentTrackInfo();
 				}
 							//|| action.equals(AudioService.ERROR_STATUS) || action.equals(AudioService.PAUSED_STATUS) || )
 			}
@@ -141,6 +147,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		filter.addAction(AudioService.PAUSED_STATUS);
 		filter.addAction(AudioService.ERROR_STATUS);
 		filter.addAction(AudioService.DESTROYED_STATUS);
+		filter.addAction(AudioService.NEW_TRACK_STATUS);
 
 
 		filter.addAction(AudioService.PAUSE_ACTION);
@@ -266,6 +273,16 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 //			String filename = URLEncoder.encode(podcast.mImageUrl, StorageService.CHARSET);
 //			mPodcastImage.setImageBitmap(BitmapFactory.decodeFile(filename));
 //		}catch(Exception e) {e.printStackTrace();}
+	}
+
+
+	//TODO update track name on toolbar
+	private void updateCurrentTrackInfo() {
+		//Get the episode on the top of the queue
+		PodcastEpisode episode = queueService.getFirstEpisode();
+
+		//Updates
+		setControlToolbarImage(episode.mPodcast);
 	}
 
 }

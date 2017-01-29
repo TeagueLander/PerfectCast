@@ -41,6 +41,7 @@ public class AudioService extends Service {
 	public static String PAUSED_STATUS = "com.teaguelander.audio.perfectcast.PAUSED_STATUS";
 	public static String ERROR_STATUS = "com.teaguelander.audio.perfectcast.ERROR_STATUS";
 	public static String DESTROYED_STATUS = "com.teaguelander.audio.perfectcast.DESTROYED_STATUS";
+	public static String NEW_TRACK_STATUS = "com.teaguelander.audio.perfectcast.NEW_TRACK_STATUS";
 
 	private static int SKIP_LENGTH = 30000;
 	private static int RESUME_REWIND_LENGTH = 2000;
@@ -124,10 +125,9 @@ public class AudioService extends Service {
 //		}
 //		Log.d("as", "Location " + location);
 
-
-
 		if (forceUpdate || currentEpisode == null) {
 			currentEpisode = queueService.getFirstEpisode();
+			sendBroadcast(new Intent(NEW_TRACK_STATUS));
 		}
 
 		if (currentEpisode != null) {
