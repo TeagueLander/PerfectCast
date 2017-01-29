@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.teaguelander.audio.perfectcast.MainActivity;
 import com.teaguelander.audio.perfectcast.R;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
 import com.teaguelander.audio.perfectcast.services.TrackQueueService;
@@ -51,14 +52,24 @@ public class EpisodeDetailFragment extends Fragment {
 			}
 
 			Button playEpisodeButton = (Button) v.findViewById(R.id.playEpisodeButton);
+			Button addToQueueButton = (Button) v.findViewById(R.id.addtoQueueButton);
+
 			playEpisodeButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 //					((MainActivity) getActivity()).playEpisode(mEpisode);
 //					TrackQueueService.ad
 					TrackQueueService.getInstance().addEpisode(0, mEpisode);
+					((MainActivity) getActivity()).playEpisodeInQueue();
 				}
 			});
+			addToQueueButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					TrackQueueService.getInstance().addEpisodeAtEnd(mEpisode);
+				}
+			});
+
 
 		}
 

@@ -224,15 +224,27 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		mPlayPauseButton.setVisibility(View.INVISIBLE);
 	}
 
-	public void playEpisode(PodcastEpisode episode) {
-		Intent intent = new Intent(AudioService.PLAY_ACTION, null, getBaseContext(), AudioService.class);
-		intent.putExtra("url", episode.mUrl);
-		Log.d("ma", "Playing: " + episode.mUrl);
-		setControlToolbarImage(episode.mPodcast);
-		startService(intent);
+//	public void playEpisode(PodcastEpisode episode) {
+//		Intent intent = new Intent(AudioService.PLAY_ACTION, null, getBaseContext(), AudioService.class);
+//		intent.putExtra("url", episode.mUrl);
+//		Log.d("ma", "Playing: " + episode.mUrl);
+//		setControlToolbarImage(episode.mPodcast);
+//		startService(intent);
+//
+////		DONE ELSEWHERE NOW: Long id = DatabaseService.getInstance(getApplicationContext()).addEpisode(episode);
+////		DONE ELSEWHERE NOW: DatabaseService.getInstance(getApplicationContext()).getEpisodeById(id); //Get next episode
+//	}
 
-		Long id = DatabaseService.getInstance(getApplicationContext()).addEpisode(episode);
-		DatabaseService.getInstance(getApplicationContext()).getEpisodeById(id); //Get next episode
+
+
+	//Forces the AudioService to take the first item in the queue
+	public void playEpisodeInQueue() {
+		Intent intent = new Intent(AudioService.PLAY_ACTION, null, getBaseContext(), AudioService.class);
+		intent.putExtra(AudioService.EXTRA_FORCE_UPDATE, true);
+
+		Log.d("ma", "asking to play new episode");
+//		setControlToolbarImage(episode.m); TODO update the image from the database url
+		startService(intent);
 	}
 
 	private void setAudioServiceStatusText(String status) {

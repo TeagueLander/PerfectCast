@@ -37,6 +37,17 @@ public class TrackQueueService {
 		return instance;
 	}
 
+// GETTING
+	public PodcastEpisode getFirstEpisode() {
+		Log.d("tqs", "Getting first episode in queue");
+		return queueItems.get(0);
+	}
+
+
+
+
+//MODIFYING
+
 	public void addEpisode(int position, PodcastEpisode episode) {
 		Log.d("tqs", "----------------Queue before insert: ");
 		for (PodcastEpisode item : queueItems) {
@@ -53,6 +64,11 @@ public class TrackQueueService {
 				break;
 			}
 		}
+
+		//Check if position is too large
+		if (position > queueItems.size()) {
+			position = queueItems.size();
+		}
 		queueItems.add(position, episode);
 
 		Log.d("tqs", "Queue before database: ");
@@ -61,6 +77,10 @@ public class TrackQueueService {
 		}
 
 		mDatabase.updateTrackQueue(queueItems);
+	}
+
+	public void addEpisodeAtEnd(PodcastEpisode episode) {
+		addEpisode(queueItems.size(), episode);
 	}
 
 	//TODO may want to remove by PodcastEpisode
