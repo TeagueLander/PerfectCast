@@ -251,6 +251,10 @@ public class PodcastDetail {
 		} else {
 //			remove?
 		}
+
+
+		//TODO remove TrackQueue test
+		new TrackQueue();
 	}
 
 	public void addToDatabase() {

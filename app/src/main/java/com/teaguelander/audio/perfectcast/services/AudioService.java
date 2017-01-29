@@ -17,7 +17,7 @@ import android.app.NotificationManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.teaguelander.audio.perfectcast.database.DataManager;
+import com.teaguelander.audio.perfectcast.database.StaticValues;
 import com.teaguelander.audio.perfectcast.MainActivity;
 import com.teaguelander.audio.perfectcast.R;
 
@@ -78,10 +78,10 @@ public class AudioService extends Service {
 		registerReceiver(receiver, filter);
 
 		//SharedPreferences
-//		prefEditor = getSharedPreferences(DataManager.PREFS_NAME, MODE_PRIVATE).edit();
+//		prefEditor = getSharedPreferences(StaticValues.PREFS_NAME, MODE_PRIVATE).edit();
 //		prefEditor.putString("name", "Elena");
 //		prefEditor.commit();
-		preferences = getSharedPreferences(DataManager.PREFS_NAME, MODE_PRIVATE);
+		preferences = getSharedPreferences(StaticValues.PREFS_NAME, MODE_PRIVATE);
 		prefEditor = preferences.edit();
 
 	}
@@ -114,7 +114,7 @@ public class AudioService extends Service {
 		Log.d("as", "Location " + location);
 		Log.d("as", "CurTrack " + currentTrackLocation);
 		if (location == null && currentTrackLocation == null) {
-			location = preferences.getString(DataManager.PREF_RESUME_URL, null);
+			location = preferences.getString(StaticValues.PREF_RESUME_URL, null);
 		}
 		Log.d("as", "Location " + location);
 		playAudioFromWeb(location);
@@ -176,7 +176,7 @@ public class AudioService extends Service {
 	}
 
 	public void resumeAudio() {
-		resumeTime = preferences.getInt(DataManager.PREF_RESUME_TIME, 0);
+		resumeTime = preferences.getInt(StaticValues.PREF_RESUME_TIME, 0);
 		mp.seekTo(resumeTime);
 		mp.start();
 		sendBroadcast(new Intent(PLAYING_STATUS));
@@ -208,8 +208,8 @@ public class AudioService extends Service {
 	}
 
 	private void savePreferences() {
-		prefEditor.putString(DataManager.PREF_RESUME_URL, currentTrackLocation);
-		prefEditor.putInt(DataManager.PREF_RESUME_TIME, resumeTime);
+		prefEditor.putString(StaticValues.PREF_RESUME_URL, currentTrackLocation);
+		prefEditor.putInt(StaticValues.PREF_RESUME_TIME, resumeTime);
 		Log.d("as", "resumeUrl " + currentTrackLocation);
 		Log.d("as", "resumeTime " + resumeTime);
 		prefEditor.commit();

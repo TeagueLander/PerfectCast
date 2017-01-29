@@ -6,13 +6,17 @@ import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.teaguelander.audio.perfectcast.objects.PodcastDetail;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
+import com.teaguelander.audio.perfectcast.objects.TrackQueue;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by Teague-Win10 on 1/22/2017.
@@ -24,10 +28,12 @@ public class DatabaseService extends SQLiteOpenHelper {
 	private static Context mContext;
 	private static SQLiteDatabase mDatabase;
 
-	private static final int DATABASE_VERSION = 11;
+	private static final int DATABASE_VERSION = 16;
 	private static final String DATABASE_NAME = "PerfectCast";
 	private static final String TABLE_EPISODES = "episodes";
 	private static final String TABLE_PODCASTS = "podcasts";
+	private static final String TABLE_TRACK_QUEUE = "track_queue";
+	private static final String VIEW_TRACK_QUEUE = "view_track_queue";
 
 	public DatabaseService(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -57,7 +63,6 @@ public class DatabaseService extends SQLiteOpenHelper {
 											   PodcastDetail.KEY_DESCRIPTION + " TEXT," +
 											   PodcastDetail.KEY_SUBSCRIBED + " TEXT," +
 											   PodcastDetail.KEY_XML + " TEXT);";
-//											   "UNIQUE (" + TextUtils.join(",", PodcastDetail.COLUMNS)  +") );";
 		String CREATE_TABLE_EPISODES = "CREATE TABLE " + TABLE_EPISODES + " ( " +
 											   PodcastEpisode.KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 											   PodcastEpisode.KEY_PODCAST_ID + " INTEGER," +
@@ -65,16 +70,26 @@ public class DatabaseService extends SQLiteOpenHelper {
 											   PodcastEpisode.KEY_DESCRIPTION + " TEXT," +
 											   PodcastEpisode.KEY_URL + " TEXT UNIQUE," +
 											   "FOREIGN KEY(" + PodcastEpisode.KEY_PODCAST_ID + ") REFERENCES " + TABLE_PODCASTS + "(" + PodcastDetail.KEY_ID + ") )";
-//											  "UNIQUE (" + TextUtils.join(",", PodcastEpisode.COLUMNS)  +") );";
+		String CREATE_TABLE_TRACK_QUEUE = "CREATE TABLE " + TABLE_TRACK_QUEUE + " ( " +
+												  TrackQueue.KEY_EPISODE_ID + " INTEGER UNIQUE, " +
+												  TrackQueue.KEY_ORDER_NUMBER + " INTEGER, " +
+												  "FOREIGN KEY(" + TrackQueue.KEY_EPISODE_ID + ") REFERENCES " + TABLE_EPISODES + "(" + PodcastEpisode.KEY_ID + ") )";
+		String CREATE_VIEW_TRACK_QUEUE = "CREATE VIEW " + VIEW_TRACK_QUEUE + " AS " +
+												 "SELECT " + TrackQueue.KEY_ORDER_NUMBER + ", " + TextUtils.join(",", PodcastEpisode.COLUMNS) +
+												 " FROM " + TABLE_EPISODES + " ep, " + TABLE_TRACK_QUEUE + " q " +
+												 "WHERE ep." + PodcastEpisode.KEY_ID + " = q." + TrackQueue.KEY_EPISODE_ID;
 		db.execSQL(CREATE_TABLE_EPISODES);
 		db.execSQL(CREATE_TABLE_PODCASTS);
+		db.execSQL(CREATE_TABLE_TRACK_QUEUE);
+		db.execSQL(CREATE_VIEW_TRACK_QUEUE);
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_EPISODES);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_PODCASTS);
-//		db.execSQL("DROP TABLE IF EXISTS " + "up_next");
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRACK_QUEUE);
+		db.execSQL("DROP VIEW IF EXISTS " + VIEW_TRACK_QUEUE);
 		this.onCreate(db);
 	}
 
@@ -150,9 +165,29 @@ public class DatabaseService extends SQLiteOpenHelper {
 		values.put(PodcastEpisode.KEY_DESCRIPTION, episode.mDescription);
 		values.put(PodcastEpisode.KEY_URL, episode.mUrl );
 
-		episodeId = mDatabase.insert(TABLE_EPISODES, null, values); //Problem is here, we've already close the database in call to addPodcast
+		episodeId = mDatabase.insert(TABLE_EPISODES, null, values);
 
 		return episodeId;
+	}
+
+	public void updateTrackQueue(ArrayList<PodcastEpisode> queue) {
+		mDatabase.beginTransaction();
+
+		mDatabase.delete(TABLE_TRACK_QUEUE, null, null);
+
+		int currentItemNumber = 0;
+		for (PodcastEpisode item : queue) {
+			ContentValues values = new ContentValues();
+			values.put(TrackQueue.KEY_EPISODE_ID, item.mId);
+			values.put(TrackQueue.KEY_ORDER_NUMBER, currentItemNumber);
+
+			mDatabase.insert(TABLE_TRACK_QUEUE, null, values);
+
+			currentItemNumber++;
+		}
+
+		mDatabase.setTransactionSuccessful();
+		mDatabase.endTransaction();
 	}
 
 //GETS
@@ -173,19 +208,10 @@ public class DatabaseService extends SQLiteOpenHelper {
 
 		PodcastEpisode episode = null;
 		try {
-			PodcastDetail podcast = getPodcast(cursor.getInt(1));
+			episode = getPodcastFromCursor(cursor);
 
-			episode = new PodcastEpisode(cursor.getString(2),
-										 cursor.getString(3),
-										 cursor.getString(4),
-										 null,
-										 null,
-										 null,
-										 podcast);
-			episode.setIds(cursor.getLong(0), cursor.getLong(1));
-
-			Log.d("dbs", "Got next episode from database" + episode.toString());
-			Log.d("dbs", "Podcast ID1: " + podcast.mId + " Podcast ID2: " + cursor.getLong(1) + " EpID: " + cursor.getLong(0));
+//			Log.d("dbs", "Got next episode from database" + episode.toString());
+//			Log.d("dbs", "Podcast ID1: " + podcast.mId + " Podcast ID2: " + cursor.getLong(1) + " EpID: " + cursor.getLong(0));
 
 		} catch (CursorIndexOutOfBoundsException e) {
 			Log.d("dbs", "No next episode to find");
@@ -229,25 +255,65 @@ public class DatabaseService extends SQLiteOpenHelper {
 		return podcast;
 	}
 
-	private String encode(String string) {
-		String encodedString = "";
-		try {
-			encodedString = URLEncoder.encode(string, StorageService.CHARSET);
-		}catch (Exception e) {
-			e.printStackTrace();
+	public ArrayList<PodcastEpisode> getTrackQueue() {
+//		ArrayList<PodcastEpisode> list = new ArrayList<PodcastEpisode>();
+		Log.d("dbs", "GETTING TRACK QUEUE");
+
+		Cursor cursor = mDatabase.query(VIEW_TRACK_QUEUE,
+										PodcastEpisode.COLUMNS,
+										null, null, null, null,
+										TrackQueue.KEY_ORDER_NUMBER + " asc");
+		if (cursor == null) {
+			return null;
 		}
-		return encodedString;
+
+		PodcastEpisode[] trackQueue = new PodcastEpisode[cursor.getCount()];
+
+		while (cursor.moveToNext()) {
+
+			PodcastEpisode episode = getPodcastFromCursor(cursor);
+			trackQueue[cursor.getPosition()] = episode;
+
+		}
+
+		return new ArrayList<PodcastEpisode>(Arrays.asList(trackQueue));
 	}
 
-	private String decode(String string) {
-		String decodedString = "";
-		try {
-			decodedString = URLDecoder.decode(string, StorageService.CHARSET);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return decodedString;
+	//Cursor Iterating
+	private PodcastEpisode getPodcastFromCursor(Cursor cursor) {
+
+		PodcastDetail podcast = getPodcast(cursor.getInt(1)); //TODO implement a podcast cache so we dont lookup and create the same podcast a bunch of times!
+		PodcastEpisode episode = new PodcastEpisode(cursor.getString(2),
+									 cursor.getString(3),
+									 cursor.getString(4),
+									 null,
+									 null,
+									 null,
+									 podcast);
+		episode.setIds(cursor.getLong(0), cursor.getLong(1));
+
+		return episode;
 	}
+
+//	private String encode(String string) {
+//		String encodedString = "";
+//		try {
+//			encodedString = URLEncoder.encode(string, StorageService.CHARSET);
+//		}catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return encodedString;
+//	}
+//
+//	private String decode(String string) {
+//		String decodedString = "";
+//		try {
+//			decodedString = URLDecoder.decode(string, StorageService.CHARSET);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return decodedString;
+//	}
 
 
 }
