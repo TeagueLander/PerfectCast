@@ -12,19 +12,19 @@ public class TrackManager {
 	DatabaseService mDatabaseService;
 	AudioService mParentService;
 
-	public TrackManager(AudioService parentService) {
-		mDatabaseService = DatabaseService.getInstance(null);
-		mParentService = parentService;
-	}
-
-	public PodcastEpisode getCurrentTrack() {
-//		return mDatabaseService.getNextEpisode();
-		return null;
-	}
-
-	public PodcastDetail getPodcastDetail(long id) {
-//		return mDatabaseService.get
-		return null;
-	}
+//	public TrackManager(AudioService parentService) {
+//		mDatabaseService = DatabaseService.getInstance(null);
+//		mParentService = parentService;
+//	}
+//
+//	public PodcastEpisode getCurrentTrack() {
+////		return mDatabaseService.getNextEpisode();
+//		return null;
+//	}
+//
+//	public PodcastDetail getPodcastDetail(long id) {
+////		return mDatabaseService.get
+//		return null;
+//	}
 
 }

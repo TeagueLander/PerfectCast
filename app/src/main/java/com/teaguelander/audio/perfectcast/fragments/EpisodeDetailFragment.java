@@ -1,6 +1,5 @@
 package com.teaguelander.audio.perfectcast.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -14,6 +13,7 @@ import android.widget.TextView;
 import com.teaguelander.audio.perfectcast.MainActivity;
 import com.teaguelander.audio.perfectcast.R;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
+import com.teaguelander.audio.perfectcast.services.TrackQueueService;
 
 /**
  * Created by Teague-Win10 on 1/17/2017.
@@ -52,12 +52,24 @@ public class EpisodeDetailFragment extends Fragment {
 			}
 
 			Button playEpisodeButton = (Button) v.findViewById(R.id.playEpisodeButton);
+			Button addToQueueButton = (Button) v.findViewById(R.id.addtoQueueButton);
+
 			playEpisodeButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					((MainActivity) getActivity()).playEpisode(mEpisode);
+//					((MainActivity) getActivity()).playEpisode(mEpisode);
+//					TrackQueueService.ad
+					TrackQueueService.getInstance().addEpisode(0, mEpisode);
+					((MainActivity) getActivity()).playEpisodeInQueue();
 				}
 			});
+			addToQueueButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					TrackQueueService.getInstance().addEpisodeAtEnd(mEpisode);
+				}
+			});
+
 
 		}
 

@@ -17,9 +17,10 @@ import android.app.NotificationManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.teaguelander.audio.perfectcast.database.DataManager;
+import com.teaguelander.audio.perfectcast.database.StaticValues;
 import com.teaguelander.audio.perfectcast.MainActivity;
 import com.teaguelander.audio.perfectcast.R;
+import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
 
 /**
  * Created by Teague-Win10 on 7/9/2016.
@@ -27,6 +28,7 @@ import com.teaguelander.audio.perfectcast.R;
 public class AudioService extends Service {
 
 	public static String PLAY_ACTION = "com.teaguelander.audio.perfectcast.PLAY_ACTION";
+		public static String EXTRA_FORCE_UPDATE = "forceUpdate";
 	public static String PAUSE_ACTION = "com.teaguelander.audio.perfectcast.PAUSE_ACTION";
 	public static String REWIND_ACTION = "com.teaguelander.audio.perfectcast.REWIND_ACTION";
 	public static String SKIP_ACTION = "com.teaguelander.audio.perfectcast.SKIP_ACTION";
@@ -44,6 +46,8 @@ public class AudioService extends Service {
 	private static int RESUME_REWIND_LENGTH = 2000;
 	private static int ICON_APP = R.mipmap.ic_launcher;
 
+	TrackQueueService queueService;
+	PodcastEpisode currentEpisode;
 	int curTrack = R.raw.groove;
 	MediaPlayer mp;
 	String currentTrackLocation = null;
@@ -61,6 +65,8 @@ public class AudioService extends Service {
 	public void onCreate() {
 		super.onCreate();
 
+		//TrackQueueService controls the "Up Next" Playlist
+		queueService = TrackQueueService.getInstance();
 		//BroadcastReceiver and filter - recieves actions like play and pause from the notification tray
 		receiver = new BroadcastReceiver() {
 			@Override
@@ -78,10 +84,10 @@ public class AudioService extends Service {
 		registerReceiver(receiver, filter);
 
 		//SharedPreferences
-//		prefEditor = getSharedPreferences(DataManager.PREFS_NAME, MODE_PRIVATE).edit();
+//		prefEditor = getSharedPreferences(StaticValues.PREFS_NAME, MODE_PRIVATE).edit();
 //		prefEditor.putString("name", "Elena");
 //		prefEditor.commit();
-		preferences = getSharedPreferences(DataManager.PREFS_NAME, MODE_PRIVATE);
+		preferences = getSharedPreferences(StaticValues.PREFS_NAME, MODE_PRIVATE);
 		prefEditor = preferences.edit();
 
 	}
@@ -110,14 +116,23 @@ public class AudioService extends Service {
 		Log.d("as", "AudioService destroyed");
 	}
 
-	public void playAudio(String location) {
-		Log.d("as", "Location " + location);
-		Log.d("as", "CurTrack " + currentTrackLocation);
-		if (location == null && currentTrackLocation == null) {
-			location = preferences.getString(DataManager.PREF_RESUME_URL, null);
+	public void playAudio(boolean forceUpdate) {
+//OLD	Log.d("as", "Location " + location);
+//		Log.d("as", "CurTrack " + currentTrackLocation);
+//		if (location == null && currentTrackLocation == null) {
+//			location = preferences.getString(StaticValues.PREF_RESUME_URL, null);
+//		}
+//		Log.d("as", "Location " + location);
+
+
+
+		if (forceUpdate || currentEpisode == null) {
+			currentEpisode = queueService.getFirstEpisode();
 		}
-		Log.d("as", "Location " + location);
-		playAudioFromWeb(location);
+
+		if (currentEpisode != null) {
+			playAudioFromWeb(currentEpisode.mUrl);
+		}
 	}
 
 	private void playAudioFromWeb(String location) {
@@ -176,7 +191,7 @@ public class AudioService extends Service {
 	}
 
 	public void resumeAudio() {
-		resumeTime = preferences.getInt(DataManager.PREF_RESUME_TIME, 0);
+		resumeTime = preferences.getInt(StaticValues.PREF_RESUME_TIME, 0);
 		mp.seekTo(resumeTime);
 		mp.start();
 		sendBroadcast(new Intent(PLAYING_STATUS));
@@ -208,8 +223,8 @@ public class AudioService extends Service {
 	}
 
 	private void savePreferences() {
-		prefEditor.putString(DataManager.PREF_RESUME_URL, currentTrackLocation);
-		prefEditor.putInt(DataManager.PREF_RESUME_TIME, resumeTime);
+		prefEditor.putString(StaticValues.PREF_RESUME_URL, currentTrackLocation);
+		prefEditor.putInt(StaticValues.PREF_RESUME_TIME, resumeTime);
 		Log.d("as", "resumeUrl " + currentTrackLocation);
 		Log.d("as", "resumeTime " + resumeTime);
 		prefEditor.commit();
@@ -288,8 +303,9 @@ public class AudioService extends Service {
 			pauseAudio();
 		}
 		else if (action.equals(PLAY_ACTION)) {
-			String url = intent.getStringExtra("url");
-			playAudio(url);
+//			String url = intent.getStringExtra("url");
+			boolean forceUpdate = intent.getBooleanExtra(EXTRA_FORCE_UPDATE, false);
+			playAudio(forceUpdate);
 		}
 		else if (action.equals(SKIP_ACTION)) {
 			skipAudio();

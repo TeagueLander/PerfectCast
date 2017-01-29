@@ -4,6 +4,7 @@ import android.util.Log;
 import android.util.Xml;
 
 import com.teaguelander.audio.perfectcast.services.DatabaseService;
+import com.teaguelander.audio.perfectcast.services.TrackQueueService;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -251,6 +252,10 @@ public class PodcastDetail {
 		} else {
 //			remove?
 		}
+
+
+		//TODO remove TrackQueueService test
+//		new TrackQueueService();
 	}
 
 	public void addToDatabase() {

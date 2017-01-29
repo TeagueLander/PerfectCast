@@ -43,8 +43,12 @@ public class PodcastEpisode {
 	}
 
 	public void setIds(long id, long podcastId) {
-		mId = id;
-		mPodcastId = podcastId;
+		if (id != -1) {
+			mId = id;
+		}
+		if (id != -1) {
+			mPodcastId = podcastId;
+		}
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import android.text.format.DateFormat;
 import com.teaguelander.audio.perfectcast.services.DataService;
 import com.teaguelander.audio.perfectcast.services.DatabaseService;
 import com.teaguelander.audio.perfectcast.services.StorageService;
+import com.teaguelander.audio.perfectcast.services.TrackQueueService;
 
 import java.text.SimpleDateFormat;
 
@@ -26,6 +27,7 @@ public class PerfectCastApp extends Application {
 		DataService.getInstance(mContext);
 		StorageService.getInstance(mContext);
 		DatabaseService.getInstance(mContext);
+		TrackQueueService.getInstance();
 		rssDateFormatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
 		basicDateFormatter = new SimpleDateFormat("dd MMM yyyy hh:mm a");
 	}
