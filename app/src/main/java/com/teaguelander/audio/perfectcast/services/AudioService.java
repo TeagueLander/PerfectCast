@@ -49,15 +49,14 @@ public class AudioService extends Service {
 
 	TrackQueueService queueService;
 	PodcastEpisode currentEpisode;
-	int curTrack = R.raw.groove;
-	MediaPlayer mp;
 	String currentTrackLocation = null;
-	BroadcastReceiver receiver; //For Intents
-	SharedPreferences preferences;
-	SharedPreferences.Editor prefEditor;
-	int notificationId = -1; //notificationID allows you to update the notification later on.
-
 	int resumeTime = 0; // Resume time
+
+	MediaPlayer mp;
+	BroadcastReceiver receiver; //For Intents
+//	SharedPreferences preferences;
+//	SharedPreferences.Editor prefEditor;
+	int notificationId = -1; //notificationID allows you to update the notification later on.
 
 	@Override
 	public IBinder onBind(Intent arg0) { return null; };
@@ -88,8 +87,8 @@ public class AudioService extends Service {
 //		prefEditor = getSharedPreferences(StaticValues.PREFS_NAME, MODE_PRIVATE).edit();
 //		prefEditor.putString("name", "Elena");
 //		prefEditor.commit();
-		preferences = getSharedPreferences(StaticValues.PREFS_NAME, MODE_PRIVATE);
-		prefEditor = preferences.edit();
+//		preferences = getSharedPreferences(StaticValues.PREFS_NAME, MODE_PRIVATE);
+//		prefEditor = preferences.edit();
 
 	}
 
@@ -107,8 +106,7 @@ public class AudioService extends Service {
 		super.onDestroy();
 
 		if (mp != null) {
-			resumeTime = mp.getCurrentPosition() - RESUME_REWIND_LENGTH;
-			savePreferences();
+			updateEpisode();
 			mp.release();
 		}
 		sendBroadcast(new Intent(DESTROYED_STATUS));
@@ -126,7 +124,12 @@ public class AudioService extends Service {
 //		Log.d("as", "Location " + location);
 
 		if (forceUpdate || currentEpisode == null) {
+			//Save Position of Episode
+			updateEpisode();
+
+			//Get New Episode
 			currentEpisode = queueService.getFirstEpisode();
+			resumeTime = (int) currentEpisode.mProgress;
 			sendBroadcast(new Intent(NEW_TRACK_STATUS));
 		}
 
@@ -143,8 +146,8 @@ public class AudioService extends Service {
 				}
 				currentTrackLocation = location;
 				//Set track to beginning
-				resumeTime = 0; //TODO check whether there is a time that needs to be resumed
-				savePreferences();
+//				resumeTime = 0; //TODO check whether there is a time that needs to be resumed
+//				savePreferences();
 
 				try {
 //					if (currentTrackLocation == null) throw new Exception("No url currently");
@@ -191,7 +194,7 @@ public class AudioService extends Service {
 	}
 
 	public void resumeAudio() {
-		resumeTime = preferences.getInt(StaticValues.PREF_RESUME_TIME, 0);
+//		resumeTime = preferences.getInt(StaticValues.PREF_RESUME_TIME, 0);
 		mp.seekTo(resumeTime);
 		mp.start();
 		sendBroadcast(new Intent(PLAYING_STATUS));
@@ -200,16 +203,14 @@ public class AudioService extends Service {
 
 	public void pauseAudio() {
 		mp.pause();
-		resumeTime = mp.getCurrentPosition() - RESUME_REWIND_LENGTH;
-		savePreferences();
+		updateEpisode();
 		sendBroadcast(new Intent(PAUSED_STATUS));
 		showNotification();
 	}
 
 	public void stopAudio() {
 		mp.stop();
-		resumeTime = mp.getCurrentPosition() - RESUME_REWIND_LENGTH;
-		savePreferences();
+		updateEpisode();
 		sendBroadcast(new Intent(STOPPED_STATUS));
 		showNotification();
 	}
@@ -222,12 +223,18 @@ public class AudioService extends Service {
 		mp.seekTo(mp.getCurrentPosition() + SKIP_LENGTH);
 	}
 
-	private void savePreferences() {
-		prefEditor.putString(StaticValues.PREF_RESUME_URL, currentTrackLocation);
-		prefEditor.putInt(StaticValues.PREF_RESUME_TIME, resumeTime);
-		Log.d("as", "resumeUrl " + currentTrackLocation);
-		Log.d("as", "resumeTime " + resumeTime);
-		prefEditor.commit();
+//	private void savePreferences() {
+//		prefEditor.putString(StaticValues.PREF_RESUME_URL, currentTrackLocation);
+//		prefEditor.putInt(StaticValues.PREF_RESUME_TIME, resumeTime);
+//		Log.d("as", "resumeUrl " + currentTrackLocation);
+//		Log.d("as", "resumeTime " + resumeTime);
+//		prefEditor.commit();
+//	}
+	private void updateEpisode() {
+		if (mp != null) {
+			resumeTime = mp.getCurrentPosition();
+			queueService.updateEpisodeProgress(currentEpisode, resumeTime);
+		}
 	}
 
 	//Creates and sends the notification that controls our audio, returns notification id

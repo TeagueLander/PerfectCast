@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		super.onDestroy();
 		stopAudioService();
 		unregisterReceiver(receiver);
-		DatabaseService.getInstance(null).closeDatabase();
+//		DatabaseService.getInstance(null).closeDatabase(); //TODO Figure this out
 	}
 
 	@Override

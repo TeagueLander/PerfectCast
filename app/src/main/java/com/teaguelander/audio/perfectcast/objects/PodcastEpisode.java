@@ -30,7 +30,7 @@ public class PodcastEpisode {
 	public String mDuration;
 	public Date mPubDate;
 	public long mBytes;
-	public long mProgress;
+	public long mProgress = 0;
 	public PodcastDetail mPodcast;
 
 	public PodcastEpisode(){}

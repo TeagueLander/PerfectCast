@@ -31,7 +31,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 	private static Context mContext;
 	private static SQLiteDatabase mDatabase;
 
-	private static final int DATABASE_VERSION = 27;
+	private static final int DATABASE_VERSION = 28;
 	private static final String DATABASE_NAME = "PerfectCast";
 	private static final String TABLE_EPISODES = "episodes";
 	private static final String TABLE_PODCASTS = "podcasts";
@@ -204,6 +204,17 @@ public class DatabaseService extends SQLiteOpenHelper {
 		mDatabase.endTransaction();
 		Log.d("dbs", "Updated Track Queue in Database");
 	}
+
+//UPDATES
+
+	//Update Progress
+	public void updateEpisodeProgress(PodcastEpisode episode) {
+		ContentValues values = new ContentValues();
+		values.put(PodcastEpisode.KEY_PROGRESS, episode.mProgress);
+
+		mDatabase.update(TABLE_EPISODES, values, PodcastEpisode.KEY_ID + "= ?", new String[]{ Long.toString(episode.mId) });
+	}
+
 
 //GETS
 
