@@ -40,7 +40,11 @@ public class TrackQueueService {
 // GETTING
 	public PodcastEpisode getFirstEpisode() {
 		Log.d("tqs", "Getting first episode in queue");
-		return queueItems.get(0);
+		if (queueItems.size() > 0) {
+			return queueItems.get(0);
+		}else {
+			return null;
+		}
 	}
 
 

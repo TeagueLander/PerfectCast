@@ -14,8 +14,12 @@ public class PodcastEpisode {
 	public static final String KEY_TITLE = "title";
 	public static final String KEY_DESCRIPTION = "description";
 	public static final String KEY_URL = "url";
+	public static final String KEY_DURATION = "duration";
+	public static final String KEY_PUB_DATE = "date_published";
+	public static final String KEY_BYTES = "size_in_bytes";
+	public static final String KEY_PROGRESS = "progress";
 
-	public static final String[] COLUMNS = { KEY_ID, KEY_PODCAST_ID, KEY_TITLE, KEY_DESCRIPTION, KEY_URL };
+	public static final String[] COLUMNS = { KEY_ID, KEY_PODCAST_ID, KEY_TITLE, KEY_DESCRIPTION, KEY_URL, KEY_DURATION, KEY_PUB_DATE, KEY_BYTES, KEY_PROGRESS };
 
 	//Object fields
 	public long mId = -1;
@@ -25,14 +29,14 @@ public class PodcastEpisode {
 	public String mUrl;
 	public String mDuration;
 	public Date mPubDate;
-	public String mBytes;
+	public long mBytes;
+	public long mProgress;
 	public PodcastDetail mPodcast;
 
-	public PodcastEpisode(){};
+	public PodcastEpisode(){}
 
-	public PodcastEpisode(String mTitle, String mDescription, String mUrl, String mDuration, Date mPubDate, String mBytes, PodcastDetail mPodcast) {
+	public PodcastEpisode(String mTitle, String mDescription, String mUrl, String mDuration, Date mPubDate, long mBytes, PodcastDetail mPodcast) {
 		super();
-//		this.mId = mId;
 		this.mTitle = mTitle;
 		this.mDescription = mDescription;
 		this.mUrl = mUrl;
@@ -49,6 +53,10 @@ public class PodcastEpisode {
 		if (id != -1) {
 			mPodcastId = podcastId;
 		}
+	}
+
+	public void setProgress(long progress) {
+		mProgress = progress;
 	}
 
 	@Override

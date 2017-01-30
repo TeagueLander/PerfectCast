@@ -290,10 +290,12 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		//Get the episode on the top of the queue
 		PodcastEpisode episode = queueService.getFirstEpisode();
 
-		//Updates
-		setControlToolbarImage(episode.mPodcast);
-		mPodcastTitle.setText(episode.mPodcast.mTitle);
-		mEpisodeTitle.setText(episode.mTitle);
+		if (episode != null) {
+			//Updates
+			setControlToolbarImage(episode.mPodcast);
+			mPodcastTitle.setText(episode.mPodcast.mTitle);
+			mEpisodeTitle.setText(episode.mTitle);
+		}
 	}
 
 }

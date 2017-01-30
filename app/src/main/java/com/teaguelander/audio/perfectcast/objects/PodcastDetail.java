@@ -173,7 +173,7 @@ public class PodcastDetail {
 		String url = "";
 		String duration = "";
 		Date pubDate = null;
-		String bytes = "";
+		long bytes = -1;
 
 		parser.require(XmlPullParser.START_TAG, null, "item");
 		while (parser.next() != XmlPullParser.END_TAG) {
@@ -190,7 +190,7 @@ public class PodcastDetail {
 			} else if (name.equalsIgnoreCase("enclosure")) {
 				//url = parser.getAttributeName(null, "url");
 				url = parser.getAttributeValue(null, "url");
-				bytes = parser.getAttributeValue(null, "length");
+				bytes = Long.parseLong(parser.getAttributeValue(null, "length") );
 				parser.nextTag();
 			} else if (name.equalsIgnoreCase("description")){
 				description = readTagText(parser, "description");
