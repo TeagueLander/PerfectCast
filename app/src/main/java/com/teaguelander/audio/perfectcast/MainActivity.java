@@ -158,7 +158,6 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		filter.addAction(AudioService.DESTROYED_STATUS);
 		filter.addAction(AudioService.NEW_TRACK_STATUS);
 
-
 		filter.addAction(AudioService.PAUSE_ACTION);
 		filter.addAction(AudioService.STOP_ACTION);
 		filter.addAction(AudioService.DESTROY_ACTION);
@@ -296,6 +295,10 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 			mPodcastTitle.setText(episode.mPodcast.mTitle);
 			mEpisodeTitle.setText(episode.mTitle);
 		}
+	}
+
+	public TrackQueueService getQueueService() {
+		return queueService;
 	}
 
 }

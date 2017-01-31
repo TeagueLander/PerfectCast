@@ -177,7 +177,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 		values.put(PodcastEpisode.KEY_PROGRESS, episode.mProgress);
 
 		episodeId = mDatabase.insert(TABLE_EPISODES, null, values);
-		episode.mId = episodeId; //Maybe do this outside of here?
+//		episode.mId = episodeId; //Maybe do this outside of here? DOESNT WORK
 
 		Log.d("dbs", "Adding or returning episode id " + episodeId);
 		return episodeId;

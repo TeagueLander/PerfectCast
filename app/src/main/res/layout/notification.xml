@@ -5,7 +5,7 @@
 	android:layout_height="fill_parent"
 	android:padding="10dp"
 	>
-
+	<!--NOT USING RIGHT NOW-->
 	<!-- WE WILL USE THIS FILE FOR THE RemoteViews OBJECT -->
 
 	<!--<ImageView android:id="@+id/image"-->

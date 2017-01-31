@@ -36,6 +36,7 @@ public class AudioService extends Service {
 	public static String SKIP_ACTION = "com.teaguelander.audio.perfectcast.SKIP_ACTION";
 	public static String STOP_ACTION = "com.teaguelander.audio.perfectcast.STOP_ACTION";
 	public static String DESTROY_ACTION = "com.teaguelander.audio.perfectcast.DESTROY_ACTION";
+	public static String REQUEST_STATUS_ACTION = "com.teaguelander.audio.perfectcast.REQUEST_STATUS_ACTION";
 
 	public static String PLAYING_STATUS = "com.teaguelander.audio.perfectcast.PLAYING_STATUS";
 	public static String PREPARING_STATUS = "com.teaguelander.audio.perfectcast.PREPARING_STATUS";
@@ -57,6 +58,7 @@ public class AudioService extends Service {
 	Bitmap podcastImage = null;
 
 	MediaPlayer mp;
+	String mStatus = DESTROYED_STATUS;
 	BroadcastReceiver receiver; //For Intents
 	int notificationId = -1; //notificationID allows you to update the notification later on.
 
@@ -113,10 +115,15 @@ public class AudioService extends Service {
 			updateEpisode();
 			mp.release();
 		}
-		sendBroadcast(new Intent(DESTROYED_STATUS));
+		updateStatus(DESTROYED_STATUS);
 		removeNotification();
 		unregisterReceiver(receiver);
 		Log.d("as", "AudioService destroyed");
+	}
+
+	public void updateStatus(String status) {
+		mStatus = status;
+		sendBroadcast(new Intent(status));
 	}
 
 	public void playAudio(boolean forceUpdate) {
@@ -129,7 +136,7 @@ public class AudioService extends Service {
 			currentEpisode = queueService.getFirstEpisode();
 			podcastImage = storageService.getImageFromStorageOrUrl(currentEpisode.mPodcast.mImageUrl, podcastImage, this);
 			resumeTime = (int) currentEpisode.mProgress;
-			sendBroadcast(new Intent(NEW_TRACK_STATUS));
+			updateStatus(NEW_TRACK_STATUS);
 		}
 
 		if (currentEpisode != null) {
@@ -158,7 +165,7 @@ public class AudioService extends Service {
 					mp.reset();
 					mp.setDataSource(currentTrackLocation);
 					mp.prepareAsync();
-					sendBroadcast(new Intent(PREPARING_STATUS));
+					updateStatus(PREPARING_STATUS);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -177,13 +184,13 @@ public class AudioService extends Service {
 //						pauseAudio();
 						stopAudio();
 						Log.d("as", "End of Audio reached");
-//						sendBroadcast(new Intent(PAUSED_STATUS));
+//						updateStatus(PAUSED_STATUS));
 					}
 				});
 				mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
 					@Override
 					public boolean onError(MediaPlayer mp, int what, int extra) {
-						sendBroadcast(new Intent(ERROR_STATUS));
+						updateStatus(ERROR_STATUS);
 						return false;
 					}
 				});
@@ -201,21 +208,21 @@ public class AudioService extends Service {
 //		resumeTime = preferences.getInt(StaticValues.PREF_RESUME_TIME, 0);
 		mp.seekTo(resumeTime);
 		mp.start();
-		sendBroadcast(new Intent(PLAYING_STATUS));
+		updateStatus(PLAYING_STATUS);
 		showNotification();
 	}
 
 	public void pauseAudio() {
 		mp.pause();
 		updateEpisode();
-		sendBroadcast(new Intent(PAUSED_STATUS));
+		updateStatus(PAUSED_STATUS);
 		showNotification();
 	}
 
 	public void stopAudio() {
 		mp.stop();
 		updateEpisode();
-		sendBroadcast(new Intent(STOPPED_STATUS));
+		updateStatus(STOPPED_STATUS);
 		showNotification();
 	}
 
@@ -272,7 +279,7 @@ public class AudioService extends Service {
 		mBuilder.addAction(android.R.drawable.ic_media_ff, "Skip", pendingSkipIntent);
 
 		//Notification Pressed set (may need to ahve a stackbuilder here)
-		Intent openMainActivity = new Intent(this,MainActivity.class);
+		Intent openMainActivity = new Intent(this, MainActivity.class);
 		openMainActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 		PendingIntent pendingOpenMainActivity =
 				PendingIntent.getActivity(
@@ -329,6 +336,8 @@ public class AudioService extends Service {
 		}else if (action.equals(DESTROY_ACTION)) {
 //			Toast.makeText(this, "Destroy Action", Toast.LENGTH_LONG).show();
 			stopSelf(); //Ends the service
+		}else if (action.equals(REQUEST_STATUS_ACTION)) {
+			updateStatus(mStatus);
 		}
 	}
 

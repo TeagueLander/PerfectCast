@@ -44,8 +44,6 @@ public class TrackQueueService {
 	}
 
 
-
-
 //MODIFYING
 
 	public void addEpisode(int position, PodcastEpisode episode) {
@@ -55,10 +53,11 @@ public class TrackQueueService {
 		}
 		Log.d("tqs", "----------------");
 
-		mDatabaseService.addEpisode(episode);
+		episode.setIds(mDatabaseService.addEpisode(episode),-1);
 
 //		Remove episode from the position it was in
 		for (PodcastEpisode item : queueItems) {
+			Log.d("tqs", "maybe remove? " + episode.mId + " " + item.mId);
 			if (episode.mId == item.mId) {
 				queueItems.remove(item);
 				break;
@@ -92,6 +91,10 @@ public class TrackQueueService {
 	public void updateEpisodeProgress(PodcastEpisode episode, long progress) {
 		episode.setProgress(progress);
 		mDatabaseService.updateEpisodeProgress(episode);
+	}
+
+	public ArrayList<PodcastEpisode> getQueueItems() {
+		return queueItems;
 	}
 
 }
