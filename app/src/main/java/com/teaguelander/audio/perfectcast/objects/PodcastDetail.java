@@ -190,7 +190,11 @@ public class PodcastDetail {
 			} else if (name.equalsIgnoreCase("enclosure")) {
 				//url = parser.getAttributeName(null, "url");
 				url = parser.getAttributeValue(null, "url");
-				bytes = Long.parseLong(parser.getAttributeValue(null, "length") );
+
+				String strBytes = parser.getAttributeValue(null, "length");
+				if (strBytes != null) {
+					bytes = Long.parseLong(strBytes);
+				}
 				parser.nextTag();
 			} else if (name.equalsIgnoreCase("description")){
 				description = readTagText(parser, "description");

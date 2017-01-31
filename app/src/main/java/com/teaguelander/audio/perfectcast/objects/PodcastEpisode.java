@@ -7,7 +7,7 @@ import java.util.Date;
  */
 
 public class PodcastEpisode {
-
+//TODO get episode from database if its there
 	//Database Keys
 	public static final String KEY_ID = "id";
 	public static final String KEY_PODCAST_ID = "podcast_id";

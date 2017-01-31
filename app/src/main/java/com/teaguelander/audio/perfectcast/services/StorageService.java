@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.concurrent.Callable;
 
 /**
  * Created by Teague-Win10 on 1/22/2017.
@@ -40,6 +41,29 @@ public class StorageService {
 		return instance;
 	}
 
+	public static Bitmap getImageFromStorageOrUrl(final String url, Bitmap destBitmap, final AudioService as) {
+		File directory = mContext.getDir(IMAGE_DIRECTORY, Context.MODE_PRIVATE);
+
+		String filename = null;
+		try { filename = URLEncoder.encode(url, CHARSET); } catch (UnsupportedEncodingException e) { e.printStackTrace(); }
+		File mypath = new File(directory, filename);
+
+		if (mypath.exists()) {
+			Bitmap bmp = BitmapFactory.decodeFile(directory + "/" + filename);
+			return bmp;
+		}
+
+		final DataService ds = DataService.getInstance(mContext);
+		ds.getImage(url, new Response.Listener<Bitmap>() {
+			@Override
+			public void onResponse(Bitmap response) {
+				as.setPodcastImageAndNotify(response);
+			}
+		});
+
+		return null;
+	}
+
 	public static void saveImageToStorageAndView(final Context context, final String url, final ImageView imageView) throws UnsupportedEncodingException {
 
 		final DataService ds = DataService.getInstance(context);
@@ -59,7 +83,7 @@ public class StorageService {
 				@Override
 				public void onResponse(Bitmap response) {
 
-					if (!directory.exists()) {
+					/*if (!directory.exists()) {
 						directory.mkdir();
 					}
 
@@ -73,17 +97,41 @@ public class StorageService {
 						fos.close();
 
 						//					Log.d("ss", "Getting " + directory + filename);
-						imageView.setImageBitmap(BitmapFactory.decodeFile(directory + "/" + filename));
+//						imageView.setImageBitmap(BitmapFactory.decodeFile(directory + "/" + filename));
 
 					} catch (FileNotFoundException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
 						e.printStackTrace();
-					}
+					}*/
+					saveBitmap(response, directory, filename);
+					imageView.setImageBitmap(response);
 				}
 			});
 
 		}
+	}
+
+	private static void saveBitmap(Bitmap bitmap, File directory, String filename) {
+		if (!directory.exists()) {
+			directory.mkdir();
+		}
+		FileOutputStream fos = null;
+		try {
+
+			//+ ".jpg"
+			File mypath = new File(directory, filename);
+			fos = new FileOutputStream(mypath);
+			bitmap.compress(Bitmap.CompressFormat.PNG, PNG_QUALITY, fos);
+			fos.close();
+//			imageView.setImageBitmap(BitmapFactory.decodeFile(directory + "/" + filename));
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	private static void loadImageFileIntoView(Context context, String filename, ImageView imageView) {

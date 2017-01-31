@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.IBinder;
 import android.media.MediaPlayer;
@@ -15,6 +16,7 @@ import android.support.v7.app.NotificationCompat;
 import android.app.NotificationManager;
 //import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.teaguelander.audio.perfectcast.database.StaticValues;
@@ -48,14 +50,14 @@ public class AudioService extends Service {
 	private static int ICON_APP = R.mipmap.ic_launcher;
 
 	TrackQueueService queueService;
+	StorageService storageService;
 	PodcastEpisode currentEpisode;
 	String currentTrackLocation = null;
 	int resumeTime = 0; // Resume time
+	Bitmap podcastImage = null;
 
 	MediaPlayer mp;
 	BroadcastReceiver receiver; //For Intents
-//	SharedPreferences preferences;
-//	SharedPreferences.Editor prefEditor;
 	int notificationId = -1; //notificationID allows you to update the notification later on.
 
 	@Override
@@ -67,6 +69,8 @@ public class AudioService extends Service {
 
 		//TrackQueueService controls the "Up Next" Playlist
 		queueService = TrackQueueService.getInstance();
+		//StorageService for images
+		storageService = StorageService.getInstance(getApplicationContext());
 		//BroadcastReceiver and filter - recieves actions like play and pause from the notification tray
 		receiver = new BroadcastReceiver() {
 			@Override
@@ -116,12 +120,6 @@ public class AudioService extends Service {
 	}
 
 	public void playAudio(boolean forceUpdate) {
-//OLD	Log.d("as", "Location " + location);
-//		Log.d("as", "CurTrack " + currentTrackLocation);
-//		if (location == null && currentTrackLocation == null) {
-//			location = preferences.getString(StaticValues.PREF_RESUME_URL, null);
-//		}
-//		Log.d("as", "Location " + location);
 
 		if (forceUpdate || currentEpisode == null) {
 			//Save Position of Episode
@@ -129,6 +127,7 @@ public class AudioService extends Service {
 
 			//Get New Episode
 			currentEpisode = queueService.getFirstEpisode();
+			podcastImage = storageService.getImageFromStorageOrUrl(currentEpisode.mPodcast.mImageUrl, podcastImage, this);
 			resumeTime = (int) currentEpisode.mProgress;
 			sendBroadcast(new Intent(NEW_TRACK_STATUS));
 		}
@@ -136,6 +135,11 @@ public class AudioService extends Service {
 		if (currentEpisode != null) {
 			playAudioFromWeb(currentEpisode.mUrl);
 		}
+	}
+
+	public void setPodcastImageAndNotify(Bitmap bitmap) {
+		podcastImage = bitmap;
+		showNotification();
 	}
 
 	private void playAudioFromWeb(String location) {
@@ -238,15 +242,15 @@ public class AudioService extends Service {
 	}
 
 	//Creates and sends the notification that controls our audio, returns notification id
-	private int showNotification() {
+	private synchronized int showNotification() {
 
 		//Notification Title, Icon, and message
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
 		mBuilder.setVisibility(Notification.VISIBILITY_PUBLIC); //This means it can be seen on the lock screen
 		mBuilder.setSmallIcon(ICON_APP);
-		mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), ICON_APP));
-		mBuilder.setContentTitle("PerfectCast");
-		mBuilder.setContentText("Now Playing");
+		mBuilder.setLargeIcon(podcastImage);
+		mBuilder.setContentTitle(currentEpisode.mPodcast.mTitle);
+		mBuilder.setContentText(currentEpisode.mTitle);
 		mBuilder.setShowWhen(false); //Tells us whether to display the time
 		mBuilder.setStyle(new NotificationCompat.MediaStyle() //We should add to this to give it more info
 				.setShowActionsInCompactView(new int[] {0,1,2})
