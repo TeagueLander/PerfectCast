@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -24,6 +25,7 @@ import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
 import com.teaguelander.audio.perfectcast.objects.RowItemClickListener;
 import com.teaguelander.audio.perfectcast.recycler.EpisodeLinearAdapter;
 import com.teaguelander.audio.perfectcast.services.DataService;
+import com.teaguelander.audio.perfectcast.services.PicassoService;
 import com.teaguelander.audio.perfectcast.services.StorageService;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -104,9 +106,10 @@ public class PodcastDetailFragment extends Fragment implements RowItemClickListe
 		titleView.setMarqueeRepeatLimit(5);
 		titleView.setSelected(true);
 		//Podcast Image
-		NetworkImageView imageView = (NetworkImageView) mView.findViewById(R.id.podcast_detail_image);
+		ImageView imageView = (ImageView) mView.findViewById(R.id.podcast_detail_image);
 		if (mPodcastDetail.mImageUrl != null) {
-			DataService.getInstance(getContext()).loadImageIntoView(mPodcastDetail.mImageUrl, imageView);
+//			DataService.getInstance(getContext()).loadImageIntoView(mPodcastDetail.mImageUrl, imageView);
+			PicassoService.loadImage(mPodcastDetail.mImageUrl, imageView);
 		}
 		//Subscribe Button
 		Button subButton = (Button) mView.findViewById(R.id.button_subscriber);
@@ -128,7 +131,7 @@ public class PodcastDetailFragment extends Fragment implements RowItemClickListe
 		mEpisodesLinearLayoutManager= new LinearLayoutManager(getContext());
 		mEpisodesLinearLayoutManager.setOrientation(LinearLayout.VERTICAL);
 		mEpisodesRecycler.setLayoutManager(mEpisodesLinearLayoutManager);
-		mEpisodeLinearAdapter = new EpisodeLinearAdapter(mPodcastDetail.mEpisodes, this);
+		mEpisodeLinearAdapter = new EpisodeLinearAdapter(mPodcastDetail.mEpisodes, EpisodeLinearAdapter.PODCAST_DETAIL_MODE, this);
 		mEpisodesRecycler.setAdapter(mEpisodeLinearAdapter);
 
 	}
@@ -152,7 +155,7 @@ public class PodcastDetailFragment extends Fragment implements RowItemClickListe
 	@Override
 	public void onRowItemClicked(PodcastEpisode episode) {
 		Log.d("pdf", "Podcast Episode Clicked! " + episode.mTitle);
-		NetworkImageView image = (NetworkImageView) mView.findViewById(R.id.podcast_detail_image);
+		ImageView image = (ImageView) mView.findViewById(R.id.podcast_detail_image);
 
 		//Log.d("pdf", "Image resource: " + image.getResources());
 //		StorageService.getInstance(getContext()).saveImageToStorage(getContext(), episode.mPodcast.mImageUrl);

@@ -41,109 +41,118 @@ public class StorageService {
 		return instance;
 	}
 
-	public static Bitmap getImageFromStorageOrUrl(final String url, Bitmap destBitmap, final AudioService as) {
-		File directory = mContext.getDir(IMAGE_DIRECTORY, Context.MODE_PRIVATE);
+//	public static Bitmap getImageFromStorage(String url) {
+//		Log.d("ss", "GET IMAGE FROM STORAGE " + url);
+//		File directory = mContext.getDir(IMAGE_DIRECTORY, Context.MODE_PRIVATE);
+//
+//		String filename = null;
+//		try { filename = URLEncoder.encode(url, CHARSET); } catch (UnsupportedEncodingException e) { e.printStackTrace(); }
+//		File mypath = new File(directory, filename);
+//
+//		if (mypath.exists()) {
+//			Log.d("ss", "Image Exists");
+//			Bitmap bmp = BitmapFactory.decodeFile(directory + "/" + filename);
+//			return bmp;
+//		}
+//		Log.d("ss", "Image Doesnt Exists");
+//		return null;
+//	}
 
-		String filename = null;
-		try { filename = URLEncoder.encode(url, CHARSET); } catch (UnsupportedEncodingException e) { e.printStackTrace(); }
-		File mypath = new File(directory, filename);
+//	public static Bitmap getImageFromStorageOrUrl(final String url, Bitmap destBitmap, final AudioService as) {
+//		Bitmap bmp = getImageFromStorage(url);
+//		if (bmp != null) return bmp;
+//
+//		final DataService ds = DataService.getInstance(mContext);
+//		ds.getImage(url, new Response.Listener<Bitmap>() {
+//			@Override
+//			public void onResponse(Bitmap response) {
+//				as.setPodcastImageAndNotify(response);
+//			}
+//		});
+//
+//		return null;
+//	}
 
-		if (mypath.exists()) {
-			Bitmap bmp = BitmapFactory.decodeFile(directory + "/" + filename);
-			return bmp;
-		}
+//	public static void saveImageToStorageAndView(final String url, final ImageView imageView) throws UnsupportedEncodingException {
+//		Log.d("sitsav", url);
+//		final DataService ds = DataService.getInstance(mContext);
+//		final File directory = mContext.getDir(IMAGE_DIRECTORY, Context.MODE_PRIVATE);
+//		final String filename = URLEncoder.encode(url, CHARSET);
+//
+////		Log.d("ss", "Getting " + directory + "/" + filename);
+//		final File mypath = new File(directory, filename);
+//
+//		if (mypath.exists()) {
+////			Log.d("ss", "File exists! Getting" + directory + "/" + filename);
+//			loadImageFileIntoView(filename, imageView);
+//		}else {
+////			Log.d("ss", "File does not exist. Getting" + url);
+//
+//			ds.getImage(url, new Response.Listener<Bitmap>() {
+//				@Override
+//				public void onResponse(Bitmap response) {
+//
+//					/*if (!directory.exists()) {
+//						directory.mkdir();
+//					}
+//
+//					FileOutputStream fos = null;
+//
+//					try {
+//
+//						//+ ".jpg"
+//						fos = new FileOutputStream(mypath);
+//						response.compress(Bitmap.CompressFormat.PNG, PNG_QUALITY, fos);
+//						fos.close();
+//
+//						//					Log.d("ss", "Getting " + directory + filename);
+////						imageView.setImageBitmap(BitmapFactory.decodeFile(directory + "/" + filename));
+//
+//					} catch (FileNotFoundException e) {
+//						e.printStackTrace();
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}*/
+//					saveBitmap(response, directory, filename);
+//					imageView.setImageBitmap(response);
+//				}
+//			});
+//
+//		}
+//	}
 
-		final DataService ds = DataService.getInstance(mContext);
-		ds.getImage(url, new Response.Listener<Bitmap>() {
-			@Override
-			public void onResponse(Bitmap response) {
-				as.setPodcastImageAndNotify(response);
-			}
-		});
-
-		return null;
-	}
-
-	public static void saveImageToStorageAndView(final Context context, final String url, final ImageView imageView) throws UnsupportedEncodingException {
-
-		final DataService ds = DataService.getInstance(context);
-		final File directory = context.getDir(IMAGE_DIRECTORY, Context.MODE_PRIVATE);
-		final String filename = URLEncoder.encode(url, CHARSET);
-
-//		Log.d("ss", "Getting " + directory + "/" + filename);
-		final File mypath = new File(directory, filename);
-
-		if (mypath.exists()) {
-//			Log.d("ss", "File exists! Getting" + directory + "/" + filename);
-			loadImageFileIntoView(context, filename, imageView);
-		}else {
-//			Log.d("ss", "File does not exist. Getting" + url);
-
-			ds.getImage(url, new Response.Listener<Bitmap>() {
-				@Override
-				public void onResponse(Bitmap response) {
-
-					/*if (!directory.exists()) {
-						directory.mkdir();
-					}
-
-					FileOutputStream fos = null;
-
-					try {
-
-						//+ ".jpg"
-						fos = new FileOutputStream(mypath);
-						response.compress(Bitmap.CompressFormat.PNG, PNG_QUALITY, fos);
-						fos.close();
-
-						//					Log.d("ss", "Getting " + directory + filename);
-//						imageView.setImageBitmap(BitmapFactory.decodeFile(directory + "/" + filename));
-
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}*/
-					saveBitmap(response, directory, filename);
-					imageView.setImageBitmap(response);
-				}
-			});
-
-		}
-	}
-
-	private static void saveBitmap(Bitmap bitmap, File directory, String filename) {
-		if (!directory.exists()) {
-			directory.mkdir();
-		}
-		FileOutputStream fos = null;
-		try {
-
-			//+ ".jpg"
-			File mypath = new File(directory, filename);
-			fos = new FileOutputStream(mypath);
-			bitmap.compress(Bitmap.CompressFormat.PNG, PNG_QUALITY, fos);
-			fos.close();
-//			imageView.setImageBitmap(BitmapFactory.decodeFile(directory + "/" + filename));
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	private static void loadImageFileIntoView(Context context, String filename, ImageView imageView) {
-		try {
-			File directory = context.getDir(IMAGE_DIRECTORY, Context.MODE_PRIVATE);
-			Bitmap bmp = BitmapFactory.decodeFile(directory + "/" + filename);
-			imageView.setImageBitmap(bmp);
-
-		}catch (Exception e) {
-//			Log.e("ss", "Crash the program!");
-			e.printStackTrace();
-		}
-	}
+//	private static void saveBitmap(Bitmap bitmap, File directory, String filename) {
+//		if (!directory.exists()) {
+//			directory.mkdir();
+//		}
+//		FileOutputStream fos = null;
+//		try {
+//
+//			//+ ".jpg"
+//			File mypath = new File(directory, filename);
+//			fos = new FileOutputStream(mypath);
+//			bitmap.compress(Bitmap.CompressFormat.PNG, PNG_QUALITY, fos);
+//			fos.close();
+////			imageView.setImageBitmap(BitmapFactory.decodeFile(directory + "/" + filename));
+//
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//
+//	}
+//
+//	private static void loadImageFileIntoView(String filename, ImageView imageView) {
+//		try {
+//			File directory = mContext.getDir(IMAGE_DIRECTORY, Context.MODE_PRIVATE);
+//			Bitmap bmp = BitmapFactory.decodeFile(directory + "/" + filename);
+//			imageView.setImageBitmap(bmp);
+//
+//		}catch (Exception e) {
+////			Log.e("ss", "Crash the program!");
+//			e.printStackTrace();
+//		}
+//	}
 
 }

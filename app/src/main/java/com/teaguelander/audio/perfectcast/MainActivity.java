@@ -29,6 +29,7 @@ import com.teaguelander.audio.perfectcast.objects.PodcastDetail;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
 import com.teaguelander.audio.perfectcast.services.AudioService;
 import com.teaguelander.audio.perfectcast.services.DatabaseService;
+import com.teaguelander.audio.perfectcast.services.PicassoService;
 import com.teaguelander.audio.perfectcast.services.StorageService;
 import com.teaguelander.audio.perfectcast.services.TrackQueueService;
 
@@ -271,7 +272,8 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		StorageService ss = StorageService.getInstance(cxt);
 
 		try {
-			ss.saveImageToStorageAndView(cxt, podcast.mImageUrl, mPodcastImage);
+//			ss.saveImageToStorageAndView(podcast.mImageUrl, mPodcastImage);
+			PicassoService.loadImage(podcast.mImageUrl, mPodcastImage);
 		}catch (Exception e){
 			Log.e("ma", "Could not load image");
 			e.printStackTrace();

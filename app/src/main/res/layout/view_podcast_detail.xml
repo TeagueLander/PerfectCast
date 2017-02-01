@@ -15,7 +15,7 @@
 		android:weightSum="12"
 		>
 
-		<com.android.volley.toolbox.NetworkImageView
+		<ImageView
 			android:id="@+id/podcast_detail_image"
 			android:layout_width="0dp"
 			android:layout_height="match_parent"

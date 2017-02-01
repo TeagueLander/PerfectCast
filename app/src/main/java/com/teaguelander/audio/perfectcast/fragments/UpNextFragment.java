@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.android.volley.toolbox.NetworkImageView;
@@ -54,7 +55,7 @@ public class UpNextFragment extends Fragment implements RowItemClickListener {
 		mUpNextLinearLayoutManager = new LinearLayoutManager(getContext());
 		mUpNextLinearLayoutManager.setOrientation(LinearLayout.VERTICAL);
 		mUpNextRecycler.setLayoutManager(mUpNextLinearLayoutManager);
-		mUpNextLinearAdapter = new EpisodeLinearAdapter(mEpisodes, this);
+		mUpNextLinearAdapter = new EpisodeLinearAdapter(mEpisodes, EpisodeLinearAdapter.UP_NEXT_MODE, this);
 		mUpNextRecycler.setAdapter(mUpNextLinearAdapter);
 
 		return mView;
@@ -66,7 +67,7 @@ public class UpNextFragment extends Fragment implements RowItemClickListener {
 	@Override
 	public void onRowItemClicked(PodcastEpisode episode) {
 		Log.d("pdf", "Podcast Episode Clicked! " + episode.mTitle);
-		NetworkImageView image = (NetworkImageView) mView.findViewById(R.id.podcast_detail_image);
+		ImageView image = (ImageView) mView.findViewById(R.id.podcast_detail_image);
 
 		//Log.d("pdf", "Image resource: " + image.getResources());
 //		StorageService.getInstance(getContext()).saveImageToStorage(getContext(), episode.mPodcast.mImageUrl);

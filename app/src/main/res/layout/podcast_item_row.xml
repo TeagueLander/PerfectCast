@@ -8,7 +8,7 @@
 	android:background="?android:attr/selectableItemBackground"
 	android:paddingTop="1dp"
 	>
-	<com.android.volley.toolbox.NetworkImageView
+	<ImageView
 		android:id="@+id/item_image"
 		android:layout_width="@dimen/podcast_item_row_height"
 		android:layout_height="@dimen/podcast_item_row_height"

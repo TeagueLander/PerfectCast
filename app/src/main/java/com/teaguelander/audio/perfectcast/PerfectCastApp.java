@@ -1,5 +1,6 @@
 package com.teaguelander.audio.perfectcast;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.text.format.DateFormat;
@@ -8,6 +9,7 @@ import android.widget.Toast;
 
 import com.teaguelander.audio.perfectcast.services.DataService;
 import com.teaguelander.audio.perfectcast.services.DatabaseService;
+import com.teaguelander.audio.perfectcast.services.PicassoService;
 import com.teaguelander.audio.perfectcast.services.StorageService;
 import com.teaguelander.audio.perfectcast.services.TrackQueueService;
 
@@ -30,15 +32,16 @@ public class PerfectCastApp extends Application {
 
 		mContext = getApplicationContext();
 		DataService.getInstance(mContext);
-		StorageService.getInstance(mContext);
+//		StorageService.getInstance(mContext);
 		DatabaseService.getInstance(mContext);
 		TrackQueueService.getInstance();
+		PicassoService.getInstance(mContext);
 	}
 
 	@Override
 	public void onTrimMemory(int level) {
 		super.onTrimMemory(level);
-		Toast.makeText(mContext, "You need to trim the FUCKING MEMORY", 10); //TODO implement a better solution
+		Toast.makeText(mContext, "You need to trim the FUCKING MEMORY", Toast.LENGTH_LONG); //TODO implement a better solution
 	}
 
 	public static Context getContext() {

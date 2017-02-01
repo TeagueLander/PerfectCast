@@ -48,7 +48,6 @@ public class AudioService extends Service {
 
 	private static int SKIP_LENGTH = 30000;
 	private static int RESUME_REWIND_LENGTH = 2000;
-	private static int ICON_APP = R.mipmap.ic_launcher;
 
 	TrackQueueService queueService;
 	StorageService storageService;
@@ -58,9 +57,9 @@ public class AudioService extends Service {
 	Bitmap podcastImage = null;
 
 	MediaPlayer mp;
+	NotificationHelper notification;
 	String mStatus = DESTROYED_STATUS;
 	BroadcastReceiver receiver; //For Intents
-	int notificationId = -1; //notificationID allows you to update the notification later on.
 
 	@Override
 	public IBinder onBind(Intent arg0) { return null; };
@@ -69,6 +68,8 @@ public class AudioService extends Service {
 	public void onCreate() {
 		super.onCreate();
 
+		//Notification Helper
+		notification = new NotificationHelper(this);
 		//TrackQueueService controls the "Up Next" Playlist
 		queueService = TrackQueueService.getInstance();
 		//StorageService for images
@@ -88,13 +89,6 @@ public class AudioService extends Service {
 		filter.addAction(REWIND_ACTION);
 		filter.addAction(DESTROY_ACTION);
 		registerReceiver(receiver, filter);
-
-		//SharedPreferences
-//		prefEditor = getSharedPreferences(StaticValues.PREFS_NAME, MODE_PRIVATE).edit();
-//		prefEditor.putString("name", "Elena");
-//		prefEditor.commit();
-//		preferences = getSharedPreferences(StaticValues.PREFS_NAME, MODE_PRIVATE);
-//		prefEditor = preferences.edit();
 
 	}
 
@@ -116,7 +110,7 @@ public class AudioService extends Service {
 			mp.release();
 		}
 		updateStatus(DESTROYED_STATUS);
-		removeNotification();
+		notification.removeNotification();
 		unregisterReceiver(receiver);
 		Log.d("as", "AudioService destroyed");
 	}
@@ -134,7 +128,7 @@ public class AudioService extends Service {
 
 			//Get New Episode
 			currentEpisode = queueService.getFirstEpisode();
-			podcastImage = storageService.getImageFromStorageOrUrl(currentEpisode.mPodcast.mImageUrl, podcastImage, this);
+//			podcastImage = storageService.getImageFromStorageOrUrl(currentEpisode.mPodcast.mImageUrl, podcastImage, this);
 			resumeTime = (int) currentEpisode.mProgress;
 			updateStatus(NEW_TRACK_STATUS);
 		}
@@ -144,10 +138,10 @@ public class AudioService extends Service {
 		}
 	}
 
-	public void setPodcastImageAndNotify(Bitmap bitmap) {
-		podcastImage = bitmap;
-		showNotification();
-	}
+//	public void setPodcastImageAndNotify(Bitmap bitmap) {
+//		podcastImage = bitmap;
+//		showNotification();
+//	}
 
 	private void playAudioFromWeb(String location) {
 		if (location != null) {
@@ -209,21 +203,21 @@ public class AudioService extends Service {
 		mp.seekTo(resumeTime);
 		mp.start();
 		updateStatus(PLAYING_STATUS);
-		showNotification();
+		notification.showNotification();
 	}
 
 	public void pauseAudio() {
 		mp.pause();
 		updateEpisode();
 		updateStatus(PAUSED_STATUS);
-		showNotification();
+		notification.showNotification();
 	}
 
 	public void stopAudio() {
 		mp.stop();
 		updateEpisode();
 		updateStatus(STOPPED_STATUS);
-		showNotification();
+		notification.showNotification();
 	}
 
 	public void rewindAudio() {
@@ -246,69 +240,6 @@ public class AudioService extends Service {
 			resumeTime = mp.getCurrentPosition();
 			queueService.updateEpisodeProgress(currentEpisode, resumeTime);
 		}
-	}
-
-	//Creates and sends the notification that controls our audio, returns notification id
-	private synchronized int showNotification() {
-
-		//Notification Title, Icon, and message
-		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
-		mBuilder.setVisibility(Notification.VISIBILITY_PUBLIC); //This means it can be seen on the lock screen
-		mBuilder.setSmallIcon(ICON_APP);
-		mBuilder.setLargeIcon(podcastImage);
-		mBuilder.setContentTitle(currentEpisode.mPodcast.mTitle);
-		mBuilder.setContentText(currentEpisode.mTitle);
-		mBuilder.setShowWhen(false); //Tells us whether to display the time
-		mBuilder.setStyle(new NotificationCompat.MediaStyle() //We should add to this to give it more info
-				.setShowActionsInCompactView(new int[] {0,1,2})
-				.setMediaSession(null)
-		);
-		mBuilder.setDeleteIntent(PendingIntent.getBroadcast(this, 100, new Intent(DESTROY_ACTION), 0));
-
-		//Add Buttons
-		PendingIntent pendingRewindIntent = PendingIntent.getBroadcast(this, 100, new Intent(REWIND_ACTION), 0);
-		mBuilder.addAction(android.R.drawable.ic_media_rew, "Rewind", pendingRewindIntent);
-		if (!mp.isPlaying()) {
-			PendingIntent pendingPlayIntent = PendingIntent.getBroadcast(this, 100, new Intent(PLAY_ACTION), 0);
-			mBuilder.addAction(android.R.drawable.ic_media_play, "Play", pendingPlayIntent);
-		}else {
-			PendingIntent pendingPauseIntent = PendingIntent.getBroadcast(this, 100, new Intent(PAUSE_ACTION), 0);
-			mBuilder.addAction(android.R.drawable.ic_media_pause, "Pause", pendingPauseIntent);
-		}
-		PendingIntent pendingSkipIntent = PendingIntent.getBroadcast(this, 100, new Intent(SKIP_ACTION), 0);
-		mBuilder.addAction(android.R.drawable.ic_media_ff, "Skip", pendingSkipIntent);
-
-		//Notification Pressed set (may need to ahve a stackbuilder here)
-		Intent openMainActivity = new Intent(this, MainActivity.class);
-		openMainActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-		PendingIntent pendingOpenMainActivity =
-				PendingIntent.getActivity(
-						this,
-						0,
-						openMainActivity,
-						PendingIntent.FLAG_UPDATE_CURRENT
-				);
-		mBuilder.setContentIntent(pendingOpenMainActivity);
-
-		//Flags
-		if (!mp.isPlaying()) {
-			mBuilder.setOngoing(false);
-		}else {
-			mBuilder.setOngoing(true);
-		}
-
-		//Gets the id of the notification manager and then sends the notification we built
-		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		mNotificationManager.notify(notificationId, mBuilder.build());
-		return notificationId;
-	}
-
-
-	private int removeNotification() {
-		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		mNotificationManager.cancel(notificationId);
-
-		return 0;
 	}
 
 	private void performAction(Intent intent) {
@@ -341,8 +272,16 @@ public class AudioService extends Service {
 		}
 	}
 
-	private void storePreferences() {
-
+	public PodcastEpisode getCurrentEpisode() {
+		return currentEpisode;
+	}
+	public boolean getIsPlaying() {
+		if (mp != null) {
+			if (mp.isPlaying()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

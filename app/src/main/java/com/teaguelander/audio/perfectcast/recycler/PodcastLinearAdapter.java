@@ -4,12 +4,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.teaguelander.audio.perfectcast.services.DataService;
 import com.teaguelander.audio.perfectcast.objects.RowItemClickListener;
 import com.teaguelander.audio.perfectcast.R;
+import com.teaguelander.audio.perfectcast.services.PicassoService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,14 +29,14 @@ public class PodcastLinearAdapter extends RecyclerView.Adapter<PodcastLinearAdap
 	public static class ViewHolder extends RecyclerView.ViewHolder{
 
 		public View mView;
-		public NetworkImageView mImageView;
+		public ImageView mImageView;
 		public TextView mTitleTextView;
 		public String mFeedUrl;
 
 		public ViewHolder(View v) {
 			super(v);
 			mView = v;
-			mImageView = (NetworkImageView) v.findViewById(R.id.item_image);
+			mImageView = (ImageView) v.findViewById(R.id.item_image);
 			mTitleTextView = (TextView) v.findViewById(R.id.item_title);
 		}
 	}
@@ -70,7 +72,8 @@ public class PodcastLinearAdapter extends RecyclerView.Adapter<PodcastLinearAdap
 			JSONObject dataItem = mDataset.getJSONObject(position);
 
 			String imgUrl = dataItem.getString("artworkUrl600");
-			DataService.getInstance(null).loadImageIntoView(imgUrl, holder.mImageView);
+//			DataService.getInstance(null).loadImageIntoView(imgUrl, holder.mImageView);
+			PicassoService.loadImage(imgUrl, holder.mImageView);
 
 			String title = dataItem.getString("collectionName");
 			holder.mTitleTextView.setText(title);
