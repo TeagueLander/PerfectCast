@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.IOException;
 
@@ -34,6 +35,12 @@ public class PicassoService {
 		Picasso.with(mContext)
 			.load(url)
 			.into(imageView);
+	}
+
+	public static void loadIntoTarget(String url, Target target) {
+		Picasso.with(mContext)
+			.load(url)
+			.into(target);
 	}
 
 	public static Bitmap getBitmap(String url) {

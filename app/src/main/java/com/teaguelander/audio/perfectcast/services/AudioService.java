@@ -96,7 +96,7 @@ public class AudioService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		//Toast.makeText(this, "Audio Service Started", Toast.LENGTH_LONG).show();
 		performAction(intent);
-		//showNotification();
+		//update();
 
 		return START_NOT_STICKY;
 	}
@@ -140,7 +140,7 @@ public class AudioService extends Service {
 
 //	public void setPodcastImageAndNotify(Bitmap bitmap) {
 //		podcastImage = bitmap;
-//		showNotification();
+//		update();
 //	}
 
 	private void playAudioFromWeb(String location) {
@@ -203,21 +203,21 @@ public class AudioService extends Service {
 		mp.seekTo(resumeTime);
 		mp.start();
 		updateStatus(PLAYING_STATUS);
-		notification.showNotification();
+		notification.update();
 	}
 
 	public void pauseAudio() {
 		mp.pause();
 		updateEpisode();
 		updateStatus(PAUSED_STATUS);
-		notification.showNotification();
+		notification.update();
 	}
 
 	public void stopAudio() {
 		mp.stop();
 		updateEpisode();
 		updateStatus(STOPPED_STATUS);
-		notification.showNotification();
+		notification.update();
 	}
 
 	public void rewindAudio() {

@@ -5,8 +5,13 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.teaguelander.audio.perfectcast.MainActivity;
 import com.teaguelander.audio.perfectcast.R;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
@@ -20,29 +25,70 @@ public class NotificationHelper {
 	private static int ICON_APP = R.mipmap.ic_launcher;
 
 	AudioService as;
-	int notificationId = -1; //notificationID allows you to update the notification later on.
+	int mNotificationId = -1; //notificationID allows you to update the notification later on.
+	Bitmap mBitmap;
+	PodcastEpisode currentEpisode;
+	boolean isPlaying;
+
 
 	public NotificationHelper(AudioService as) {
 		this.as = as;
 	}
 
+	private void getNotificationImage() {
+		Target targetFunction = new Target() {
+			@Override
+			public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+//				Log.d("nh", "Loaded BITMAP");
+				setLargeIcon(bitmap);
+				showNotification();
+			}
+
+			@Override
+			public void onBitmapFailed(Drawable errorDrawable) {
+//				Log.d("nh", "Failed BITMAP");
+				showNotification();
+			}
+
+			@Override
+			public void onPrepareLoad(Drawable placeHolderDrawable) {
+//				Log.d("nh", "Prepared BITMAP");
+			}
+		};
+		PicassoService.loadIntoTarget(currentEpisode.mPodcast.mImageUrl, targetFunction);
+	}
+
+	public void setLargeIcon(Bitmap bitmap) {
+		mBitmap = bitmap;
+	}
+
 	public int removeNotification() {
 		NotificationManager mNotificationManager = (NotificationManager) as.getSystemService(Context.NOTIFICATION_SERVICE);
-		mNotificationManager.cancel(notificationId);
+		mNotificationManager.cancel(mNotificationId);
 
 		return -1;
 	}
 
-	public synchronized int showNotification() {
-
+	public void update() {
 		PodcastEpisode currentEpisode = as.getCurrentEpisode();
-		boolean isPlaying = as.getIsPlaying();
+		isPlaying = as.getIsPlaying();
+
+		if (currentEpisode != this.currentEpisode) {
+			this.currentEpisode = currentEpisode;
+			getNotificationImage();
+		}
+//		showNotification();
+	}
+
+	public synchronized int showNotification() {
 
 		//Notification Title, Icon, and message
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(as);
 		mBuilder.setVisibility(Notification.VISIBILITY_PUBLIC); //This means it can be seen on the lock screen
 		mBuilder.setSmallIcon(ICON_APP);
-//		mBuilder.setLargeIcon(podcastImage);
+		if (mBitmap != null) {
+			mBuilder.setLargeIcon(mBitmap);
+		}
 //		mBuilder.setLargeIcon(PicassoService.getInstance(null).getBitmap(currentEpisode.mPodcast.mImageUrl));
 		mBuilder.setContentTitle(currentEpisode.mPodcast.mTitle);
 		mBuilder.setContentText(currentEpisode.mTitle);
@@ -87,8 +133,8 @@ public class NotificationHelper {
 
 		//Gets the id of the notification manager and then sends the notification we built
 		NotificationManager mNotificationManager = (NotificationManager) as.getSystemService(Context.NOTIFICATION_SERVICE);
-		mNotificationManager.notify(notificationId, mBuilder.build());
-		return notificationId;
+		mNotificationManager.notify(mNotificationId, mBuilder.build());
+		return mNotificationId;
 	}
 
 
@@ -104,9 +150,9 @@ public class NotificationHelper {
 //
 //		Notification notification = builder.build();
 //		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-//		notificationManager.notify(notificationId, notification);
+//		notificationManager.notify(mNotificationId, notification);
 //
-//		return notificationId;
+//		return mNotificationId;
 	}*/
 
 }
