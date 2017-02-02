@@ -6,10 +6,12 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 //import android.support.design.widget.FloatingActionButton;
 //import android.support.design.widget.Snackbar;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 	boolean isAudioPlaying = false;
 	BroadcastReceiver receiver;
 	AppCompatActivity thisActivity = this;
+	private Handler progressHandler = new Handler();
 
 	FloatingSearchView searchView;
 
@@ -49,6 +52,10 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 	ImageView mPodcastImage;
 	TextView mPodcastTitle;
 	TextView mEpisodeTitle;
+	TextView mProgressCounter;
+
+	int mCurrentProgress = -1;
+	int mMaxProgress = -1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +83,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		mPodcastImage = (ImageView) mControlToolbar.findViewById(R.id.podcastImage);
 		mPodcastTitle = (TextView) mControlToolbar.findViewById(R.id.podcast_title);
 		mEpisodeTitle = (TextView) mControlToolbar.findViewById(R.id.episode_title);
+		mProgressCounter = (TextView) mControlToolbar.findViewById(R.id.progressCounter);
 
 		updateCurrentTrackInfo();
 
@@ -111,14 +119,6 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 				String action = intent.getAction();
 				Log.d("ma", "MainActivity received Intent: " + action);
 
-//				Toast.makeText(getApplicationContext(), "Action Received: " + action, Toast.LENGTH_SHORT).show();
-//				if (action.equals(AudioService.PAUSE_ACTION) || action.equals(AudioService.STOP_ACTION) || action.equals(AudioService.DESTROY_ACTION)) {
-//					setAudioIsPlaying(false);
-//				}
-//				else if (action.equals(AudioService.PLAYING_STATUS)) {
-//					setAudioIsPlaying(true);
-//					isAudioPlaying = true;
-//				}
 				if (action.equals(AudioService.DESTROYED_STATUS)) {
 					setAudioIsPlaying(false);
 					setAudioServiceStatusText(getResources().getString(R.string.destroyed_status));
@@ -141,6 +141,10 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 				} else if (action.equals(AudioService.NEW_TRACK_STATUS)) {
 					updateCurrentTrackInfo();
 				}
+
+				mCurrentProgress = intent.getIntExtra(AudioService.EXTRA_CURRENT_PROGRESS, 0) / 1000;
+				mMaxProgress = intent.getIntExtra(AudioService.EXTRA_MAX_PROGRESS, 0) / 1000;
+				updateProgress();
 							//|| action.equals(AudioService.ERROR_STATUS) || action.equals(AudioService.PAUSED_STATUS) || )
 			}
 		};
@@ -155,12 +159,10 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		filter.addAction(AudioService.DESTROYED_STATUS);
 		filter.addAction(AudioService.NEW_TRACK_STATUS);
 
-		filter.addAction(AudioService.PAUSE_ACTION);
-		filter.addAction(AudioService.STOP_ACTION);
-		filter.addAction(AudioService.DESTROY_ACTION);
+//		filter.addAction(AudioService.PAUSE_ACTION);
+//		filter.addAction(AudioService.STOP_ACTION);
+//		filter.addAction(AudioService.DESTROY_ACTION);
 		registerReceiver(receiver, filter);
-
-
 
 	}
 
@@ -293,6 +295,27 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 			mEpisodeTitle.setText(episode.mTitle);
 		}
 	}
+
+	private void updateProgress() {
+		Log.d("ma","Time reached " + DateUtils.formatElapsedTime(mCurrentProgress) + "/" + DateUtils.formatElapsedTime(mMaxProgress));
+		mProgressCounter.setText(DateUtils.formatElapsedTime(mCurrentProgress) + "/" + DateUtils.formatElapsedTime(mMaxProgress));
+
+		progressHandler.removeCallbacks(mUpdateProgressTask);
+		if (isAudioPlaying) {
+			progressHandler.postDelayed(mUpdateProgressTask, 1000);
+		} else {
+
+		}
+	}
+
+	private Runnable mUpdateProgressTask = new Runnable() {
+		@Override
+		public void run() {
+			mCurrentProgress += 1;
+			updateProgress();
+		}
+	};
+
 
 	public TrackQueueService getQueueService() {
 		return queueService;

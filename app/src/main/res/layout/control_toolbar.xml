@@ -71,6 +71,22 @@
 
 		</RelativeLayout>
 
+		<!-- ProgressBar along the bottom -->
+		<!--<ProgressBar
+			android:layout_width="match_parent"
+			android:layout_height="5dp"
+			android:focusable="false"
+			android:layout_alignParentBottom="true"
+			style="?android:attr/progressBarStyleHorizontal"
+			android:max="100"
+			android:progress="45"
+			/>-->
+		<!--<ProgressBar-->
+			<!--android:layout_width="wrap_content"-->
+			<!--android:layout_height="wrap_content"/>-->
+
+
+		<!-- Play/Pause Button -->
 		<RelativeLayout
 			android:id="@+id/playControl"
 			android:layout_width="?attr/actionBarSize"
@@ -114,6 +130,15 @@
 				/>
 
 		</RelativeLayout>
+
+
+		<TextView
+			android:id="@+id/progressCounter"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_toLeftOf="@id/playControl"
+			android:text="-2/00:00"
+			/>
 
 	</RelativeLayout>
 

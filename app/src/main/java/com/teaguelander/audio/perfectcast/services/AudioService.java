@@ -1,27 +1,17 @@
 package com.teaguelander.audio.perfectcast.services;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.IBinder;
 import android.media.MediaPlayer;
-import android.support.v7.app.NotificationCompat;
-import android.app.NotificationManager;
 //import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
-import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import com.teaguelander.audio.perfectcast.database.StaticValues;
-import com.teaguelander.audio.perfectcast.MainActivity;
-import com.teaguelander.audio.perfectcast.R;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
 
 /**
@@ -45,6 +35,8 @@ public class AudioService extends Service {
 	public static String ERROR_STATUS = "com.teaguelander.audio.perfectcast.ERROR_STATUS";
 	public static String DESTROYED_STATUS = "com.teaguelander.audio.perfectcast.DESTROYED_STATUS";
 	public static String NEW_TRACK_STATUS = "com.teaguelander.audio.perfectcast.NEW_TRACK_STATUS";
+		public static String EXTRA_CURRENT_PROGRESS = "currentProgress";
+		public static String EXTRA_MAX_PROGRESS = "maxProgress";
 
 	private static int SKIP_LENGTH = 30000;
 	private static int RESUME_REWIND_LENGTH = 2000;
@@ -52,7 +44,8 @@ public class AudioService extends Service {
 	TrackQueueService queueService;
 	PodcastEpisode currentEpisode;
 	String currentTrackLocation = null;
-	int resumeTime = 0; // Resume time
+	int currentProgress = -1; // Resume time
+	int maxProgress = -1;
 	Bitmap podcastImage = null;
 
 	MediaPlayer mp;
@@ -114,7 +107,11 @@ public class AudioService extends Service {
 
 	public void updateStatus(String status) {
 		mStatus = status;
-		sendBroadcast(new Intent(status));
+
+		Intent intent = new Intent(status);
+		intent.putExtra(EXTRA_CURRENT_PROGRESS, currentProgress);
+		intent.putExtra(EXTRA_MAX_PROGRESS, maxProgress);
+		sendBroadcast(intent);
 	}
 
 	public void playAudio(boolean forceUpdate) {
@@ -127,7 +124,7 @@ public class AudioService extends Service {
 			currentEpisode = queueService.getFirstEpisode();
 //			podcastImage = storageService.getImageFromStorageOrUrl(currentEpisode.mPodcast.mImageUrl, podcastImage, this);
 			if (currentEpisode != null) {
-				resumeTime = (int) currentEpisode.mProgress;
+				currentProgress = (int) currentEpisode.mProgress;
 				updateStatus(NEW_TRACK_STATUS);
 			}
 		}
@@ -137,11 +134,6 @@ public class AudioService extends Service {
 		}
 	}
 
-//	public void setPodcastImageAndNotify(Bitmap bitmap) {
-//		podcastImage = bitmap;
-//		update();
-//	}
-
 	private void playAudioFromWeb(String location) {
 		if (location != null) {
 			if (mp == null || location.equals(currentTrackLocation) != true) {
@@ -150,7 +142,7 @@ public class AudioService extends Service {
 				}
 				currentTrackLocation = location;
 				//Set track to beginning
-//				resumeTime = 0; //TODO check whether there is a time that needs to be resumed
+//				currentProgress = 0; //TODO check whether there is a time that needs to be resumed
 //				savePreferences();
 
 				try {
@@ -198,8 +190,9 @@ public class AudioService extends Service {
 	}
 
 	public void resumeAudio() {
-//		resumeTime = preferences.getInt(StaticValues.PREF_RESUME_TIME, 0);
-		mp.seekTo(resumeTime);
+//		currentProgress = preferences.getInt(StaticValues.PREF_RESUME_TIME, 0);
+		maxProgress = mp.getDuration();
+		mp.seekTo(currentProgress);
 		mp.start();
 		updateStatus(PLAYING_STATUS);
 		notification.update();
@@ -229,15 +222,15 @@ public class AudioService extends Service {
 
 //	private void savePreferences() {
 //		prefEditor.putString(StaticValues.PREF_RESUME_URL, currentTrackLocation);
-//		prefEditor.putInt(StaticValues.PREF_RESUME_TIME, resumeTime);
+//		prefEditor.putInt(StaticValues.PREF_RESUME_TIME, currentProgress);
 //		Log.d("as", "resumeUrl " + currentTrackLocation);
-//		Log.d("as", "resumeTime " + resumeTime);
+//		Log.d("as", "currentProgress " + currentProgress);
 //		prefEditor.commit();
 //	}
 	private void updateEpisode() {
 		if (mp != null) {
-			resumeTime = mp.getCurrentPosition();
-			queueService.updateEpisodeProgress(currentEpisode, resumeTime);
+			currentProgress = mp.getCurrentPosition();
+			queueService.updateEpisodeProgress(currentEpisode, currentProgress);
 		}
 	}
 

@@ -53,6 +53,7 @@
 				android:textColor="@color/black"
 				android:padding="@dimen/smallPadding"
 				android:backgroundTint="@color/buttonGrey"
+				android:visibility="invisible"
 				/>
 
 		</LinearLayout>

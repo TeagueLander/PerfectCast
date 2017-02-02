@@ -112,6 +112,7 @@ public class PodcastDetailFragment extends Fragment implements RowItemClickListe
 		//Subscribe Button
 		Button subButton = (Button) mView.findViewById(R.id.button_subscriber);
 		refreshSubStatus();
+		subButton.setVisibility(View.VISIBLE);
 		subButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
