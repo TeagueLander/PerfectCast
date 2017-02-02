@@ -194,22 +194,22 @@ public class AudioService extends Service {
 		maxProgress = mp.getDuration();
 		mp.seekTo(currentProgress);
 		mp.start();
-		updateStatus(PLAYING_STATUS);
 		notification.update();
+		updateStatus(PLAYING_STATUS);
 	}
 
 	public void pauseAudio() {
 		mp.pause();
 		updateEpisode();
-		updateStatus(PAUSED_STATUS);
 		notification.update();
+		updateStatus(PAUSED_STATUS);
 	}
 
 	public void stopAudio() {
 		mp.stop();
 		updateEpisode();
-		updateStatus(STOPPED_STATUS);
 		notification.update();
+		updateStatus(STOPPED_STATUS);
 	}
 
 	public void rewindAudio() {

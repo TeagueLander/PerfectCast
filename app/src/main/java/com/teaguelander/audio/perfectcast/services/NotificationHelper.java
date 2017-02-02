@@ -29,6 +29,7 @@ public class NotificationHelper {
 	Bitmap mBitmap;
 	PodcastEpisode currentEpisode;
 	boolean isPlaying;
+	Target mCurrentTargetFunction;
 
 
 	public NotificationHelper(AudioService as) {
@@ -36,26 +37,27 @@ public class NotificationHelper {
 	}
 
 	private void getNotificationImage() {
-		Target targetFunction = new Target() {
+		mCurrentTargetFunction = new Target() {
 			@Override
 			public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-//				Log.d("nh", "Loaded BITMAP");
+				Log.d("nh", "Loaded BITMAP");
 				setLargeIcon(bitmap);
 				showNotification();
 			}
 
 			@Override
 			public void onBitmapFailed(Drawable errorDrawable) {
-//				Log.d("nh", "Failed BITMAP");
+				Log.d("nh", "Failed BITMAP");
 				showNotification();
 			}
 
 			@Override
 			public void onPrepareLoad(Drawable placeHolderDrawable) {
-//				Log.d("nh", "Prepared BITMAP");
+				Log.d("nh", "Prepared BITMAP");
 			}
 		};
-		PicassoService.loadIntoTarget(currentEpisode.mPodcast.mImageUrl, targetFunction);
+		Log.d("nh", "PicassoService is trying to load " + currentEpisode.mPodcast.mImageUrl);
+		PicassoService.loadIntoTarget(currentEpisode.mPodcast.mImageUrl, mCurrentTargetFunction);
 	}
 
 	public void setLargeIcon(Bitmap bitmap) {
@@ -70,17 +72,24 @@ public class NotificationHelper {
 	}
 
 	public void update() {
+		Log.d("nh", "Notification Update called");
 		PodcastEpisode currentEpisode = as.getCurrentEpisode();
 		isPlaying = as.getIsPlaying();
 
+		Log.d("nh", "NOTIFICATION HELPER " + currentEpisode.toString());
 		if (currentEpisode != this.currentEpisode) {
+			Log.d("nh", "NEED A BLOODY NEW IMAGE FUCK!");
 			this.currentEpisode = currentEpisode;
 			getNotificationImage();
+		} else {
+			Log.d("nh", "NO NEED IMAGE NEEDED!");
+			showNotification();
 		}
-//		showNotification();
 	}
 
 	public synchronized int showNotification() {
+
+		Log.d("nh", "SHOW NOTICIATION");
 
 		//Notification Title, Icon, and message
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(as);

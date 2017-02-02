@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 	TextView mEpisodeTitle;
 	TextView mProgressCounter;
 
+	PodcastEpisode mCurrentEpisode;
+	PodcastDetail mCurrentPodcast;
 	int mCurrentProgress = -1;
 	int mMaxProgress = -1;
 
@@ -297,7 +299,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 	}
 
 	private void updateProgress() {
-		Log.d("ma","Time reached " + DateUtils.formatElapsedTime(mCurrentProgress) + "/" + DateUtils.formatElapsedTime(mMaxProgress));
+//		Log.d("ma","Time reached " + DateUtils.formatElapsedTime(mCurrentProgress) + "/" + DateUtils.formatElapsedTime(mMaxProgress));
 		mProgressCounter.setText(DateUtils.formatElapsedTime(mCurrentProgress) + "/" + DateUtils.formatElapsedTime(mMaxProgress));
 
 		progressHandler.removeCallbacks(mUpdateProgressTask);
