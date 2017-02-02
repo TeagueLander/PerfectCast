@@ -1,16 +1,12 @@
 package com.teaguelander.audio.perfectcast;
 
-import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
-import android.text.format.DateFormat;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.teaguelander.audio.perfectcast.services.DataService;
 import com.teaguelander.audio.perfectcast.services.DatabaseService;
 import com.teaguelander.audio.perfectcast.services.PicassoService;
-import com.teaguelander.audio.perfectcast.services.StorageService;
 import com.teaguelander.audio.perfectcast.services.TrackQueueService;
 
 import java.text.SimpleDateFormat;

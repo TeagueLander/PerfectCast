@@ -31,13 +31,14 @@ public class DatabaseService extends SQLiteOpenHelper {
 	private static Context mContext;
 	private static SQLiteDatabase mDatabase;
 
-	private static final int DATABASE_VERSION = 29;
+	private static final int DATABASE_VERSION = 30;
 	private static final String DATABASE_NAME = "PerfectCast";
 	private static final String TABLE_EPISODES = "episodes";
 	private static final String TABLE_PODCASTS = "podcasts";
 	private static final String TABLE_TRACK_QUEUE = "track_queue";
 	private static final String VIEW_TRACK_QUEUE = "view_track_queue";
 
+	//TODO implement a LRU cache for podcast maybe?
 	public DatabaseService(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		mContext = context;
@@ -64,7 +65,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 											   PodcastDetail.KEY_TITLE + " TEXT," +
 											   PodcastDetail.KEY_IMAGE_URL + " TEXT," +
 											   PodcastDetail.KEY_DESCRIPTION + " TEXT," +
-											   PodcastDetail.KEY_SUBSCRIBED + " TEXT," +
+											   PodcastDetail.KEY_SUBSCRIBED + " INTEGER," +
 											   PodcastDetail.KEY_XML + " TEXT);";
 		String CREATE_TABLE_EPISODES = "CREATE TABLE " + TABLE_EPISODES + " ( " +
 											   PodcastEpisode.KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -104,7 +105,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 
 	//Add Podcast
 	public long addPodcast(PodcastDetail podcast) {
-		Log.d("dbs", "Adding podcast " + podcast.mTitle);
+		Log.d("dbs", "Adding podcast " + podcast.mTitle + " Subscribed: " + podcast.mSubscribed);
 
 		//TODO made this a get by url function
 		Cursor cursor = mDatabase.query(TABLE_PODCASTS,
@@ -265,7 +266,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 										cursor.getString(2),
 										cursor.getString(3),
 										cursor.getString(4),
-										Boolean.parseBoolean(cursor.getString(5)),
+										cursor.getInt(5) == 1,
 										cursor.getString(6));
 			podcast.setId(cursor.getLong(0));
 			Log.d("dbs", "Got podcast from database");
@@ -326,25 +327,41 @@ public class DatabaseService extends SQLiteOpenHelper {
 		return episode;
 	}
 
-//	private String encode(String string) {
-//		String encodedString = "";
-//		try {
-//			encodedString = URLEncoder.encode(string, StorageService.CHARSET);
-//		}catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return encodedString;
-//	}
-//
-//	private String decode(String string) {
-//		String decodedString = "";
-//		try {
-//			decodedString = URLDecoder.decode(string, StorageService.CHARSET);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return decodedString;
-//	}
 
+	//Podcast Gets//
+
+	public void checkPodcastParameters(PodcastDetail podcast) {
+		Cursor cursor = mDatabase.query(TABLE_PODCASTS,
+										new String[] { PodcastDetail.KEY_ID, PodcastDetail.KEY_SUBSCRIBED },
+										PodcastDetail.KEY_URL + " = ?",
+										new String[] { podcast.mUrl },
+										null, null, null);
+
+		if (cursor.moveToFirst()) {
+			Log.d("dbs", "Getting subscribed " + Boolean.parseBoolean(cursor.getString(1)));
+			long id = cursor.getLong(0);
+			boolean subscribed = cursor.getInt(1) == 1;
+
+			podcast.setId(id);
+			podcast.setSubscribed(subscribed);
+		}
+	}
+
+	//Podcast Updates//
+
+	public void updatePodcastSubscribed(PodcastDetail podcast) {
+
+		Log.d("dbs", "Updating " + podcast.mTitle + " subscribed " + podcast.mSubscribed);
+
+		ContentValues values = new ContentValues();
+		values.put(PodcastDetail.KEY_SUBSCRIBED, podcast.mSubscribed);
+
+		mDatabase.update(TABLE_PODCASTS,
+						 values,
+						 PodcastDetail.KEY_SUBSCRIBED + " = ?",
+						 new String[] { Long.toString(podcast.mId) }
+		);
+
+	}
 
 }

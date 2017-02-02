@@ -6,16 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
-import com.android.volley.toolbox.NetworkImageView;
 import com.teaguelander.audio.perfectcast.R;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
 import com.teaguelander.audio.perfectcast.objects.RowItemClickListener;
-import com.teaguelander.audio.perfectcast.services.DataService;
 import com.teaguelander.audio.perfectcast.services.PicassoService;
-import com.teaguelander.audio.perfectcast.services.StorageService;
 
 import java.util.ArrayList;
 
@@ -34,7 +30,6 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 	private int mEpisodesCount;
 	private RowItemClickListener mItemClickListener;
 	private String mMode;
-	private StorageService storageService;
 
 	public static class ViewHolder extends RecyclerView.ViewHolder {
 		public View mView;
@@ -60,7 +55,6 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 		mEpisodes = episodes;
 		mItemClickListener = itemClickListener;
 		mMode = mode;
-		storageService = StorageService.getInstance(null);
 	}
 
 
@@ -77,12 +71,7 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 	public void onBindViewHolder(ViewHolder holder, int position) {
 		final PodcastEpisode episode = mEpisodes.get(position);
 
-//		if (mMode == UP_NEXT_MODE) {
-//			try { storageService.saveImageToStorageAndView(episode.mPodcast.mImageUrl, holder.mPodcastImage); }
-//			catch (Exception e) { e.printStackTrace(); };
-//		}
 		if (mMode == UP_NEXT_MODE) {
-			//DataService.getInstance(null).loadImageIntoView(episode.mPodcast.mImageUrl, holder.mPodcastImage);
 			PicassoService.loadImage(episode.mPodcast.mImageUrl, holder.mPodcastImage);
 			holder.mPodcastImage.setVisibility(View.VISIBLE);
 			RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) holder.mTitleTextView.getLayoutParams();

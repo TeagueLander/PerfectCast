@@ -2,7 +2,6 @@ package com.teaguelander.audio.perfectcast.fragments;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Response;
-import com.android.volley.toolbox.NetworkImageView;
 import com.teaguelander.audio.perfectcast.R;
 import com.teaguelander.audio.perfectcast.objects.PodcastDetail;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
@@ -26,7 +24,6 @@ import com.teaguelander.audio.perfectcast.objects.RowItemClickListener;
 import com.teaguelander.audio.perfectcast.recycler.EpisodeLinearAdapter;
 import com.teaguelander.audio.perfectcast.services.DataService;
 import com.teaguelander.audio.perfectcast.services.PicassoService;
-import com.teaguelander.audio.perfectcast.services.StorageService;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -111,19 +108,22 @@ public class PodcastDetailFragment extends Fragment implements RowItemClickListe
 //			DataService.getInstance(getContext()).loadImageIntoView(mPodcastDetail.mImageUrl, imageView);
 			PicassoService.loadImage(mPodcastDetail.mImageUrl, imageView);
 		}
+
 		//Subscribe Button
 		Button subButton = (Button) mView.findViewById(R.id.button_subscriber);
 		refreshSubStatus();
 		subButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mPodcastDetail.setSubscribed(!mPodcastDetail.getSubscribed());
+				mPodcastDetail.setSubscribedAndUpdate(!mPodcastDetail.mSubscribed);
 				refreshSubStatus();
 			}
 		});
+
 		//Description Area
 		TextView descriptionView = (TextView) mView.findViewById(R.id.description);
 		if (mPodcastDetail.mDescription != null) { descriptionView.setText(mPodcastDetail.mDescription); }
+
 		//Episodes
 		mEpisodesRecycler = (RecyclerView) mView.findViewById(R.id.episodesRecycler);
 		mEpisodesRecycler.setHasFixedSize(true);
@@ -138,7 +138,7 @@ public class PodcastDetailFragment extends Fragment implements RowItemClickListe
 
 	private void refreshSubStatus() {
 		Button subButton = (Button) mView.findViewById(R.id.button_subscriber);
-		if (mPodcastDetail.getSubscribed() == true) {
+		if (mPodcastDetail.mSubscribed == true) {
 			subButton.setBackgroundTintList(  ColorStateList.valueOf( getResources().getColor(R.color.buttonSelected, null) )  );
 			subButton.setTextColor(getResources().getColor(R.color.textColorPrimary, null));
 			subButton.setText(R.string.button_subscribed);

@@ -20,8 +20,11 @@ public class PicassoService {
 
 	private PicassoService(Context context) {
 		mContext = context;
+
+		//Picasso Settings here
 		Picasso.with(mContext)
 			.setIndicatorsEnabled(true);
+		//If we need to set our cache size then see https://square.github.io/picasso/2.x/picasso/com/squareup/picasso/Picasso.html
 	}
 
 	public static synchronized PicassoService getInstance(Context context) {

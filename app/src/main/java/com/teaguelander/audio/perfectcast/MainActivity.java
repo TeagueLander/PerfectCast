@@ -28,12 +28,8 @@ import com.teaguelander.audio.perfectcast.fragments.SearchResultsFragment;
 import com.teaguelander.audio.perfectcast.objects.PodcastDetail;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
 import com.teaguelander.audio.perfectcast.services.AudioService;
-import com.teaguelander.audio.perfectcast.services.DatabaseService;
 import com.teaguelander.audio.perfectcast.services.PicassoService;
-import com.teaguelander.audio.perfectcast.services.StorageService;
 import com.teaguelander.audio.perfectcast.services.TrackQueueService;
-
-import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity { //implements SearchView.OnQueryTextListener, SearchView.OnCloseListener
 
@@ -269,7 +265,6 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 
 	private void setControlToolbarImage(PodcastDetail podcast) {
 		Context cxt = getApplicationContext();
-		StorageService ss = StorageService.getInstance(cxt);
 
 		try {
 //			ss.saveImageToStorageAndView(podcast.mImageUrl, mPodcastImage);

@@ -1,5 +1,6 @@
 package com.teaguelander.audio.perfectcast.objects;
 
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.util.Xml;
 
@@ -117,9 +118,6 @@ public class PodcastDetail {
 				skipTag(parser);
 			}
 		}
-		Log.d("pd", "Title: " + title);
-		Log.d("pd", "Description: " + description);
-		Log.d("pd", "ImageUrl: " + imageUrl);
 //		Log.d("pd", ">>episodes>>");
 
 //		for (PodcastEpisode episode: episodes) {
@@ -133,6 +131,12 @@ public class PodcastDetail {
 
 //		return new PodcastDetail(title, imageUrl, description, episodes);
 		setPodcastDetails(title, imageUrl, description, episodes);
+		getSubscribedFromDatabase();
+		Log.d("pd", "Title: " + title);
+		Log.d("pd", "Description: " + description);
+		Log.d("pd", "ImageUrl: " + imageUrl);
+		Log.d("pd", "Subscribed: " + mSubscribed);
+		Log.d("pd", "Id: " + mId);
 	}
 
 	private static String readImageTagUrl(XmlPullParser parser) throws IOException, XmlPullParserException {
@@ -245,23 +249,30 @@ public class PodcastDetail {
 		}
 	}
 
-	public boolean getSubscribed() {
+	public boolean getSubscribedFromDatabase() {
+		DatabaseService.getInstance(null).checkPodcastParameters(this);
 		return mSubscribed;
 	}
 
 	public void setSubscribed(boolean value) {
 		mSubscribed = value;
-		if (value == true) {
+	}
+
+	public void setSubscribedAndUpdate(boolean value) {
+
+		mSubscribed = value;
+
+		if (mId == -1) {
 			addToDatabase();
 		} else {
-//			remove?
+			DatabaseService.getInstance(null).updatePodcastSubscribed(this);
 		}
-
 
 		//TODO remove TrackQueueService test
 //		new TrackQueueService();
 	}
 
+	//Adds to database with current mSubscribed value from object
 	public void addToDatabase() {
 		DatabaseService ds = DatabaseService.getInstance(null);
 

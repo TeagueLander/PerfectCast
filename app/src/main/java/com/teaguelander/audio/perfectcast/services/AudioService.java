@@ -50,7 +50,6 @@ public class AudioService extends Service {
 	private static int RESUME_REWIND_LENGTH = 2000;
 
 	TrackQueueService queueService;
-	StorageService storageService;
 	PodcastEpisode currentEpisode;
 	String currentTrackLocation = null;
 	int resumeTime = 0; // Resume time
@@ -72,8 +71,6 @@ public class AudioService extends Service {
 		notification = new NotificationHelper(this);
 		//TrackQueueService controls the "Up Next" Playlist
 		queueService = TrackQueueService.getInstance();
-		//StorageService for images
-		storageService = StorageService.getInstance(getApplicationContext());
 		//BroadcastReceiver and filter - recieves actions like play and pause from the notification tray
 		receiver = new BroadcastReceiver() {
 			@Override
@@ -129,8 +126,10 @@ public class AudioService extends Service {
 			//Get New Episode
 			currentEpisode = queueService.getFirstEpisode();
 //			podcastImage = storageService.getImageFromStorageOrUrl(currentEpisode.mPodcast.mImageUrl, podcastImage, this);
-			resumeTime = (int) currentEpisode.mProgress;
-			updateStatus(NEW_TRACK_STATUS);
+			if (currentEpisode != null) {
+				resumeTime = (int) currentEpisode.mProgress;
+				updateStatus(NEW_TRACK_STATUS);
+			}
 		}
 
 		if (currentEpisode != null) {
