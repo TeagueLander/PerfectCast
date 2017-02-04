@@ -45,10 +45,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 	boolean isAudioPlaying = false;
 	BroadcastReceiver receiver;
 	AppCompatActivity thisActivity = this;
-//	private HandlerThread ht;
 	private Handler progressHandler = new Handler();
-	Timer timer;
-	TimerTask timerTask;
 
 	FloatingSearchView searchView;
 
@@ -307,30 +304,13 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 	}
 
 	private void updateProgress() {
-////		Log.d("ma","Time reached " + DateUtils.formatElapsedTime(mCurrentProgress) + "/" + DateUtils.formatElapsedTime(mMaxProgress));
 		mProgressCounter.setText(DateUtils.formatElapsedTime(mCurrentProgress) + "/" + DateUtils.formatElapsedTime(mMaxProgress));
-//
-//		progressHandler.removeCallbacks(mUpdateProgressTask);
-//		if (isAudioPlaying) {
-////			progressHandler.postDelayed(mUpdateProgressTask, 1000);
-//		} else {
-//
-//		}
-		if (timer != null) {
-			timer.cancel();
-			timer = null;
-		}
+
+		progressHandler.removeCallbacks(mUpdateProgressTask);
 		if (isAudioPlaying) {
-			timer = new Timer();
+			progressHandler.postDelayed(mUpdateProgressTask, 1000);
+		} else {
 
-			timerTask = new TimerTask() {
-				@Override
-				public void run() {
-					progressHandler.post(mUpdateProgressTask);
-				}
-			};
-
-			timer.schedule(timerTask, 0, 1000);
 		}
 	}
 
@@ -339,8 +319,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		public void run() {
 			mCurrentProgress += 1;
 			mProgressCounter.setText(DateUtils.formatElapsedTime(mCurrentProgress) + "/" + DateUtils.formatElapsedTime(mMaxProgress));
-//			mProgressCounter.setText(Integer.toString(mCurrentProgress));
-//			updateProgress();
+			progressHandler.postDelayed(mUpdateProgressTask, 1000);
 		}
 	};
 

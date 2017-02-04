@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.os.Handler;
 import android.os.IBinder;
 import android.media.MediaPlayer;
 //import android.support.v4.app.TaskStackBuilder;
@@ -40,6 +41,7 @@ public class AudioService extends Service {
 
 	private static int SKIP_LENGTH = 30000;
 	private static int RESUME_REWIND_LENGTH = 2000;
+	private static int SAVE_PROGRESS_INTERVAL = 10000;
 
 	TrackQueueService queueService;
 	PodcastEpisode currentEpisode;
@@ -52,6 +54,7 @@ public class AudioService extends Service {
 	NotificationHelper notification;
 	String mStatus = DESTROYED_STATUS;
 	BroadcastReceiver receiver; //For Intents
+	Handler mSaveProgressHandler = new Handler();
 
 	@Override
 	public IBinder onBind(Intent arg0) { return null; };
@@ -196,6 +199,7 @@ public class AudioService extends Service {
 		mp.start();
 		notification.update();
 		updateStatus(PLAYING_STATUS);
+		setSaveProgressTimer();
 	}
 
 	public void pauseAudio() {
@@ -204,6 +208,7 @@ public class AudioService extends Service {
 		notification.update();
 		updateStatus(PAUSED_STATUS);
 		updateEpisode();
+		setSaveProgressTimer();
 	}
 
 	public void stopAudio() {
@@ -212,6 +217,7 @@ public class AudioService extends Service {
 		notification.update();
 		updateStatus(STOPPED_STATUS);
 		updateEpisode();
+		setSaveProgressTimer();
 	}
 
 	public void rewindAudio() {
@@ -277,5 +283,20 @@ public class AudioService extends Service {
 		}
 		return false;
 	}
+
+	private void setSaveProgressTimer() {
+		mSaveProgressHandler.removeCallbacks(mSaveProgressTask);
+		if (getIsPlaying()) {
+			mSaveProgressHandler.postDelayed(mSaveProgressTask, SAVE_PROGRESS_INTERVAL);
+		}
+	}
+
+	private Runnable mSaveProgressTask = new Runnable() {
+		@Override
+		public void run() {
+			updateEpisode();
+			mSaveProgressHandler.postDelayed(mSaveProgressTask, SAVE_PROGRESS_INTERVAL);
+		}
+	};
 
 }
