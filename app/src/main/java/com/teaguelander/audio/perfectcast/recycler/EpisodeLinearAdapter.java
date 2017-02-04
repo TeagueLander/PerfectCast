@@ -1,6 +1,7 @@
 package com.teaguelander.audio.perfectcast.recycler;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,7 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 	}
 
 	public EpisodeLinearAdapter(ArrayList<PodcastEpisode> episodes, String mode, RowItemClickListener itemClickListener) {
+		Log.d("edf", "EPISODES LINEARA CREATED");
 		mEpisodesCount = episodes.size();
 		mEpisodes = episodes;
 		mItemClickListener = itemClickListener;

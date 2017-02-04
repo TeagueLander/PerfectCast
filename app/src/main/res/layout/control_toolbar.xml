@@ -128,17 +128,28 @@
 				android:layout_centerHorizontal="true"
 				android:textSize="10dp"
 				/>
+			<TextView
+			android:id="@+id/progressCounter"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="--:--/--:--"
+			android:layout_alignParentTop="true"
+			android:layout_centerHorizontal="true"
+			android:fontFamily="monospace"
+			android:textSize="6dp"
+			android:layout_marginTop="2dp"
+			/>
 
 		</RelativeLayout>
 
 
-		<TextView
-			android:id="@+id/progressCounter"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_toLeftOf="@id/playControl"
-			android:text="-2/00:00"
-			/>
+		<!--<TextView-->
+			<!--android:id="@+id/progressCounter"-->
+			<!--android:layout_width="wrap_content"-->
+			<!--android:layout_height="wrap_content"-->
+			<!--android:layout_toLeftOf="@id/playControl"-->
+			<!--android:text="-2/00:00"-->
+			<!--/>-->
 
 	</RelativeLayout>
 

@@ -7,6 +7,7 @@ import android.os.Bundle;
 //import android.support.design.widget.FloatingActionButton;
 //import android.support.design.widget.Snackbar;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -33,14 +34,21 @@ import com.teaguelander.audio.perfectcast.services.AudioService;
 import com.teaguelander.audio.perfectcast.services.PicassoService;
 import com.teaguelander.audio.perfectcast.services.TrackQueueService;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MainActivity extends AppCompatActivity { //implements SearchView.OnQueryTextListener, SearchView.OnCloseListener
+
 
 	//Useful everywhere
 	TrackQueueService queueService;
 	boolean isAudioPlaying = false;
 	BroadcastReceiver receiver;
 	AppCompatActivity thisActivity = this;
+//	private HandlerThread ht;
 	private Handler progressHandler = new Handler();
+	Timer timer;
+	TimerTask timerTask;
 
 	FloatingSearchView searchView;
 
@@ -299,14 +307,30 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 	}
 
 	private void updateProgress() {
-//		Log.d("ma","Time reached " + DateUtils.formatElapsedTime(mCurrentProgress) + "/" + DateUtils.formatElapsedTime(mMaxProgress));
+////		Log.d("ma","Time reached " + DateUtils.formatElapsedTime(mCurrentProgress) + "/" + DateUtils.formatElapsedTime(mMaxProgress));
 		mProgressCounter.setText(DateUtils.formatElapsedTime(mCurrentProgress) + "/" + DateUtils.formatElapsedTime(mMaxProgress));
-
-		progressHandler.removeCallbacks(mUpdateProgressTask);
+//
+//		progressHandler.removeCallbacks(mUpdateProgressTask);
+//		if (isAudioPlaying) {
+////			progressHandler.postDelayed(mUpdateProgressTask, 1000);
+//		} else {
+//
+//		}
+		if (timer != null) {
+			timer.cancel();
+			timer = null;
+		}
 		if (isAudioPlaying) {
-			progressHandler.postDelayed(mUpdateProgressTask, 1000);
-		} else {
+			timer = new Timer();
 
+			timerTask = new TimerTask() {
+				@Override
+				public void run() {
+					progressHandler.post(mUpdateProgressTask);
+				}
+			};
+
+			timer.schedule(timerTask, 0, 1000);
 		}
 	}
 
@@ -314,7 +338,9 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		@Override
 		public void run() {
 			mCurrentProgress += 1;
-			updateProgress();
+			mProgressCounter.setText(DateUtils.formatElapsedTime(mCurrentProgress) + "/" + DateUtils.formatElapsedTime(mMaxProgress));
+//			mProgressCounter.setText(Integer.toString(mCurrentProgress));
+//			updateProgress();
 		}
 	};
 

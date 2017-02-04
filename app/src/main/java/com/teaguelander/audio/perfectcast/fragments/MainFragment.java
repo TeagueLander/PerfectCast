@@ -52,6 +52,7 @@ public class MainFragment extends Fragment{
 		adapter.addFragment(new UpNextFragment(), getString(R.string.tab_up_next));
 		//View Pager
 		ViewPager viewPager = (ViewPager) v.findViewById(R.id.viewpager);
+		viewPager.setOffscreenPageLimit(2);
 		viewPager.setAdapter(adapter);
 		//Bind tabs to the ViewPager
 		TabLayout tabLayout = (TabLayout) v.findViewById(R.id.tabs);

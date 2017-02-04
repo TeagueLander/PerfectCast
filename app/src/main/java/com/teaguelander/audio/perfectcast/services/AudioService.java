@@ -200,16 +200,18 @@ public class AudioService extends Service {
 
 	public void pauseAudio() {
 		mp.pause();
-		updateEpisode();
+		currentProgress = mp.getCurrentPosition(); //TODO remove this and move updateEpisode() here (need async call on updateEpisode
 		notification.update();
 		updateStatus(PAUSED_STATUS);
+		updateEpisode();
 	}
 
 	public void stopAudio() {
 		mp.stop();
-		updateEpisode();
+		currentProgress = mp.getCurrentPosition();
 		notification.update();
 		updateStatus(STOPPED_STATUS);
+		updateEpisode();
 	}
 
 	public void rewindAudio() {

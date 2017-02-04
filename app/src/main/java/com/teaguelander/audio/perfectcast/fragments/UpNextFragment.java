@@ -46,6 +46,7 @@ public class UpNextFragment extends Fragment implements RowItemClickListener {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		Log.d("UNF", "Up next created");
 		mEpisodes = queueService.getQueueItems();
 
 		mView = inflater.inflate(R.layout.view_up_next, container, false);
