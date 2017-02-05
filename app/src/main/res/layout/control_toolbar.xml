@@ -17,26 +17,76 @@
 		android:layout_height="match_parent"
 		>
 
+		<!-- Everything to the right of the play/pause button -->
 		<RelativeLayout
-			android:layout_width="?attr/actionBarSize"
-			android:layout_height="?attr/actionBarSize"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
 			android:layout_alignParentTop="true"
 			android:layout_alignParentStart="true"
-			android:layout_marginTop="@dimen/halfSmallPadding"
-			android:layout_marginBottom="@dimen/halfSmallPadding"
+			android:layout_marginTop="0dp"
+			android:layout_marginBottom="0dp"
+			android:layout_marginRight="?attr/actionBarSize"
 			>
 
+			<!-- Current Podcast Image -->
 			<ImageView
 				android:id="@+id/podcastImage"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:src="@android:drawable/ic_media_play"
+				android:layout_width="?attr/actionBarSize"
+				android:layout_height="?attr/actionBarSize"
 				android:background="#0000"
 				android:contentDescription="@string/cd_album_art"
+				android:layout_alignParentLeft="true"
 				/>
+
+			<!-- Current Episode Info-->
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_marginLeft="?attr/actionBarSize"
+				android:padding="@dimen/smallPadding"
+				android:orientation="vertical"
+				>
+
+				<!-- Current Podcast Title -->
+				<TextView
+					android:id="@+id/podcast_title"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:maxLines="1"
+					android:ellipsize="end"
+					android:textStyle="bold"
+					/>
+
+				<!-- Current Episode Title -->
+				<TextView
+					android:id="@+id/episode_title"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:maxLines="1"
+					android:ellipsize="end"
+					android:fontFamily="sans-serif-light"
+					/>
+
+			</LinearLayout>
 
 		</RelativeLayout>
 
+		<!-- ProgressBar along the bottom -->
+		<!--<ProgressBar
+			android:layout_width="match_parent"
+			android:layout_height="5dp"
+			android:focusable="false"
+			android:layout_alignParentBottom="true"
+			style="?android:attr/progressBarStyleHorizontal"
+			android:max="100"
+			android:progress="45"
+			/>-->
+		<!--<ProgressBar-->
+			<!--android:layout_width="wrap_content"-->
+			<!--android:layout_height="wrap_content"/>-->
+
+
+		<!-- Play/Pause Button -->
 		<RelativeLayout
 			android:id="@+id/playControl"
 			android:layout_width="?attr/actionBarSize"
@@ -46,7 +96,7 @@
 			android:layout_alignParentEnd="true"
 			android:layout_marginBottom="4dp"
 			>
-
+			<!-- The play/pause button (hidden when we are loading) -->
 			<ImageButton
 				android:id="@+id/playPauseButton"
 				android:layout_width="match_parent"
@@ -56,6 +106,7 @@
 				android:background="#0000"
 				android:contentDescription="@string/cd_play_pause_button"
 				/>
+			<!-- Loading Circle (hidden unless we are loading) -->
 			<ProgressBar
 				android:id="@+id/progressCircle"
 				android:layout_width="match_parent"
@@ -67,7 +118,7 @@
 				android:layout_centerHorizontal="true"
 				android:layout_centerVertical="true"
 				/>
-
+			<!-- The current status of the AudioService -->
 			<TextView
 				android:text="@string/destroyed_status"
 				android:layout_width="wrap_content"
@@ -77,19 +128,29 @@
 				android:layout_centerHorizontal="true"
 				android:textSize="10dp"
 				/>
+			<TextView
+			android:id="@+id/progressCounter"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="--:--/--:--"
+			android:layout_alignParentTop="true"
+			android:layout_centerHorizontal="true"
+			android:fontFamily="monospace"
+			android:textSize="6dp"
+			android:layout_marginTop="2dp"
+			/>
+
 		</RelativeLayout>
 
+
+		<!--<TextView-->
+			<!--android:id="@+id/progressCounter"-->
+			<!--android:layout_width="wrap_content"-->
+			<!--android:layout_height="wrap_content"-->
+			<!--android:layout_toLeftOf="@id/playControl"-->
+			<!--android:text="-2/00:00"-->
+			<!--/>-->
+
 	</RelativeLayout>
-
-	<!--<item
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:id="@+id/action_favorite"
-		android:icon="@android:drawable/ic_media_play"
-		android:title="@string/play"
-		app:showAsAction="ifRoom"
-		/>
--->
-
 
 </android.support.v7.widget.Toolbar>

@@ -14,7 +14,8 @@
 		android:background="@color/colorDarkGrey"
 		android:weightSum="12"
 		>
-		<com.android.volley.toolbox.NetworkImageView
+
+		<ImageView
 			android:id="@+id/podcast_detail_image"
 			android:layout_width="0dp"
 			android:layout_height="match_parent"
@@ -32,6 +33,7 @@
 			android:paddingBottom="@dimen/smallPadding"
 			android:gravity="center"
 			>
+
 			<TextView
 				android:id="@+id/podcast_detail_title"
 				android:layout_width="match_parent"
@@ -42,6 +44,7 @@
 				android:maxLines="1"
 				android:gravity="center_horizontal"
 				/>
+
 			<Button
 				android:id="@+id/button_subscriber"
 				android:layout_width="match_parent"
@@ -50,31 +53,36 @@
 				android:textColor="@color/black"
 				android:padding="@dimen/smallPadding"
 				android:backgroundTint="@color/buttonGrey"
+				android:visibility="invisible"
 				/>
 
 		</LinearLayout>
 
 	</LinearLayout>
 
+	<!-- Description + Episodes -->
 	<LinearLayout
+		android:id="@+id/description_and_episodes"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:orientation="vertical"
 		>
+
 		<!-- Description -->
 		<ScrollView
 			android:layout_width="match_parent"
 			android:layout_height="@dimen/podcast_detail_title_height"
 			android:orientation="vertical"
 			android:background="@color/colorBackgroundPrimary"
-
 			>
+
 			<LinearLayout
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:orientation="vertical"
 				android:padding="@dimen/smallPadding"
 				>
+
 				<TextView
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
@@ -82,12 +90,14 @@
 					android:text="@string/description"
 					android:textSize="@dimen/h4"
 					/>
+
 				<TextView
 					android:id="@+id/description"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:text="@string/lorem"
 					/>
+
 			</LinearLayout>
 
 		</ScrollView>
@@ -107,16 +117,6 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			/>
-		<!--<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content">
-			<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/lorem"
-				android:padding="@dimen/smallPadding"
-				/>
-		</LinearLayout>-->
 
 	</LinearLayout>
 

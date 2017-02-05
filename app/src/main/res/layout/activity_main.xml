@@ -21,7 +21,7 @@
 			android:background="@color/colorPrimary">
 		</android.support.design.widget.AppBarLayout>
 
-
+		<!-- The Main Content area-->
 		<RelativeLayout
 			android:id="@+id/activity_main_content"
 			android:layout_width="match_parent"
@@ -30,21 +30,15 @@
 			android:layout_marginBottom="@dimen/toolbar"
 			android:background="#FFFFFF">
 
-			<!-- Main Content -->
-			<!--<include layout="@layout/content_main"/>-->
-			<!-- Search View -->
-			<!--<include layout="@layout/view_search_results" />-->
 			<FrameLayout
 				android:id="@+id/fragment_container"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				>
-
 			</FrameLayout>
+
 		</RelativeLayout>
 
-
-		<!-- SEARCH BAR -->
 
 		<!-- BOTTOM TOOLBAR -->
 		<android.support.design.widget.AppBarLayout
@@ -59,6 +53,7 @@
 
 		</android.support.design.widget.AppBarLayout>
 
+		<!-- SEARCH BAR -->
 		<com.arlib.floatingsearchview.FloatingSearchView
 			android:id="@+id/searchView"
 			android:layout_width="match_parent"

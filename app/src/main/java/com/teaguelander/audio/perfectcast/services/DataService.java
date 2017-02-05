@@ -22,6 +22,9 @@ import com.teaguelander.audio.perfectcast.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Iterator;
 
 import static com.android.volley.Response.*;
@@ -31,7 +34,8 @@ import static com.android.volley.Response.*;
  */
 public class DataService {
 
-	public static String ITUNES_URL = "https://itunes.apple.com/search";
+	public static final String ITUNES_URL = "https://itunes.apple.com/search";
+	public static final int CACHE_SIZE = 20;
 
 	private static DataService instance;
 	private RequestQueue requestQueue;
@@ -43,11 +47,9 @@ public class DataService {
 		requestQueue = getRequestQueue();
 
 		imageLoader = new ImageLoader(requestQueue, new ImageLoader.ImageCache() {
-			private final LruCache<String, Bitmap> cache = new LruCache<String, Bitmap>(20);
+			private final LruCache<String, Bitmap> cache = new LruCache<String, Bitmap>(CACHE_SIZE);
 			@Override
-			public Bitmap getBitmap(String url) {
-				return cache.get(url);
-			}
+			public Bitmap getBitmap(String url) { return cache.get(url); }
 			@Override
 			public void putBitmap(String url, Bitmap bitmap) {
 				cache.put(url, bitmap);
@@ -77,10 +79,10 @@ public class DataService {
 		return imageLoader;
 	}
 
-	public void loadImageIntoView(String url, NetworkImageView imageView) {
-		//imageLoader.get(url, imageLoader.getImageListener(imageView, R.drawable.image_not_loaded, 0));
-		imageView.setImageUrl(url, imageLoader);
-	}
+//	public void loadImageIntoView(String url, NetworkImageView imageView) {
+//		//imageLoader.get(url, imageLoader.getImageListener(imageView, R.drawable.image_not_loaded, 0));
+//		imageView.setImageUrl(url, imageLoader);
+//	}
 
 	public void getImage(final String url, Response.Listener<Bitmap> listener) {
 		ImageRequest request = new ImageRequest(url, listener, 0, 0, null, null,

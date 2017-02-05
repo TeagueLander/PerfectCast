@@ -6,9 +6,13 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 //import android.support.design.widget.FloatingActionButton;
 //import android.support.design.widget.Snackbar;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -27,23 +31,38 @@ import com.teaguelander.audio.perfectcast.fragments.SearchResultsFragment;
 import com.teaguelander.audio.perfectcast.objects.PodcastDetail;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
 import com.teaguelander.audio.perfectcast.services.AudioService;
-import com.teaguelander.audio.perfectcast.services.DatabaseService;
-import com.teaguelander.audio.perfectcast.services.StorageService;
+import com.teaguelander.audio.perfectcast.services.PicassoService;
+import com.teaguelander.audio.perfectcast.services.TrackQueueService;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity { //implements SearchView.OnQueryTextListener, SearchView.OnCloseListener
 
+
 	//Useful everywhere
+	TrackQueueService queueService;
 	boolean isAudioPlaying = false;
 	BroadcastReceiver receiver;
 	AppCompatActivity thisActivity = this;
+	private Handler progressHandler = new Handler();
 
 	FloatingSearchView searchView;
 
 	//Control Toolbar
+	Toolbar mControlToolbar;
 	ImageButton mPlayPauseButton;
 	TextView mAudioServiceStatusTextView;
 	ProgressBar mProgressCircle;
 	ImageView mPodcastImage;
+	TextView mPodcastTitle;
+	TextView mEpisodeTitle;
+	TextView mProgressCounter;
+
+	PodcastEpisode mCurrentEpisode;
+	PodcastDetail mCurrentPodcast;
+	int mCurrentProgress = -1;
+	int mMaxProgress = -1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +73,8 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		//Allow Internet Access
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy);
-		//Open Database
-			//Doing in the application on create right now
+		//Track Queue Access
+		queueService = TrackQueueService.getInstance();
 		//FrameLayout (For Fragments)
 		FrameLayout fl = (FrameLayout) findViewById(R.id.fragment_container);
 		MainFragment mainFragment = new MainFragment();
@@ -64,13 +83,19 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		searchView = (FloatingSearchView) findViewById(R.id.searchView);
 
 		//Control toolbar
-		mPlayPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
-		mProgressCircle = (ProgressBar) findViewById(R.id.progressCircle);
-		mAudioServiceStatusTextView = (TextView) findViewById(R.id.audioServiceStatus);
-		mPodcastImage = (ImageView) findViewById(R.id.podcastImage);
+		mControlToolbar = (Toolbar) findViewById(R.id.control_toolbar);
+		mPlayPauseButton = (ImageButton) mControlToolbar.findViewById(R.id.playPauseButton);
+		mProgressCircle = (ProgressBar) mControlToolbar.findViewById(R.id.progressCircle);
+		mAudioServiceStatusTextView = (TextView) mControlToolbar.findViewById(R.id.audioServiceStatus);
+		mPodcastImage = (ImageView) mControlToolbar.findViewById(R.id.podcastImage);
+		mPodcastTitle = (TextView) mControlToolbar.findViewById(R.id.podcast_title);
+		mEpisodeTitle = (TextView) mControlToolbar.findViewById(R.id.episode_title);
+		mProgressCounter = (TextView) mControlToolbar.findViewById(R.id.progressCounter);
 
-		//TODO remove
-		searchView.setSearchText("zelda");
+		updateCurrentTrackInfo();
+
+		//TODO remove and not working (why?)
+//		searchView.setSearchText("zelda");
 
 		/*EVENT LISTENERS*/
 		//Search Submitted
@@ -101,14 +126,6 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 				String action = intent.getAction();
 				Log.d("ma", "MainActivity received Intent: " + action);
 
-//				Toast.makeText(getApplicationContext(), "Action Received: " + action, Toast.LENGTH_SHORT).show();
-//				if (action.equals(AudioService.PAUSE_ACTION) || action.equals(AudioService.STOP_ACTION) || action.equals(AudioService.DESTROY_ACTION)) {
-//					setAudioIsPlaying(false);
-//				}
-//				else if (action.equals(AudioService.PLAYING_STATUS)) {
-//					setAudioIsPlaying(true);
-//					isAudioPlaying = true;
-//				}
 				if (action.equals(AudioService.DESTROYED_STATUS)) {
 					setAudioIsPlaying(false);
 					setAudioServiceStatusText(getResources().getString(R.string.destroyed_status));
@@ -128,7 +145,13 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 				} else if (action.equals(AudioService.PLAYING_STATUS)) {
 					setAudioIsPlaying(true);
 					setAudioServiceStatusText(getResources().getString(R.string.playing_status));
+				} else if (action.equals(AudioService.NEW_TRACK_STATUS)) {
+					updateCurrentTrackInfo();
 				}
+
+				mCurrentProgress = intent.getIntExtra(AudioService.EXTRA_CURRENT_PROGRESS, 0) / 1000;
+				mMaxProgress = intent.getIntExtra(AudioService.EXTRA_MAX_PROGRESS, 0) / 1000;
+				updateProgress();
 							//|| action.equals(AudioService.ERROR_STATUS) || action.equals(AudioService.PAUSED_STATUS) || )
 			}
 		};
@@ -141,14 +164,12 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		filter.addAction(AudioService.PAUSED_STATUS);
 		filter.addAction(AudioService.ERROR_STATUS);
 		filter.addAction(AudioService.DESTROYED_STATUS);
+		filter.addAction(AudioService.NEW_TRACK_STATUS);
 
-
-		filter.addAction(AudioService.PAUSE_ACTION);
-		filter.addAction(AudioService.STOP_ACTION);
-		filter.addAction(AudioService.DESTROY_ACTION);
+//		filter.addAction(AudioService.PAUSE_ACTION);
+//		filter.addAction(AudioService.STOP_ACTION);
+//		filter.addAction(AudioService.DESTROY_ACTION);
 		registerReceiver(receiver, filter);
-
-
 
 	}
 
@@ -162,7 +183,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		super.onDestroy();
 		stopAudioService();
 		unregisterReceiver(receiver);
-		DatabaseService.getInstance(null).closeDatabase();
+//		DatabaseService.getInstance(null).closeDatabase(); //TODO Figure this out
 	}
 
 	@Override
@@ -253,10 +274,10 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 
 	private void setControlToolbarImage(PodcastDetail podcast) {
 		Context cxt = getApplicationContext();
-		StorageService ss = StorageService.getInstance(cxt);
 
 		try {
-			ss.saveImageToStorageAndView(cxt, podcast.mImageUrl, mPodcastImage);
+//			ss.saveImageToStorageAndView(podcast.mImageUrl, mPodcastImage);
+			PicassoService.loadImage(podcast.mImageUrl, mPodcastImage);
 		}catch (Exception e){
 			Log.e("ma", "Could not load image");
 			e.printStackTrace();
@@ -266,6 +287,45 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 //			String filename = URLEncoder.encode(podcast.mImageUrl, StorageService.CHARSET);
 //			mPodcastImage.setImageBitmap(BitmapFactory.decodeFile(filename));
 //		}catch(Exception e) {e.printStackTrace();}
+	}
+
+
+	//TODO update track name on toolbar
+	private void updateCurrentTrackInfo() {
+		//Get the episode on the top of the queue
+		PodcastEpisode episode = queueService.getFirstEpisode();
+
+		if (episode != null) {
+			//Updates
+			setControlToolbarImage(episode.mPodcast);
+			mPodcastTitle.setText(episode.mPodcast.mTitle);
+			mEpisodeTitle.setText(episode.mTitle);
+		}
+	}
+
+	private void updateProgress() {
+		mProgressCounter.setText(DateUtils.formatElapsedTime(mCurrentProgress) + "/" + DateUtils.formatElapsedTime(mMaxProgress));
+
+		progressHandler.removeCallbacks(mUpdateProgressTask);
+		if (isAudioPlaying) {
+			progressHandler.postDelayed(mUpdateProgressTask, 1000);
+		} else {
+
+		}
+	}
+
+	private Runnable mUpdateProgressTask = new Runnable() {
+		@Override
+		public void run() {
+			mCurrentProgress += 1;
+			mProgressCounter.setText(DateUtils.formatElapsedTime(mCurrentProgress) + "/" + DateUtils.formatElapsedTime(mMaxProgress));
+			progressHandler.postDelayed(mUpdateProgressTask, 1000);
+		}
+	};
+
+
+	public TrackQueueService getQueueService() {
+		return queueService;
 	}
 
 }

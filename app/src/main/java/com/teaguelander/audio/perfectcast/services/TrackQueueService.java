@@ -1,12 +1,8 @@
 package com.teaguelander.audio.perfectcast.services;
 
-import android.content.Context;
-import android.provider.Settings;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
-import com.teaguelander.audio.perfectcast.services.DatabaseService;
 
 import java.util.ArrayList;
 
@@ -23,11 +19,11 @@ public class TrackQueueService {
 
 	private static TrackQueueService instance;
 	private ArrayList<PodcastEpisode> queueItems;
-	private DatabaseService mDatabase;
+	private DatabaseService mDatabaseService;
 
 	private TrackQueueService() {
-		mDatabase = DatabaseService.getInstance(null);
-		queueItems = mDatabase.getTrackQueue();
+		mDatabaseService = DatabaseService.getInstance(null);
+		queueItems = mDatabaseService.getTrackQueue();
 	}
 
 	public static synchronized TrackQueueService getInstance() {
@@ -40,10 +36,12 @@ public class TrackQueueService {
 // GETTING
 	public PodcastEpisode getFirstEpisode() {
 		Log.d("tqs", "Getting first episode in queue");
-		return queueItems.get(0);
+		if (queueItems.size() > 0) {
+			return queueItems.get(0);
+		}else {
+			return null;
+		}
 	}
-
-
 
 
 //MODIFYING
@@ -55,10 +53,11 @@ public class TrackQueueService {
 		}
 		Log.d("tqs", "----------------");
 
-		mDatabase.addEpisode(episode);
+		episode.setIds(mDatabaseService.addEpisode(episode),-1);
 
 //		Remove episode from the position it was in
 		for (PodcastEpisode item : queueItems) {
+			Log.d("tqs", "maybe remove? " + episode.mId + " " + item.mId);
 			if (episode.mId == item.mId) {
 				queueItems.remove(item);
 				break;
@@ -76,7 +75,7 @@ public class TrackQueueService {
 			Log.d("tqs", "Podcast: " + item.mPodcast.mTitle + " Episode: " + item.mTitle + " ID: " + item.mId);
 		}
 
-		mDatabase.updateTrackQueue(queueItems);
+		mDatabaseService.updateTrackQueue(queueItems);
 	}
 
 	public void addEpisodeAtEnd(PodcastEpisode episode) {
@@ -86,7 +85,16 @@ public class TrackQueueService {
 	//TODO may want to remove by PodcastEpisode
 	public void removeEpisode(int position) {
 		queueItems.remove(position);
-		mDatabase.updateTrackQueue(queueItems);
+		mDatabaseService.updateTrackQueue(queueItems);
+	}
+
+	public void updateEpisodeProgress(PodcastEpisode episode, long progress) {
+		episode.setProgress(progress);
+		mDatabaseService.updateEpisodeProgress(episode);
+	}
+
+	public ArrayList<PodcastEpisode> getQueueItems() {
+		return queueItems;
 	}
 
 }

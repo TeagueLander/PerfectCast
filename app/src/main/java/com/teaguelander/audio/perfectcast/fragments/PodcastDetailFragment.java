@@ -2,7 +2,6 @@ package com.teaguelander.audio.perfectcast.fragments;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,18 +12,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Response;
-import com.android.volley.toolbox.NetworkImageView;
 import com.teaguelander.audio.perfectcast.R;
 import com.teaguelander.audio.perfectcast.objects.PodcastDetail;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
 import com.teaguelander.audio.perfectcast.objects.RowItemClickListener;
 import com.teaguelander.audio.perfectcast.recycler.EpisodeLinearAdapter;
 import com.teaguelander.audio.perfectcast.services.DataService;
-import com.teaguelander.audio.perfectcast.services.StorageService;
+import com.teaguelander.audio.perfectcast.services.PicassoService;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -40,19 +39,21 @@ public class PodcastDetailFragment extends Fragment implements RowItemClickListe
 	String mFeedXmlDataset;
 	View mView;
 	PodcastDetail mPodcastDetail;
+	boolean mNoEpisodes = false;
 
 	private RecyclerView mEpisodesRecycler;
 	private LinearLayoutManager mEpisodesLinearLayoutManager;
 	private EpisodeLinearAdapter mEpisodeLinearAdapter;
 
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+
 		//IF NO feedUrl or no feedUrl response then just use XML
-		Log.d("pdf", getArguments().getString("feedUrl"));
+//		Log.d("pdf", getArguments().getString("feedUrl"));
 		mFeedUrl = getArguments().getString("feedUrl");
+		mNoEpisodes = getArguments().getBoolean("noEpisodes");
 
 		if (mFeedUrl != null) {
 			Log.d("pdf", "Requesting Xml");
@@ -71,6 +72,11 @@ public class PodcastDetailFragment extends Fragment implements RowItemClickListe
 		View v = inflater.inflate(R.layout.view_podcast_detail, container, false);
 
 		mView = v;
+
+		if (getArguments().getBoolean("podcastSet")) {
+			setupView();
+		}
+
 		return mView;
 	}
 
@@ -104,38 +110,48 @@ public class PodcastDetailFragment extends Fragment implements RowItemClickListe
 		titleView.setMarqueeRepeatLimit(5);
 		titleView.setSelected(true);
 		//Podcast Image
-		NetworkImageView imageView = (NetworkImageView) mView.findViewById(R.id.podcast_detail_image);
+		ImageView imageView = (ImageView) mView.findViewById(R.id.podcast_detail_image);
 		if (mPodcastDetail.mImageUrl != null) {
-			DataService.getInstance(getContext()).loadImageIntoView(mPodcastDetail.mImageUrl, imageView);
+//			DataService.getInstance(getContext()).loadImageIntoView(mPodcastDetail.mImageUrl, imageView);
+			PicassoService.loadImage(mPodcastDetail.mImageUrl, imageView);
 		}
+
 		//Subscribe Button
 		Button subButton = (Button) mView.findViewById(R.id.button_subscriber);
 		refreshSubStatus();
+		subButton.setVisibility(View.VISIBLE);
 		subButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mPodcastDetail.setSubscribed(!mPodcastDetail.getSubscribed());
+				mPodcastDetail.setSubscribedAndUpdate(!mPodcastDetail.mSubscribed);
 				refreshSubStatus();
 			}
 		});
-		//Description Area
-		TextView descriptionView = (TextView) mView.findViewById(R.id.description);
-		if (mPodcastDetail.mDescription != null) { descriptionView.setText(mPodcastDetail.mDescription); }
-		//Episodes
-		mEpisodesRecycler = (RecyclerView) mView.findViewById(R.id.episodesRecycler);
-		mEpisodesRecycler.setHasFixedSize(true);
-//		mEpisodesRecycler.setNestedScrollingEnabled(false);
-		mEpisodesLinearLayoutManager= new LinearLayoutManager(getContext());
-		mEpisodesLinearLayoutManager.setOrientation(LinearLayout.VERTICAL);
-		mEpisodesRecycler.setLayoutManager(mEpisodesLinearLayoutManager);
-		mEpisodeLinearAdapter = new EpisodeLinearAdapter(mPodcastDetail.mEpisodes, this);
-		mEpisodesRecycler.setAdapter(mEpisodeLinearAdapter);
 
+		//On screen like UpNext, we want to show just the title, image, and sub button
+		if (mNoEpisodes == false) {
+			//Description Area
+			TextView descriptionView = (TextView) mView.findViewById(R.id.description);
+			if (mPodcastDetail.mDescription != null) { descriptionView.setText(mPodcastDetail.mDescription); }
+
+			//Episodes
+			mEpisodesRecycler = (RecyclerView) mView.findViewById(R.id.episodesRecycler);
+			mEpisodesRecycler.setHasFixedSize(true);
+			//		mEpisodesRecycler.setNestedScrollingEnabled(false);
+			mEpisodesLinearLayoutManager = new LinearLayoutManager(getContext());
+			mEpisodesLinearLayoutManager.setOrientation(LinearLayout.VERTICAL);
+			mEpisodesRecycler.setLayoutManager(mEpisodesLinearLayoutManager);
+			mEpisodeLinearAdapter = new EpisodeLinearAdapter(mPodcastDetail.mEpisodes, EpisodeLinearAdapter.PODCAST_DETAIL_MODE, this);
+			mEpisodesRecycler.setAdapter(mEpisodeLinearAdapter);
+		} else {
+			View description_and_episodes =  mView.findViewById(R.id.description_and_episodes);
+			description_and_episodes.setVisibility(View.GONE);
+		}
 	}
 
 	private void refreshSubStatus() {
 		Button subButton = (Button) mView.findViewById(R.id.button_subscriber);
-		if (mPodcastDetail.getSubscribed() == true) {
+		if (mPodcastDetail.mSubscribed == true) {
 			subButton.setBackgroundTintList(  ColorStateList.valueOf( getResources().getColor(R.color.buttonSelected, null) )  );
 			subButton.setTextColor(getResources().getColor(R.color.textColorPrimary, null));
 			subButton.setText(R.string.button_subscribed);
@@ -146,13 +162,17 @@ public class PodcastDetailFragment extends Fragment implements RowItemClickListe
 		}
 	}
 
+	public void setPodcast(PodcastDetail podcast) {
+		mPodcastDetail = podcast;
+	}
+
 
 	@Override
 	public void onRowItemClicked(String feedUrl) {}
 	@Override
 	public void onRowItemClicked(PodcastEpisode episode) {
 		Log.d("pdf", "Podcast Episode Clicked! " + episode.mTitle);
-		NetworkImageView image = (NetworkImageView) mView.findViewById(R.id.podcast_detail_image);
+//		ImageView image = (ImageView) mView.findViewById(R.id.podcast_detail_image); //TODO get image from here?
 
 		//Log.d("pdf", "Image resource: " + image.getResources());
 //		StorageService.getInstance(getContext()).saveImageToStorage(getContext(), episode.mPodcast.mImageUrl);
