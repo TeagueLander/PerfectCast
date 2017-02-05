@@ -14,6 +14,8 @@ import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
 import com.teaguelander.audio.perfectcast.objects.RowItemClickListener;
 import com.teaguelander.audio.perfectcast.services.PicassoService;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
+
 import java.util.ArrayList;
 
 import static com.teaguelander.audio.perfectcast.PerfectCastApp.basicDateFormatter;
@@ -39,6 +41,7 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 		public TextView mDurationTextView;
 		public TextView mSizeTextView;
 		public TextView mPubDateTextView;
+		public TextView mProgressPercentTextView;
 		public String mUrl;
 
 		public ViewHolder(View v) {
@@ -48,6 +51,8 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 			mTitleTextView = (TextView) v.findViewById(R.id.episode_title);
 			mDurationTextView = (TextView) v.findViewById(R.id.episode_duration);
 			mPubDateTextView = (TextView) v.findViewById(R.id.episode_pubdate);
+			mProgressPercentTextView = (TextView) v.findViewById(R.id.episode_progress_percent);
+			mSizeTextView = (TextView) v.findViewById(R.id.episode_size);
 		}
 	}
 
@@ -82,7 +87,9 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 		}
 
 		holder.mTitleTextView.setText(episode.mTitle);
-		holder.mDurationTextView.setText( episode.mDuration );
+		holder.mDurationTextView.setText(DurationFormatUtils.formatDuration(episode.mProgress, "H:mm:ss", true) + "/" + episode.mDuration);
+		holder.mProgressPercentTextView.setText(episode.mProgressPercent + "% Complete" );
+		holder.mSizeTextView.setText(Long.toString(episode.mBytes/1000000) + "MB");
 		if (episode.mPubDate != null) {
 			holder.mPubDateTextView.setText(basicDateFormatter.format(episode.mPubDate));
 		}

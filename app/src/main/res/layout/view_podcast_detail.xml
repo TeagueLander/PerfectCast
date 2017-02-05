@@ -4,8 +4,9 @@
 			android:orientation="vertical"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@android:color/white"
 	>
+	<!--android:background="@android:color/white"-->
+
 
 	<!-- Name and Image area -->
 	<LinearLayout
@@ -60,7 +61,7 @@
 
 	</LinearLayout>
 
-	<!-- Description + Episodes -->
+	<!-- Description + Episodes (Gone if noEpisodes is set to false) -->
 	<LinearLayout
 		android:id="@+id/description_and_episodes"
 		android:layout_width="match_parent"

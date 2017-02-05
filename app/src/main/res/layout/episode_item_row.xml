@@ -43,6 +43,20 @@
 			android:layout_height="wrap_content"
 			android:layout_below="@id/episode_duration"
 			/>
+		<TextView
+			android:id="@+id/episode_progress_percent"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_below="@id/episode_title"
+			/>
+		<TextView
+			android:id="@+id/episode_size"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_below="@id/episode_progress_percent"
+			/>
 		<!--Put in drawable progressbar here -->
 	</RelativeLayout>
 

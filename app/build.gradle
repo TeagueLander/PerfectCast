@@ -36,6 +36,8 @@ dependencies {
 	compile 'com.google.code.gson:gson:2.2.4'
 	compile 'com.squareup.picasso:picasso:2.5.2'
 
+	compile 'org.apache.commons:commons-lang3:3.4' //For Duration Parsing
+
 	//JSOUP
 //    compile 'org.jsoup:jsoup:1.10.2'
 }

@@ -19,12 +19,14 @@ public class PerfectCastApp extends Application {
 	private static Context mContext;
 	public static SimpleDateFormat rssDateFormatter;
 	public static SimpleDateFormat basicDateFormatter;
+	public static SimpleDateFormat durationFormatter;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		rssDateFormatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
 		basicDateFormatter = new SimpleDateFormat("dd MMM yyyy hh:mm a");
+//		durationFormatter = new SimpleDateFormat("HH:mm:ss");
 
 		mContext = getApplicationContext();
 		DataService.getInstance(mContext);
