@@ -68,17 +68,26 @@ public class UpNextFragment extends Fragment implements RowItemClickListener {
 	@Override
 	public void onRowItemClicked(PodcastEpisode episode) {
 		Log.d("pdf", "Podcast Episode Clicked! " + episode.mTitle);
-		ImageView image = (ImageView) mView.findViewById(R.id.podcast_detail_image);
 
-		//Log.d("pdf", "Image resource: " + image.getResources());
-//		StorageService.getInstance(getContext()).saveImageToStorage(getContext(), episode.mPodcast.mImageUrl);
+		//Podcast Detail Fragment
+		PodcastDetailFragment podcastDetailFragment = new PodcastDetailFragment();
+		Bundle args = new Bundle();
+		args.putBoolean("podcastSet", true);
+		args.putBoolean("noEpisodes", true);
+		podcastDetailFragment.setArguments(args);
+		podcastDetailFragment.setPodcast(episode.mPodcast);
 
+		//Episode Detail Fragment
 		EpisodeDetailFragment episodeDetail = new EpisodeDetailFragment();
 		episodeDetail.setEpisode(episode);
-		FragmentTransaction ft = getFragmentManager().beginTransaction();
+
+		Log.d("pdf", "Podcast Episode Clicked! " + episode.mTitle);
+		FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+		ft.add(R.id.fragment_container, podcastDetailFragment);
 		ft.add(R.id.fragment_container, episodeDetail);
 		ft.addToBackStack(null);
 		ft.commit();
+		Log.d("pdf", "Podcast Episode Clicked! " + episode.mTitle);
 
 	}
 }

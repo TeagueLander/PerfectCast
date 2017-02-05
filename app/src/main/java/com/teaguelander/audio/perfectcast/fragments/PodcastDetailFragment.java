@@ -39,19 +39,21 @@ public class PodcastDetailFragment extends Fragment implements RowItemClickListe
 	String mFeedXmlDataset;
 	View mView;
 	PodcastDetail mPodcastDetail;
+	boolean mNoEpisodes = false;
 
 	private RecyclerView mEpisodesRecycler;
 	private LinearLayoutManager mEpisodesLinearLayoutManager;
 	private EpisodeLinearAdapter mEpisodeLinearAdapter;
 
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+
 		//IF NO feedUrl or no feedUrl response then just use XML
-		Log.d("pdf", getArguments().getString("feedUrl"));
+//		Log.d("pdf", getArguments().getString("feedUrl"));
 		mFeedUrl = getArguments().getString("feedUrl");
+		mNoEpisodes = getArguments().getBoolean("noEpisodes");
 
 		if (mFeedUrl != null) {
 			Log.d("pdf", "Requesting Xml");
@@ -70,6 +72,11 @@ public class PodcastDetailFragment extends Fragment implements RowItemClickListe
 		View v = inflater.inflate(R.layout.view_podcast_detail, container, false);
 
 		mView = v;
+
+		if (getArguments().getBoolean("podcastSet")) {
+			setupView();
+		}
+
 		return mView;
 	}
 
@@ -121,20 +128,25 @@ public class PodcastDetailFragment extends Fragment implements RowItemClickListe
 			}
 		});
 
-		//Description Area
-		TextView descriptionView = (TextView) mView.findViewById(R.id.description);
-		if (mPodcastDetail.mDescription != null) { descriptionView.setText(mPodcastDetail.mDescription); }
+		//On screen like UpNext, we want to show just the title, image, and sub button
+		if (mNoEpisodes == false) {
+			//Description Area
+			TextView descriptionView = (TextView) mView.findViewById(R.id.description);
+			if (mPodcastDetail.mDescription != null) { descriptionView.setText(mPodcastDetail.mDescription); }
 
-		//Episodes
-		mEpisodesRecycler = (RecyclerView) mView.findViewById(R.id.episodesRecycler);
-		mEpisodesRecycler.setHasFixedSize(true);
-//		mEpisodesRecycler.setNestedScrollingEnabled(false);
-		mEpisodesLinearLayoutManager= new LinearLayoutManager(getContext());
-		mEpisodesLinearLayoutManager.setOrientation(LinearLayout.VERTICAL);
-		mEpisodesRecycler.setLayoutManager(mEpisodesLinearLayoutManager);
-		mEpisodeLinearAdapter = new EpisodeLinearAdapter(mPodcastDetail.mEpisodes, EpisodeLinearAdapter.PODCAST_DETAIL_MODE, this);
-		mEpisodesRecycler.setAdapter(mEpisodeLinearAdapter);
-
+			//Episodes
+			mEpisodesRecycler = (RecyclerView) mView.findViewById(R.id.episodesRecycler);
+			mEpisodesRecycler.setHasFixedSize(true);
+			//		mEpisodesRecycler.setNestedScrollingEnabled(false);
+			mEpisodesLinearLayoutManager = new LinearLayoutManager(getContext());
+			mEpisodesLinearLayoutManager.setOrientation(LinearLayout.VERTICAL);
+			mEpisodesRecycler.setLayoutManager(mEpisodesLinearLayoutManager);
+			mEpisodeLinearAdapter = new EpisodeLinearAdapter(mPodcastDetail.mEpisodes, EpisodeLinearAdapter.PODCAST_DETAIL_MODE, this);
+			mEpisodesRecycler.setAdapter(mEpisodeLinearAdapter);
+		} else {
+			View description_and_episodes =  mView.findViewById(R.id.description_and_episodes);
+			description_and_episodes.setVisibility(View.GONE);
+		}
 	}
 
 	private void refreshSubStatus() {
@@ -150,13 +162,17 @@ public class PodcastDetailFragment extends Fragment implements RowItemClickListe
 		}
 	}
 
+	public void setPodcast(PodcastDetail podcast) {
+		mPodcastDetail = podcast;
+	}
+
 
 	@Override
 	public void onRowItemClicked(String feedUrl) {}
 	@Override
 	public void onRowItemClicked(PodcastEpisode episode) {
 		Log.d("pdf", "Podcast Episode Clicked! " + episode.mTitle);
-		ImageView image = (ImageView) mView.findViewById(R.id.podcast_detail_image);
+//		ImageView image = (ImageView) mView.findViewById(R.id.podcast_detail_image); //TODO get image from here?
 
 		//Log.d("pdf", "Image resource: " + image.getResources());
 //		StorageService.getInstance(getContext()).saveImageToStorage(getContext(), episode.mPodcast.mImageUrl);

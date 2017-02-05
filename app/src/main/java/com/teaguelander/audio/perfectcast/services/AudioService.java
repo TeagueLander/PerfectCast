@@ -222,10 +222,12 @@ public class AudioService extends Service {
 
 	public void rewindAudio() {
 		mp.seekTo(mp.getCurrentPosition() - SKIP_LENGTH);
+		updateEpisode();
 	}
 
 	public void skipAudio() {
 		mp.seekTo(mp.getCurrentPosition() + SKIP_LENGTH);
+		updateEpisode();
 	}
 
 //	private void savePreferences() {
