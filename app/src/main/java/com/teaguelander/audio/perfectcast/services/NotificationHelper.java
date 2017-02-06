@@ -22,7 +22,7 @@ import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
 
 public class NotificationHelper {
 
-	private static int ICON_APP = R.mipmap.ic_launcher;
+	private static int ICON_APP = R.drawable.ic_tempicon;
 
 	AudioService as;
 	int mNotificationId = -1; //notificationID allows you to update the notification later on.

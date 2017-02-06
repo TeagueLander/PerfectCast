@@ -358,7 +358,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 
 		mDatabase.update(TABLE_PODCASTS,
 						 values,
-						 PodcastDetail.KEY_SUBSCRIBED + " = ?",
+						 PodcastDetail.KEY_ID + " = ?",
 						 new String[] { Long.toString(podcast.mId) }
 		);
 

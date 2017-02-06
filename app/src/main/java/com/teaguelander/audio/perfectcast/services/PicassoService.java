@@ -17,7 +17,7 @@ public class PicassoService {
 
 	private static PicassoService instance;
 	private static Context mContext;
-	private static int IMAGE_SIZE = 200;
+	private static int IMAGE_SIZE = 256;
 
 	private PicassoService(Context context) {
 		mContext = context;

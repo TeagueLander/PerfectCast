@@ -34,6 +34,8 @@ import com.teaguelander.audio.perfectcast.services.AudioService;
 import com.teaguelander.audio.perfectcast.services.PicassoService;
 import com.teaguelander.audio.perfectcast.services.TrackQueueService;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -293,21 +295,23 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 	//TODO update track name on toolbar
 	private void updateCurrentTrackInfo() {
 		//Get the episode on the top of the queue
-		PodcastEpisode episode = queueService.getFirstEpisode();
+		mCurrentEpisode = queueService.getFirstEpisode();
 
-		if (episode != null) {
+		if (mCurrentEpisode != null) {
 			//Updates
-			setControlToolbarImage(episode.mPodcast);
-			mPodcastTitle.setText(episode.mPodcast.mTitle);
-			mEpisodeTitle.setText(episode.mTitle);
+			setControlToolbarImage(mCurrentEpisode.mPodcast);
+			mPodcastTitle.setText(mCurrentEpisode.mPodcast.mTitle);
+			mEpisodeTitle.setText(mCurrentEpisode.mTitle);
+			mProgressCounter.setText(DurationFormatUtils.formatDuration(mCurrentEpisode.mProgress, "H:mm:ss", true) + "/" + mCurrentEpisode.mDuration);
+			Log.d("ma", "Got progress " + mCurrentEpisode.mDuration);
 		}
 	}
 
 	private void updateProgress() {
-		mProgressCounter.setText(DateUtils.formatElapsedTime(mCurrentProgress) + "/" + DateUtils.formatElapsedTime(mMaxProgress));
+		mProgressCounter.setText(DateUtils.formatElapsedTime(mCurrentProgress) + "/" + mCurrentEpisode.mDuration);
 
 		progressHandler.removeCallbacks(mUpdateProgressTask);
-		if (isAudioPlaying) {
+		if (isAudioPlaying == true) {
 			progressHandler.postDelayed(mUpdateProgressTask, 1000);
 		} else {
 
@@ -318,7 +322,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		@Override
 		public void run() {
 			mCurrentProgress += 1;
-			mProgressCounter.setText(DateUtils.formatElapsedTime(mCurrentProgress) + "/" + DateUtils.formatElapsedTime(mMaxProgress));
+			mProgressCounter.setText(DateUtils.formatElapsedTime(mCurrentProgress) + "/" + mCurrentEpisode.mDuration); //DateUtils.formatElapsedTime(mMaxProgress)); TODO mMaxProgress is probably better...
 			progressHandler.postDelayed(mUpdateProgressTask, 1000);
 		}
 	};
