@@ -31,7 +31,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 	private static Context mContext;
 	private static SQLiteDatabase mDatabase;
 
-	private static final int DATABASE_VERSION = 30;
+	private static final int DATABASE_VERSION = 31;
 	private static final String DATABASE_NAME = "PerfectCast";
 	private static final String TABLE_EPISODES = "episodes";
 	private static final String TABLE_PODCASTS = "podcasts";
@@ -113,11 +113,14 @@ public class DatabaseService extends SQLiteOpenHelper {
 								 PodcastDetail.KEY_URL + " = ?",
 								 new String[] { podcast.mUrl },
 								 null, null, null);
-		if (cursor != null) { //Podcast already exists
+
+		if (cursor != null) { //Podcast already exists so UPDATE
 			Log.d("dbs", "Cursor not null!");
-			//TODO We should do an update statement
+			//TODO We should do an update statement TITLE, URLS, etc
 			cursor.moveToFirst();
 			if (cursor.getCount() > 0) {
+				updatePodcastXml(podcast); //Update with the latest XML that we have
+
 				return cursor.getLong(0);
 			}
 		}
@@ -235,7 +238,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 
 		PodcastEpisode episode = null;
 		try {
-			episode = getPodcastFromCursor(cursor);
+			episode = getEpisodeFromCursor(cursor);
 
 		} catch (CursorIndexOutOfBoundsException e) {
 			Log.d("dbs", "No next episode to find");
@@ -295,7 +298,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 
 		while (cursor.moveToNext()) {
 
-			PodcastEpisode episode = getPodcastFromCursor(cursor);
+			PodcastEpisode episode = getEpisodeFromCursor(cursor);
 			trackQueue[cursor.getPosition()] = episode;
 			Log.d("dbs", "Queue item " + cursor.getPosition() + ". Episode: " + episode.toString());
 		}
@@ -304,12 +307,13 @@ public class DatabaseService extends SQLiteOpenHelper {
 	}
 
 	//Cursor Iterating
-	private PodcastEpisode getPodcastFromCursor(Cursor cursor) {
+	private PodcastEpisode getEpisodeFromCursor(Cursor cursor) {
 
 		PodcastDetail podcast = getPodcast(cursor.getInt(1)); //TODO implement a podcast cache so we dont lookup and create the same podcast a bunch of times!
 
 		Date pubDate = null;
 		String date = cursor.getString(6);
+
 		if (date != null) {
 			try { pubDate = rssDateFormatter.parse(date); } catch (ParseException e) { e.printStackTrace(); }
 		}
@@ -327,8 +331,41 @@ public class DatabaseService extends SQLiteOpenHelper {
 		return episode;
 	}
 
+	private PodcastDetail getPodcastFromCursor(Cursor cursor) {
+		PodcastDetail podcast = new PodcastDetail(cursor.getString(1),
+												  cursor.getString(2),
+												  cursor.getString(3),
+												  cursor.getString(4),
+												  cursor.getInt(5) == 1,
+												  cursor.getString(6));
+		podcast.setId(cursor.getLong(0));
+
+		return podcast;
+	}
+
 
 	//Podcast Gets//
+
+	public ArrayList<PodcastDetail> getSubscribedPodcasts() {
+		Cursor cursor = mDatabase.query(TABLE_PODCASTS,
+										PodcastDetail.COLUMNS,
+										PodcastDetail.KEY_SUBSCRIBED + " = ?",
+										new String[] { Integer.toString(1) },
+										null, null, null);
+
+		if (cursor == null) {
+			return null;
+		}
+
+		PodcastDetail[] subbedPodcasts = new PodcastDetail[cursor.getCount()];
+
+		while (cursor.moveToNext()) {
+			PodcastDetail podcast = getPodcastFromCursor(cursor);
+			subbedPodcasts[cursor.getPosition()] = podcast;
+		}
+
+		return new ArrayList<PodcastDetail>(Arrays.asList(subbedPodcasts));
+	}
 
 	public void checkPodcastParameters(PodcastDetail podcast) {
 		Cursor cursor = mDatabase.query(TABLE_PODCASTS,
@@ -362,6 +399,29 @@ public class DatabaseService extends SQLiteOpenHelper {
 						 new String[] { Long.toString(podcast.mId) }
 		);
 
+	}
+
+	public void updatePodcastXml(PodcastDetail podcast) {
+		ContentValues values = new ContentValues();
+		values.put(PodcastDetail.KEY_XML, podcast.mXml);
+
+		mDatabase.update(TABLE_PODCASTS,
+						 values,
+						 PodcastDetail.KEY_ID + " = ?",
+						 new String[] { Long.toString(podcast.mId) }
+		);
+	}
+
+	public long getEpisodeProgress(PodcastEpisode episode) {
+		Cursor cursor = mDatabase.query(TABLE_EPISODES,
+										new String[] { PodcastEpisode.KEY_PROGRESS },
+										PodcastEpisode.KEY_URL + " = ?",
+										new String[] { episode.mUrl },
+										null, null, null);
+		if (cursor.moveToFirst()) {
+			return cursor.getLong(0);
+		}
+		return 0;
 	}
 
 }

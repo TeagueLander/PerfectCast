@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-					android:orientation="vertical"
-					android:layout_width="match_parent"
-					android:layout_height="match_parent"
-					android:background="@android:color/holo_green_dark"
-					>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/colorDarkGrey"
+	>
 
-	<TextView
+	<!--<TextView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:text="Second View"
@@ -16,6 +16,117 @@
 		android:textStyle="bold"
 		android:layout_centerVertical="true"
 		android:layout_centerHorizontal="true"
-		android:id="@+id/textView" />
+		android:id="@+id/textView"
+		/>-->
 
-</LinearLayout>
+	<TextView
+		android:id="@+id/podcastTitle"
+		android:layout_width="match_parent"
+		android:layout_height="64dp"
+		android:textSize="@dimen/h0"
+		android:layout_centerHorizontal="true"
+		android:gravity="center"
+		android:maxLines="1"
+		android:ellipsize="end"
+		android:textColor="@color/textColorPrimaryDark"
+		android:padding="@dimen/smallPadding"
+		/>
+	<!--<TextView
+		android:id="@+id/episodeTitle"
+		android:layout_width="match_parent"
+		android:layout_height="48dp"
+		android:textSize="@dimen/h1"
+		android:layout_centerHorizontal="true"
+		android:gravity="center"
+		android:maxLines="1"
+		android:ellipsize="end"
+		android:textColor="@color/textColorPrimaryDark"
+		android:padding="@dimen/smallPadding"
+		android:layout_below="@id/podcastTitle"
+		/>-->
+
+	<LinearLayout
+		android:id="@+id/control_area"
+		android:layout_width="match_parent"
+		android:layout_height="128dp"
+		android:layout_alignParentBottom="true"
+		android:orientation="vertical"
+		>
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="64dp"
+			android:orientation="horizontal"
+			android:gravity="center"
+			android:layout_weight="3"
+			>
+			<Space
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				/>
+			<android.support.design.widget.FloatingActionButton
+				android:id="@+id/jumpBackwardButton"
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="2"
+				android:src="@android:drawable/ic_media_rew"
+				/>
+			<Space
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				/>
+			<android.support.design.widget.FloatingActionButton
+				android:id="@+id/playPauseButton"
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:src="@android:drawable/ic_media_play"
+				android:layout_weight="2"
+				/>
+			<Space
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				/>
+			<android.support.design.widget.FloatingActionButton
+				android:id="@+id/jumpForwardButton"
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:src="@android:drawable/ic_media_ff"
+				android:layout_weight="2"
+				/>
+			<Space
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				/>
+		</LinearLayout>
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="64dp"
+			>
+			<SeekBar
+				android:id="@+id/seekbar"
+				android:layout_width="match_parent"
+				android:layout_height="64dp"
+				android:progress="0"
+				android:secondaryProgress="0"
+				/>
+		</LinearLayout>
+	</LinearLayout>
+
+	<ImageView
+		android:id="@+id/podcastImage"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:src="@drawable/ic_tempicon"
+		android:layout_centerHorizontal="true"
+		android:layout_below="@id/podcastTitle"
+		android:layout_above="@id/control_area"
+		android:scaleX="1"
+		android:scaleY="1"
+		android:padding="24dp"
+		/><!-- maybe enlarge padding a bit -->
+	<!--android:layout_marginBottom="128dp"-->
+
+</RelativeLayout>

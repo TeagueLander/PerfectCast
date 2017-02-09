@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="@dimen/podcast_item_row_height"
+	android:layout_height="@dimen/podcast_item_row_height"
+	android:id="@+id/item_card"
+	>
+
+	<ImageView
+		android:id="@+id/item_image"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:adjustViewBounds="true"
+		/>
+
+</LinearLayout>

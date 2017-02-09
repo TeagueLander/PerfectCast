@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.teaguelander.audio.perfectcast.R;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
-import com.teaguelander.audio.perfectcast.objects.RowItemClickListener;
+import com.teaguelander.audio.perfectcast.objects.ItemClickListener;
 import com.teaguelander.audio.perfectcast.services.PicassoService;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
@@ -31,7 +31,7 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 
 	private ArrayList<PodcastEpisode> mEpisodes;
 	private int mEpisodesCount;
-	private RowItemClickListener mItemClickListener;
+	private ItemClickListener mItemClickListener;
 	private String mMode;
 
 	public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -56,7 +56,7 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 		}
 	}
 
-	public EpisodeLinearAdapter(ArrayList<PodcastEpisode> episodes, String mode, RowItemClickListener itemClickListener) {
+	public EpisodeLinearAdapter(ArrayList<PodcastEpisode> episodes, String mode, ItemClickListener itemClickListener) {
 		Log.d("edf", "EPISODES LINEARA CREATED");
 		mEpisodesCount = episodes.size();
 		mEpisodes = episodes;
@@ -97,7 +97,7 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 		holder.mView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mItemClickListener.onRowItemClicked(episode);
+				mItemClickListener.onItemClicked(episode);
 			}
 		});
 	}
@@ -105,6 +105,14 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 	@Override
 	public int getItemCount() {
 		return mEpisodesCount;
+	}
+
+	public void removeEpisodeAt(int position) {
+		//REMOVE EPISODE CALLED!
+//		mEpisodes.remove(position); MAYBE IT DOESNT NEED TO BE REMOVED BECAUSE MEPISODES IS SHALLOW COPIED
+		mEpisodesCount = mEpisodes.size();
+		notifyItemRemoved(position);
+		notifyItemRangeChanged(position, mEpisodesCount);
 	}
 
 }

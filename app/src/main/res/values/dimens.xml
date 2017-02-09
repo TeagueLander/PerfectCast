@@ -10,6 +10,7 @@
 
 	<dimen name="podcast_item_row_height">80dp</dimen>
 
+	<dimen name="h0">30dp</dimen>
 	<dimen name="h1">24dp</dimen>
 	<dimen name="h2">22dp</dimen>
 	<dimen name="h3">18dp</dimen>

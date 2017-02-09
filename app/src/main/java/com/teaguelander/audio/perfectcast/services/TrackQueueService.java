@@ -97,4 +97,12 @@ public class TrackQueueService {
 		return queueItems;
 	}
 
+	public void onEpisodeFinished() {
+		PodcastEpisode episode = queueItems.get(0);
+
+		episode.setProgress(episode.mMaxProgress);
+//		mDatabaseService.updateEpisodeProgress(episode); Done in playAudio
+
+		removeEpisode(0);
+	}
 }

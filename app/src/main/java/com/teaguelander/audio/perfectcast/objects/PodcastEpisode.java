@@ -2,6 +2,8 @@ package com.teaguelander.audio.perfectcast.objects;
 
 import android.util.Log;
 
+import com.teaguelander.audio.perfectcast.services.DatabaseService;
+
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import java.text.ParseException;
@@ -96,6 +98,11 @@ public class PodcastEpisode {
 		//Get ProgressPercent
 		mProgressPercent = (long) (((double)mProgress / mMaxProgress)*100);
 		Log.d("pe", "pp: " + mProgressPercent + " p: " + mProgress + " mp " + mMaxProgress);
+	}
+
+	public void getProgressFromDatabase() {
+		long progress = DatabaseService.getInstance(null).getEpisodeProgress(this);
+		setProgress(progress);
 	}
 
 	@Override

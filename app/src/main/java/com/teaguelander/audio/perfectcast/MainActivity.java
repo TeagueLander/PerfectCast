@@ -149,6 +149,9 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 					setAudioServiceStatusText(getResources().getString(R.string.playing_status));
 				} else if (action.equals(AudioService.NEW_TRACK_STATUS)) {
 					updateCurrentTrackInfo();
+				} else if (action.equals(AudioService.COMPLETED_STATUS)) {
+					setAudioIsPlaying(false);
+					setAudioServiceStatusText(getResources().getString(R.string.completed_string));
 				}
 
 				mCurrentProgress = intent.getIntExtra(AudioService.EXTRA_CURRENT_PROGRESS, 0) / 1000;
@@ -167,6 +170,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		filter.addAction(AudioService.ERROR_STATUS);
 		filter.addAction(AudioService.DESTROYED_STATUS);
 		filter.addAction(AudioService.NEW_TRACK_STATUS);
+		filter.addAction(AudioService.COMPLETED_STATUS);
 
 //		filter.addAction(AudioService.PAUSE_ACTION);
 //		filter.addAction(AudioService.STOP_ACTION);
@@ -186,6 +190,16 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		stopAudioService();
 		unregisterReceiver(receiver);
 //		DatabaseService.getInstance(null).closeDatabase(); //TODO Figure this out
+	}
+
+	@Override
+	public void onBackPressed() {
+		int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
+		if (backStackCount == 0) {
+			moveTaskToBack(true);
+		} else {
+			super.onBackPressed();
+		}
 	}
 
 	@Override

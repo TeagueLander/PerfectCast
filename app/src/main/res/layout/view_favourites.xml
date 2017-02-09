@@ -4,10 +4,9 @@
 	android:orientation="vertical"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@android:color/holo_blue_dark"
 	>
 
-	<TextView
+	<!--<TextView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:text="First View"
@@ -16,7 +15,16 @@
 		android:textColor="@android:color/black"
 		android:textStyle="bold"
 		android:layout_centerVertical="true"/>
-		<!--android:layout_centerHorizontal="true"-->
-		<!--android:id="@+id/textView" />-->
+		&lt;!&ndash;android:layout_centerHorizontal="true"&ndash;&gt;
+		&lt;!&ndash;android:id="@+id/textView" />&ndash;&gt;-->
+
+	<android.support.v7.widget.RecyclerView
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/subbedPodcastRecycler"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:scrollbars="vertical"
+		>
+	</android.support.v7.widget.RecyclerView>
 
 </LinearLayout>
