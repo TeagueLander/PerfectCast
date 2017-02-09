@@ -125,7 +125,8 @@
 		android:layout_above="@id/control_area"
 		android:scaleX="1"
 		android:scaleY="1"
-		android:padding="24dp"
+		android:paddingTop="6dp"
+		android:paddingBottom="12dp"
 		/><!-- maybe enlarge padding a bit -->
 	<!--android:layout_marginBottom="128dp"-->
 

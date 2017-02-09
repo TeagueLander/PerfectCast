@@ -5,13 +5,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.teaguelander.audio.perfectcast.R;
@@ -38,7 +41,9 @@ public class NowPlayingFragment extends Fragment {
 	FloatingActionButton mJumpBackwardButton;
 	FloatingActionButton mPlayPauseButton;
 	FloatingActionButton mJumpForwardButton;
+	SeekBar mSeekbar;
 
+	Handler mProgressHandler = new Handler();
 	PodcastEpisode currentEpisode;
 	boolean isAudioPlaying;
 	long mCurrentProgress;
@@ -119,6 +124,7 @@ public class NowPlayingFragment extends Fragment {
 		mJumpBackwardButton = (FloatingActionButton) mView.findViewById(R.id.jumpBackwardButton);
 		mPlayPauseButton = (FloatingActionButton) mView.findViewById(R.id.playPauseButton);
 		mJumpForwardButton = (FloatingActionButton) mView.findViewById(R.id.jumpForwardButton);
+		mSeekbar = (SeekBar) mView.findViewById(R.id.seekbar);
 
 		updateCurrentTrackInfo();
 
@@ -150,12 +156,31 @@ public class NowPlayingFragment extends Fragment {
 
 	}
 
-	private void updateProgress() {
-
-	}
-
 	private void setImage() {
 		PicassoService.loadLargeImage(currentEpisode.mPodcast.mImageUrl, mImageView);
 	}
+
+	private void updateProgress() {
+		//UPDATE SEEKBAR
+		mSeekbar.setMax((int)mMaxProgress);
+		mSeekbar.setProgress((int)mCurrentProgress);
+
+		mProgressHandler.removeCallbacks(mUpdateProgressTask);
+		if (isAudioPlaying == true) {
+			mProgressHandler.postDelayed(mUpdateProgressTask, 1000);
+		} else {
+
+		}
+	}
+
+	private Runnable mUpdateProgressTask = new Runnable() {
+		@Override
+		public void run() {
+			mCurrentProgress += 1;
+			mSeekbar.setMax((int)mMaxProgress);
+			mSeekbar.setProgress((int)mCurrentProgress);
+			mProgressHandler.postDelayed(mUpdateProgressTask, 1000);
+		}
+	};
 
 }
