@@ -1,5 +1,6 @@
 package com.teaguelander.audio.perfectcast.fragments;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -33,6 +34,7 @@ public class NowPlayingFragment extends Fragment {
 
 	TrackQueueService trackQueueService;
 	BroadcastReceiver receiver;
+	Activity mActivity;
 
 	View mView;
 	ImageView mImageView;
@@ -57,6 +59,7 @@ public class NowPlayingFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		mActivity = getActivity();
 		trackQueueService = TrackQueueService.getInstance();
 
 		receiver = new BroadcastReceiver() {
@@ -75,11 +78,12 @@ public class NowPlayingFragment extends Fragment {
 				} else if (action.equals(AudioService.STOPPED_STATUS)) {
 					setAudioIsPlaying(false);
 				} else if (action.equals(AudioService.PREPARING_STATUS)) {
-					//setAudioIsPlaying(false); TODO remove?
+					setAudioIsPlaying(false); //TODO remove?
 //					setLoadingVisible(); TODO add spinner
 				} else if (action.equals(AudioService.PLAYING_STATUS)) {
 					setAudioIsPlaying(true);
 				} else if (action.equals(AudioService.NEW_TRACK_STATUS)) {
+					setAudioIsPlaying(false); //TODO remove?
 					updateCurrentTrackInfo();
 				} else if (action.equals(AudioService.COMPLETED_STATUS)) {
 					setAudioIsPlaying(false);
@@ -125,6 +129,11 @@ public class NowPlayingFragment extends Fragment {
 		mPlayPauseButton = (FloatingActionButton) mView.findViewById(R.id.playPauseButton);
 		mJumpForwardButton = (FloatingActionButton) mView.findViewById(R.id.jumpForwardButton);
 		mSeekbar = (SeekBar) mView.findViewById(R.id.seekbar);
+
+		mPlayPauseButton.setOnClickListener(playPauseButtonListener);
+		mJumpBackwardButton.setOnClickListener(jumpBackwardButtonListener);
+		mJumpForwardButton.setOnClickListener(jumpForwardButtonListener);
+		mSeekbar.setOnSeekBarChangeListener(seekBarChangeListener);
 
 		updateCurrentTrackInfo();
 
@@ -180,6 +189,55 @@ public class NowPlayingFragment extends Fragment {
 			mSeekbar.setMax((int)mMaxProgress);
 			mSeekbar.setProgress((int)mCurrentProgress);
 			mProgressHandler.postDelayed(mUpdateProgressTask, 1000);
+		}
+	};
+
+//	BUTTON LISTENERS
+	View.OnClickListener playPauseButtonListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			if(isAudioPlaying){
+				mActivity.sendBroadcast(new Intent(AudioService.PAUSE_ACTION));
+			}else {
+				mActivity.startService(new Intent(AudioService.PLAY_ACTION, null, mActivity.getBaseContext(), AudioService.class));
+			}
+		}
+	};
+	View.OnClickListener jumpForwardButtonListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			mActivity.sendBroadcast(new Intent(AudioService.SKIP_ACTION));
+		}
+	};
+	View.OnClickListener jumpBackwardButtonListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			mActivity.sendBroadcast(new Intent(AudioService.REWIND_ACTION));
+		}
+	};
+
+//	SEEKBAR LISTENER
+	SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+		int mProgress;
+
+		@Override
+		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+			if (fromUser) {
+				Log.d("npf", "Progress Changed: " + progress + " From User: " + fromUser);
+				mProgress = progress;
+			}
+		}
+		@Override
+		public void onStartTrackingTouch(SeekBar seekBar) {
+			Log.d("npf", "Start touch");
+		}
+		@Override
+		public void onStopTrackingTouch(SeekBar seekBar) {
+			Log.d("npf", "Stopped touch");
+			Intent intent = new Intent(AudioService.SKIP_ACTION);
+			intent.putExtra(AudioService.SKIP_DESTINATION, mProgress * 1000);
+
+			mActivity.sendBroadcast(intent);
 		}
 	};
 

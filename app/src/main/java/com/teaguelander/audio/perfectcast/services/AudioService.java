@@ -25,6 +25,7 @@ public class AudioService extends Service {
 	public static String PAUSE_ACTION = "com.teaguelander.audio.perfectcast.PAUSE_ACTION";
 	public static String REWIND_ACTION = "com.teaguelander.audio.perfectcast.REWIND_ACTION";
 	public static String SKIP_ACTION = "com.teaguelander.audio.perfectcast.SKIP_ACTION";
+		public static String SKIP_DESTINATION = "skipDest";
 	public static String STOP_ACTION = "com.teaguelander.audio.perfectcast.STOP_ACTION";
 	public static String DESTROY_ACTION = "com.teaguelander.audio.perfectcast.DESTROY_ACTION";
 	public static String REQUEST_STATUS_ACTION = "com.teaguelander.audio.perfectcast.REQUEST_STATUS_ACTION";
@@ -216,8 +217,8 @@ public class AudioService extends Service {
 		mp.pause();
 		currentProgress = mp.getCurrentPosition(); //TODO remove this and move updateEpisode() here (need async call on updateEpisode
 		notification.update();
-		updateStatus(PAUSED_STATUS);
 		updateEpisode();
+		updateStatus(PAUSED_STATUS);
 		setSaveProgressTimer();
 	}
 
@@ -225,21 +226,26 @@ public class AudioService extends Service {
 		mp.stop();
 		currentProgress = mp.getCurrentPosition();
 		notification.update();
-		updateStatus(STOPPED_STATUS);
 		updateEpisode();
+		updateStatus(STOPPED_STATUS);
 		setSaveProgressTimer();
 	}
 
 	public void rewindAudio() {
 		mp.seekTo(mp.getCurrentPosition() - SKIP_LENGTH);
-		updateStatus(mStatus);
 		updateEpisode();
+		updateStatus(mStatus);
 	}
 
 	public void skipAudio() {
 		mp.seekTo(mp.getCurrentPosition() + SKIP_LENGTH);
-		updateStatus(mStatus);
 		updateEpisode();
+		updateStatus(mStatus);
+	}
+	public void skipAudio(int dest) {
+		mp.seekTo(dest);
+		updateEpisode();
+		updateStatus(mStatus);
 	}
 
 //	private void savePreferences() {
@@ -271,7 +277,12 @@ public class AudioService extends Service {
 			playAudio(forceUpdate);
 		}
 		else if (action.equals(SKIP_ACTION)) {
-			skipAudio();
+			int skipDest = intent.getIntExtra(SKIP_DESTINATION, -1);
+			if (skipDest == -1) {
+				skipAudio();
+			}else {
+				skipAudio(skipDest);
+			}
 		}
 		else if (action.equals(REWIND_ACTION)) {
 			rewindAudio();
