@@ -11,8 +11,10 @@ import android.widget.TextView;
 
 import com.teaguelander.audio.perfectcast.R;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
-import com.teaguelander.audio.perfectcast.objects.RowItemClickListener;
+import com.teaguelander.audio.perfectcast.objects.ItemClickListener;
 import com.teaguelander.audio.perfectcast.services.PicassoService;
+
+import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import java.util.ArrayList;
 
@@ -29,7 +31,7 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 
 	private ArrayList<PodcastEpisode> mEpisodes;
 	private int mEpisodesCount;
-	private RowItemClickListener mItemClickListener;
+	private ItemClickListener mItemClickListener;
 	private String mMode;
 
 	public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -39,6 +41,7 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 		public TextView mDurationTextView;
 		public TextView mSizeTextView;
 		public TextView mPubDateTextView;
+		public TextView mProgressPercentTextView;
 		public String mUrl;
 
 		public ViewHolder(View v) {
@@ -48,10 +51,12 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 			mTitleTextView = (TextView) v.findViewById(R.id.episode_title);
 			mDurationTextView = (TextView) v.findViewById(R.id.episode_duration);
 			mPubDateTextView = (TextView) v.findViewById(R.id.episode_pubdate);
+			mProgressPercentTextView = (TextView) v.findViewById(R.id.episode_progress_percent);
+			mSizeTextView = (TextView) v.findViewById(R.id.episode_size);
 		}
 	}
 
-	public EpisodeLinearAdapter(ArrayList<PodcastEpisode> episodes, String mode, RowItemClickListener itemClickListener) {
+	public EpisodeLinearAdapter(ArrayList<PodcastEpisode> episodes, String mode, ItemClickListener itemClickListener) {
 		Log.d("edf", "EPISODES LINEARA CREATED");
 		mEpisodesCount = episodes.size();
 		mEpisodes = episodes;
@@ -82,7 +87,9 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 		}
 
 		holder.mTitleTextView.setText(episode.mTitle);
-		holder.mDurationTextView.setText( episode.mDuration );
+		holder.mDurationTextView.setText(DurationFormatUtils.formatDuration(episode.mProgress, "H:mm:ss", true) + "/" + episode.mDuration);
+		holder.mProgressPercentTextView.setText(episode.mProgressPercent + "% Complete" );
+		holder.mSizeTextView.setText(Long.toString(episode.mBytes/1000000) + "MB");
 		if (episode.mPubDate != null) {
 			holder.mPubDateTextView.setText(basicDateFormatter.format(episode.mPubDate));
 		}
@@ -90,7 +97,7 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 		holder.mView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mItemClickListener.onRowItemClicked(episode);
+				mItemClickListener.onItemClicked(episode);
 			}
 		});
 	}
@@ -100,4 +107,23 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 		return mEpisodesCount;
 	}
 
+	public void removeEpisodeAt(int position) {
+		//REMOVE EPISODE CALLED!
+//		mEpisodes.remove(position); MAYBE IT DOESNT NEED TO BE REMOVED BECAUSE MEPISODES IS SHALLOW COPIED
+		mEpisodesCount = mEpisodes.size();
+		notifyItemRemoved(position);
+		notifyItemRangeChanged(position, mEpisodesCount);
+	}
+
+	public void addEpisodeAt(int position) {
+		mEpisodesCount = mEpisodes.size();
+		notifyItemInserted(position);
+		notifyItemRangeChanged(position, mEpisodesCount);
+	}
+
+	public void moveEpisodeTo(int position, int oldPosition) {
+		notifyItemMoved(oldPosition, position);
+	}
+
+	//TODO notifyItemChanged will update from the Episode I think!
 }

@@ -197,7 +197,7 @@ public class PodcastDetail {
 
 				String strBytes = parser.getAttributeValue(null, "length");
 				if (strBytes != null) {
-					bytes = Long.parseLong(strBytes);
+					try { bytes = Long.parseLong(strBytes); } catch (NumberFormatException e) { bytes = -1; }
 				}
 				parser.nextTag();
 			} else if (name.equalsIgnoreCase("description")){
@@ -211,6 +211,7 @@ public class PodcastDetail {
 		PodcastEpisode episode = new PodcastEpisode(title, description, url, duration, pubDate, bytes, this);
 		//TODO check if episode already exists and get its ID
 		episode.setIds(-1, mId);
+		episode.getProgressFromDatabase();
 		return episode;
 	}
 
@@ -270,6 +271,16 @@ public class PodcastDetail {
 
 		//TODO remove TrackQueueService test
 //		new TrackQueueService();
+	}
+
+	public void setXmlAndUpdate(String xml) {
+		mXml = xml;
+
+		if (mId == -1) {
+			addToDatabase();
+		} else {
+			DatabaseService.getInstance(null).updatePodcastXml(this);
+		}
 	}
 
 	//Adds to database with current mSubscribed value from object

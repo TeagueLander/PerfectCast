@@ -34,6 +34,8 @@ import com.teaguelander.audio.perfectcast.services.AudioService;
 import com.teaguelander.audio.perfectcast.services.PicassoService;
 import com.teaguelander.audio.perfectcast.services.TrackQueueService;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -147,6 +149,9 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 					setAudioServiceStatusText(getResources().getString(R.string.playing_status));
 				} else if (action.equals(AudioService.NEW_TRACK_STATUS)) {
 					updateCurrentTrackInfo();
+				} else if (action.equals(AudioService.COMPLETED_STATUS)) {
+					setAudioIsPlaying(false);
+					setAudioServiceStatusText(getResources().getString(R.string.completed_string));
 				}
 
 				mCurrentProgress = intent.getIntExtra(AudioService.EXTRA_CURRENT_PROGRESS, 0) / 1000;
@@ -165,6 +170,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		filter.addAction(AudioService.ERROR_STATUS);
 		filter.addAction(AudioService.DESTROYED_STATUS);
 		filter.addAction(AudioService.NEW_TRACK_STATUS);
+		filter.addAction(AudioService.COMPLETED_STATUS);
 
 //		filter.addAction(AudioService.PAUSE_ACTION);
 //		filter.addAction(AudioService.STOP_ACTION);
@@ -184,6 +190,16 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		stopAudioService();
 		unregisterReceiver(receiver);
 //		DatabaseService.getInstance(null).closeDatabase(); //TODO Figure this out
+	}
+
+	@Override
+	public void onBackPressed() {
+		int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
+		if (backStackCount == 0) {
+			moveTaskToBack(true);
+		} else {
+			super.onBackPressed();
+		}
 	}
 
 	@Override
@@ -293,21 +309,23 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 	//TODO update track name on toolbar
 	private void updateCurrentTrackInfo() {
 		//Get the episode on the top of the queue
-		PodcastEpisode episode = queueService.getFirstEpisode();
+		mCurrentEpisode = queueService.getFirstEpisode();
 
-		if (episode != null) {
+		if (mCurrentEpisode != null) {
 			//Updates
-			setControlToolbarImage(episode.mPodcast);
-			mPodcastTitle.setText(episode.mPodcast.mTitle);
-			mEpisodeTitle.setText(episode.mTitle);
+			setControlToolbarImage(mCurrentEpisode.mPodcast);
+			mPodcastTitle.setText(mCurrentEpisode.mPodcast.mTitle);
+			mEpisodeTitle.setText(mCurrentEpisode.mTitle);
+			mProgressCounter.setText(DurationFormatUtils.formatDuration(mCurrentEpisode.mProgress, "H:mm:ss", true) + "/" + mCurrentEpisode.mDuration);
+			Log.d("ma", "Got progress " + mCurrentEpisode.mDuration);
 		}
 	}
 
 	private void updateProgress() {
-		mProgressCounter.setText(DateUtils.formatElapsedTime(mCurrentProgress) + "/" + DateUtils.formatElapsedTime(mMaxProgress));
+		mProgressCounter.setText(DateUtils.formatElapsedTime(mCurrentProgress) + "/" + mCurrentEpisode.mDuration);
 
 		progressHandler.removeCallbacks(mUpdateProgressTask);
-		if (isAudioPlaying) {
+		if (isAudioPlaying == true) {
 			progressHandler.postDelayed(mUpdateProgressTask, 1000);
 		} else {
 
@@ -318,7 +336,7 @@ public class MainActivity extends AppCompatActivity { //implements SearchView.On
 		@Override
 		public void run() {
 			mCurrentProgress += 1;
-			mProgressCounter.setText(DateUtils.formatElapsedTime(mCurrentProgress) + "/" + DateUtils.formatElapsedTime(mMaxProgress));
+			mProgressCounter.setText(DateUtils.formatElapsedTime(mCurrentProgress) + "/" + mCurrentEpisode.mDuration); //DateUtils.formatElapsedTime(mMaxProgress)); TODO mMaxProgress is probably better...
 			progressHandler.postDelayed(mUpdateProgressTask, 1000);
 		}
 	};

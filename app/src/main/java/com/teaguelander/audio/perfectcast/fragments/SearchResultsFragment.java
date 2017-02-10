@@ -13,10 +13,11 @@ import android.widget.LinearLayout;
 
 import com.android.volley.Response;
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.teaguelander.audio.perfectcast.objects.PodcastDetail;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
 import com.teaguelander.audio.perfectcast.services.DataService;
 import com.teaguelander.audio.perfectcast.MainActivity;
-import com.teaguelander.audio.perfectcast.objects.RowItemClickListener;
+import com.teaguelander.audio.perfectcast.objects.ItemClickListener;
 import com.teaguelander.audio.perfectcast.R;
 import com.teaguelander.audio.perfectcast.recycler.PodcastLinearAdapter;
 
@@ -27,7 +28,7 @@ import org.json.JSONObject;
  * Created by Teague-Win10 on 1/9/2017.
  */
 
-public class SearchResultsFragment extends Fragment implements RowItemClickListener {
+public class SearchResultsFragment extends Fragment implements ItemClickListener {
 
 	private RecyclerView mRecyclerView;
 	private LinearLayoutManager mLinearLayoutManager;
@@ -91,7 +92,7 @@ public class SearchResultsFragment extends Fragment implements RowItemClickListe
 	}
 
 	@Override
-	public void onRowItemClicked(String feedUrl) {
+	public void onItemClicked(String feedUrl) {
 		Log.d("srf","Podcast Clicked!");
 		PodcastDetailFragment podcastDetailFragment = new PodcastDetailFragment();
 		Bundle args = new Bundle();
@@ -104,5 +105,8 @@ public class SearchResultsFragment extends Fragment implements RowItemClickListe
 		transaction.commit();
 	}
 	@Override
-	public void onRowItemClicked(PodcastEpisode episode) {}
+	public void onItemClicked(PodcastEpisode episode) {}
+
+	@Override
+	public void onItemClicked(PodcastDetail podcast) {}
 }

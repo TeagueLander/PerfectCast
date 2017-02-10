@@ -1,5 +1,9 @@
 package com.teaguelander.audio.perfectcast.fragments;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -9,15 +13,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.android.volley.toolbox.NetworkImageView;
 import com.teaguelander.audio.perfectcast.MainActivity;
 import com.teaguelander.audio.perfectcast.R;
+import com.teaguelander.audio.perfectcast.objects.PodcastDetail;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
-import com.teaguelander.audio.perfectcast.objects.RowItemClickListener;
+import com.teaguelander.audio.perfectcast.objects.ItemClickListener;
 import com.teaguelander.audio.perfectcast.recycler.EpisodeLinearAdapter;
+import com.teaguelander.audio.perfectcast.services.AudioService;
 import com.teaguelander.audio.perfectcast.services.TrackQueueService;
 
 import java.util.ArrayList;
@@ -26,7 +30,7 @@ import java.util.ArrayList;
  * Created by Teague-Win10 on 1/8/2017.
  */
 
-public class UpNextFragment extends Fragment implements RowItemClickListener {
+public class UpNextFragment extends Fragment implements ItemClickListener {
 
 	View mView;
 	private RecyclerView mUpNextRecycler;
@@ -36,13 +40,61 @@ public class UpNextFragment extends Fragment implements RowItemClickListener {
 	private MainActivity mMainActivity;
 	private TrackQueueService queueService;
 
+	private BroadcastReceiver receiver;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mMainActivity = (MainActivity) getActivity();
 		queueService = mMainActivity.getQueueService();
+
+		receiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				String action = intent.getAction();
+				Log.d("ma", "UpNext received Intent: " + action);
+
+
+				//TODO update %complete and stuff like that
+				if (action.equals(AudioService.COMPLETED_STATUS)) {
+					//Remove episode from recycler
+					mUpNextLinearAdapter.removeEpisodeAt(0); //TODO do we still this still? It was copied to ELA
+				}
+				if (action.equals(EpisodeDetailFragment.QUEUE_REMOVE_ITEM)) {
+					int position = intent.getIntExtra(EpisodeDetailFragment.ITEM_POSITION, -1);
+					mUpNextLinearAdapter.removeEpisodeAt(position);
+				}
+				if (action.equals(EpisodeDetailFragment.QUEUE_ADD_ITEM)) {
+					int position = intent.getIntExtra(EpisodeDetailFragment.ITEM_POSITION, -1);
+					int oldPosition = intent.getIntExtra(EpisodeDetailFragment.OLD_POSITION, -1);
+					if (oldPosition == -1) {
+						mUpNextLinearAdapter.addEpisodeAt(position);
+					} else {
+						mUpNextLinearAdapter.moveEpisodeTo(position, oldPosition);
+					}
+				}
+			}
+		};
+
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(AudioService.PLAYING_STATUS);
+		filter.addAction(AudioService.PREPARING_STATUS);
+		filter.addAction(AudioService.STOPPED_STATUS);
+		filter.addAction(AudioService.PAUSED_STATUS);
+		filter.addAction(AudioService.ERROR_STATUS);
+		filter.addAction(AudioService.DESTROYED_STATUS);
+		filter.addAction(AudioService.NEW_TRACK_STATUS);
+		filter.addAction(AudioService.COMPLETED_STATUS);
+		filter.addAction(EpisodeDetailFragment.QUEUE_REMOVE_ITEM);
+		filter.addAction(EpisodeDetailFragment.QUEUE_ADD_ITEM);
+		getActivity().registerReceiver(receiver, filter);
 	}
 
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		getActivity().unregisterReceiver(receiver);
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -64,9 +116,9 @@ public class UpNextFragment extends Fragment implements RowItemClickListener {
 	}
 
 	@Override
-	public void onRowItemClicked(String feedUrl) {}
+	public void onItemClicked(String feedUrl) {}
 	@Override
-	public void onRowItemClicked(PodcastEpisode episode) {
+	public void onItemClicked(PodcastEpisode episode) {
 		Log.d("pdf", "Podcast Episode Clicked! " + episode.mTitle);
 
 		//Podcast Detail Fragment
@@ -90,4 +142,7 @@ public class UpNextFragment extends Fragment implements RowItemClickListener {
 		Log.d("pdf", "Podcast Episode Clicked! " + episode.mTitle);
 
 	}
+
+	@Override
+	public void onItemClicked(PodcastDetail podcast) {}
 }

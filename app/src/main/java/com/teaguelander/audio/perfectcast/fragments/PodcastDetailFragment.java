@@ -20,7 +20,7 @@ import com.android.volley.Response;
 import com.teaguelander.audio.perfectcast.R;
 import com.teaguelander.audio.perfectcast.objects.PodcastDetail;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
-import com.teaguelander.audio.perfectcast.objects.RowItemClickListener;
+import com.teaguelander.audio.perfectcast.objects.ItemClickListener;
 import com.teaguelander.audio.perfectcast.recycler.EpisodeLinearAdapter;
 import com.teaguelander.audio.perfectcast.services.DataService;
 import com.teaguelander.audio.perfectcast.services.PicassoService;
@@ -33,7 +33,7 @@ import java.io.IOException;
  * Created by Teague-Win10 on 1/11/2017.
  */
 
-public class PodcastDetailFragment extends Fragment implements RowItemClickListener {
+public class PodcastDetailFragment extends Fragment implements ItemClickListener {
 
 	String mFeedUrl;
 	String mFeedXmlDataset;
@@ -168,9 +168,9 @@ public class PodcastDetailFragment extends Fragment implements RowItemClickListe
 
 
 	@Override
-	public void onRowItemClicked(String feedUrl) {}
+	public void onItemClicked(String feedUrl) {}
 	@Override
-	public void onRowItemClicked(PodcastEpisode episode) {
+	public void onItemClicked(PodcastEpisode episode) {
 		Log.d("pdf", "Podcast Episode Clicked! " + episode.mTitle);
 //		ImageView image = (ImageView) mView.findViewById(R.id.podcast_detail_image); //TODO get image from here?
 
@@ -185,4 +185,7 @@ public class PodcastDetailFragment extends Fragment implements RowItemClickListe
 		ft.commit();
 
 	}
+
+	@Override
+	public void onItemClicked(PodcastDetail podcast) {}
 }

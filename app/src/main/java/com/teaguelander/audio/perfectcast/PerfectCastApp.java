@@ -19,12 +19,14 @@ public class PerfectCastApp extends Application {
 	private static Context mContext;
 	public static SimpleDateFormat rssDateFormatter;
 	public static SimpleDateFormat basicDateFormatter;
+	public static SimpleDateFormat durationFormatter;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		rssDateFormatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
 		basicDateFormatter = new SimpleDateFormat("dd MMM yyyy hh:mm a");
+//		durationFormatter = new SimpleDateFormat("HH:mm:ss");
 
 		mContext = getApplicationContext();
 		DataService.getInstance(mContext);
@@ -44,3 +46,11 @@ public class PerfectCastApp extends Application {
 		return mContext;
 	}
 }
+
+//TODO Credit
+/*
+http://www.flaticon.com/free-icon/fishing-rod_140661#term=fishing rod&page=1&position=2
+
+
+
+ */

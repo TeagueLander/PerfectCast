@@ -25,6 +25,7 @@ public class AudioService extends Service {
 	public static String PAUSE_ACTION = "com.teaguelander.audio.perfectcast.PAUSE_ACTION";
 	public static String REWIND_ACTION = "com.teaguelander.audio.perfectcast.REWIND_ACTION";
 	public static String SKIP_ACTION = "com.teaguelander.audio.perfectcast.SKIP_ACTION";
+		public static String SKIP_DESTINATION = "skipDest";
 	public static String STOP_ACTION = "com.teaguelander.audio.perfectcast.STOP_ACTION";
 	public static String DESTROY_ACTION = "com.teaguelander.audio.perfectcast.DESTROY_ACTION";
 	public static String REQUEST_STATUS_ACTION = "com.teaguelander.audio.perfectcast.REQUEST_STATUS_ACTION";
@@ -36,6 +37,7 @@ public class AudioService extends Service {
 	public static String ERROR_STATUS = "com.teaguelander.audio.perfectcast.ERROR_STATUS";
 	public static String DESTROYED_STATUS = "com.teaguelander.audio.perfectcast.DESTROYED_STATUS";
 	public static String NEW_TRACK_STATUS = "com.teaguelander.audio.perfectcast.NEW_TRACK_STATUS";
+	public static String COMPLETED_STATUS = "com.teaguelander.audio.perfectcast.COMPLETED_STATUS";
 		public static String EXTRA_CURRENT_PROGRESS = "currentProgress";
 		public static String EXTRA_MAX_PROGRESS = "maxProgress";
 
@@ -121,7 +123,7 @@ public class AudioService extends Service {
 
 		if (forceUpdate || currentEpisode == null) {
 			//Save Position of Episode
-			updateEpisode();
+//			updateEpisode();
 
 			//Get New Episode
 			currentEpisode = queueService.getFirstEpisode();
@@ -169,8 +171,17 @@ public class AudioService extends Service {
 				mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 					public void onCompletion(MediaPlayer mp) {
 //						mp.seekTo(0);
-//						pauseAudio();
-						stopAudio();
+						//TODO remove the track
+						pauseAudio();
+//						stopAudio();
+
+						mp.pause();
+						currentProgress = mp.getCurrentPosition(); //TODO remove this and move updateEpisode() here (need async call on updateEpisode
+						notification.update();
+						queueService.onEpisodeFinished();
+						updateStatus(COMPLETED_STATUS);
+						playAudio(true); //Plays the next track
+
 						Log.d("as", "End of Audio reached");
 //						updateStatus(PAUSED_STATUS));
 					}
@@ -206,8 +217,8 @@ public class AudioService extends Service {
 		mp.pause();
 		currentProgress = mp.getCurrentPosition(); //TODO remove this and move updateEpisode() here (need async call on updateEpisode
 		notification.update();
-		updateStatus(PAUSED_STATUS);
 		updateEpisode();
+		updateStatus(PAUSED_STATUS);
 		setSaveProgressTimer();
 	}
 
@@ -215,19 +226,26 @@ public class AudioService extends Service {
 		mp.stop();
 		currentProgress = mp.getCurrentPosition();
 		notification.update();
-		updateStatus(STOPPED_STATUS);
 		updateEpisode();
+		updateStatus(STOPPED_STATUS);
 		setSaveProgressTimer();
 	}
 
 	public void rewindAudio() {
 		mp.seekTo(mp.getCurrentPosition() - SKIP_LENGTH);
 		updateEpisode();
+		updateStatus(mStatus);
 	}
 
 	public void skipAudio() {
 		mp.seekTo(mp.getCurrentPosition() + SKIP_LENGTH);
 		updateEpisode();
+		updateStatus(mStatus);
+	}
+	public void skipAudio(int dest) {
+		mp.seekTo(dest);
+		updateEpisode();
+		updateStatus(mStatus);
 	}
 
 //	private void savePreferences() {
@@ -259,7 +277,12 @@ public class AudioService extends Service {
 			playAudio(forceUpdate);
 		}
 		else if (action.equals(SKIP_ACTION)) {
-			skipAudio();
+			int skipDest = intent.getIntExtra(SKIP_DESTINATION, -1);
+			if (skipDest == -1) {
+				skipAudio();
+			}else {
+				skipAudio(skipDest);
+			}
 		}
 		else if (action.equals(REWIND_ACTION)) {
 			rewindAudio();

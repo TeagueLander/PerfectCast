@@ -7,9 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.toolbox.NetworkImageView;
-import com.teaguelander.audio.perfectcast.services.DataService;
-import com.teaguelander.audio.perfectcast.objects.RowItemClickListener;
+import com.teaguelander.audio.perfectcast.objects.ItemClickListener;
 import com.teaguelander.audio.perfectcast.R;
 import com.teaguelander.audio.perfectcast.services.PicassoService;
 
@@ -24,7 +22,7 @@ import org.json.JSONObject;
 public class PodcastLinearAdapter extends RecyclerView.Adapter<PodcastLinearAdapter.ViewHolder> {
 	private JSONArray mDataset;
 	private int mDatasetLength;
-	private RowItemClickListener mItemClickListener;
+	private ItemClickListener mItemClickListener;
 
 	public static class ViewHolder extends RecyclerView.ViewHolder{
 
@@ -41,7 +39,7 @@ public class PodcastLinearAdapter extends RecyclerView.Adapter<PodcastLinearAdap
 		}
 	}
 
-	public PodcastLinearAdapter(JSONObject dataset, RowItemClickListener itemClickListener) {
+	public PodcastLinearAdapter(JSONObject dataset, ItemClickListener itemClickListener) {
 		mDatasetLength = 0;
 		mItemClickListener = itemClickListener;
 		try {
@@ -86,7 +84,7 @@ public class PodcastLinearAdapter extends RecyclerView.Adapter<PodcastLinearAdap
 		holder.mView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mItemClickListener.onRowItemClicked(holder.mFeedUrl);
+				mItemClickListener.onItemClicked(holder.mFeedUrl);
 			}
 		});
 	}
