@@ -35,7 +35,7 @@ public class TrackQueueService {
 
 // GETTING
 	public PodcastEpisode getFirstEpisode() {
-		Log.d("tqs", "Getting first episode in queue");
+//		Log.d("tqs", "Getting first episode in queue");
 		if (queueItems.size() > 0) {
 			return queueItems.get(0);
 		}else {
@@ -43,21 +43,31 @@ public class TrackQueueService {
 		}
 	}
 
+	public int checkForEpisode(PodcastEpisode episode) {
+		int position = -1;
+		for (PodcastEpisode queueEpisode: queueItems) {
+			position++;
+//			Log.d("tqs","Episode " + episode.mId + "  against " + queueEpisode.mId);
+			if (episode.mUrl.equals(queueEpisode.mUrl)) {
+				return position;
+			}
+		}
+		return -1;
+	}
 
 //MODIFYING
-
-	public void addEpisode(int position, PodcastEpisode episode) {
-		Log.d("tqs", "----------------Queue before insert: ");
+	public int addEpisode(int position, PodcastEpisode episode) {
+		/*Log.d("tqs", "----------------Queue before insert: ");
 		for (PodcastEpisode item : queueItems) {
 			Log.d("tqs", "Podcast: " + item.mPodcast.mTitle + " Episode: " + item.mTitle);
 		}
-		Log.d("tqs", "----------------");
+		Log.d("tqs", "----------------");*/
 
 		episode.setIds(mDatabaseService.addEpisode(episode),-1);
 
 //		Remove episode from the position it was in
 		for (PodcastEpisode item : queueItems) {
-			Log.d("tqs", "maybe remove? " + episode.mId + " " + item.mId);
+//			Log.d("tqs", "maybe remove? " + episode.mId + " " + item.mId);
 			if (episode.mId == item.mId) {
 				queueItems.remove(item);
 				break;
@@ -70,16 +80,17 @@ public class TrackQueueService {
 		}
 		queueItems.add(position, episode);
 
-		Log.d("tqs", "Queue before database: ");
+		/*Log.d("tqs", "Queue before database: ");
 		for (PodcastEpisode item : queueItems) {
 			Log.d("tqs", "Podcast: " + item.mPodcast.mTitle + " Episode: " + item.mTitle + " ID: " + item.mId);
-		}
+		}*/
 
 		mDatabaseService.updateTrackQueue(queueItems);
+		return position;
 	}
 
-	public void addEpisodeAtEnd(PodcastEpisode episode) {
-		addEpisode(queueItems.size(), episode);
+	public int addEpisodeAtEnd(PodcastEpisode episode) {
+		return addEpisode(queueItems.size(), episode);
 	}
 
 	//TODO may want to remove by PodcastEpisode

@@ -115,4 +115,15 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 		notifyItemRangeChanged(position, mEpisodesCount);
 	}
 
+	public void addEpisodeAt(int position) {
+		mEpisodesCount = mEpisodes.size();
+		notifyItemInserted(position);
+		notifyItemRangeChanged(position, mEpisodesCount);
+	}
+
+	public void moveEpisodeTo(int position, int oldPosition) {
+		notifyItemMoved(oldPosition, position);
+	}
+
+	//TODO notifyItemChanged will update from the Episode I think!
 }

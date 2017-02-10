@@ -60,6 +60,19 @@ public class UpNextFragment extends Fragment implements ItemClickListener {
 					//Remove episode from recycler
 					mUpNextLinearAdapter.removeEpisodeAt(0); //TODO do we still this still? It was copied to ELA
 				}
+				if (action.equals(EpisodeDetailFragment.QUEUE_REMOVE_ITEM)) {
+					int position = intent.getIntExtra(EpisodeDetailFragment.ITEM_POSITION, -1);
+					mUpNextLinearAdapter.removeEpisodeAt(position);
+				}
+				if (action.equals(EpisodeDetailFragment.QUEUE_ADD_ITEM)) {
+					int position = intent.getIntExtra(EpisodeDetailFragment.ITEM_POSITION, -1);
+					int oldPosition = intent.getIntExtra(EpisodeDetailFragment.OLD_POSITION, -1);
+					if (oldPosition == -1) {
+						mUpNextLinearAdapter.addEpisodeAt(position);
+					} else {
+						mUpNextLinearAdapter.moveEpisodeTo(position, oldPosition);
+					}
+				}
 			}
 		};
 
@@ -72,6 +85,8 @@ public class UpNextFragment extends Fragment implements ItemClickListener {
 		filter.addAction(AudioService.DESTROYED_STATUS);
 		filter.addAction(AudioService.NEW_TRACK_STATUS);
 		filter.addAction(AudioService.COMPLETED_STATUS);
+		filter.addAction(EpisodeDetailFragment.QUEUE_REMOVE_ITEM);
+		filter.addAction(EpisodeDetailFragment.QUEUE_ADD_ITEM);
 		getActivity().registerReceiver(receiver, filter);
 	}
 
