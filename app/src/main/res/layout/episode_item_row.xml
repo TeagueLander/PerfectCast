@@ -5,9 +5,9 @@
 	android:layout_width="match_parent"
 	android:layout_height="@dimen/podcast_item_row_height"
 	android:clickable="true"
-	android:background="?android:attr/selectableItemBackground"
-	android:paddingTop="1dp"
+	android:background="@color/colorBackgroundPrimary"
 	>
+	<!--android:background="?android:attr/selectableItemBackground"-->
 
 	<ImageView
 		android:id="@+id/podcast_image"
@@ -65,6 +65,12 @@
 		android:layout_height="1dp"
 		android:background="@color/colorRowDivider"
 		android:layout_alignParentBottom="true"
+		/>
+	<View
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:background="@color/colorRowDivider"
+		android:layout_alignParentTop="true"
 		/>
 
 </RelativeLayout>

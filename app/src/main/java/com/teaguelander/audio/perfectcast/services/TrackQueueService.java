@@ -116,4 +116,17 @@ public class TrackQueueService {
 
 		removeEpisode(0);
 	}
+
+	public void updateDatabase() {
+		printQueue();
+		mDatabaseService.updateTrackQueue(queueItems);
+	}
+
+	private void printQueue() {
+		Log.d("tqs", "SAVING DATABASE >>>>>>>>>>>>>>>>" + " REF ID: " + Integer.toHexString(System.identityHashCode(queueItems)) );
+		for (PodcastEpisode episode : queueItems) {
+			Log.d("tqs", "Title: " + episode.mTitle);
+		}
+		Log.d("tqs", "END SAVING DATABASE >>>>>>>>>>>>>>>>");
+	}
 }

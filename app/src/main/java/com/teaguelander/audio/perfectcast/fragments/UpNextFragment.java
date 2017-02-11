@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.LinearLayout;
 
 import com.teaguelander.audio.perfectcast.MainActivity;
 import com.teaguelander.audio.perfectcast.R;
+import com.teaguelander.audio.perfectcast.objects.ItemDragAndDropHelperCallback;
 import com.teaguelander.audio.perfectcast.objects.PodcastDetail;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
 import com.teaguelander.audio.perfectcast.objects.ItemClickListener;
@@ -36,6 +38,8 @@ public class UpNextFragment extends Fragment implements ItemClickListener {
 	private RecyclerView mUpNextRecycler;
 	private LinearLayoutManager mUpNextLinearLayoutManager;
 	private EpisodeLinearAdapter mUpNextLinearAdapter;
+	private ItemTouchHelper mItemTouchHelper;
+
 	private ArrayList<PodcastEpisode> mEpisodes;
 	private MainActivity mMainActivity;
 	private TrackQueueService queueService;
@@ -111,6 +115,10 @@ public class UpNextFragment extends Fragment implements ItemClickListener {
 		mUpNextLinearAdapter = new EpisodeLinearAdapter(mEpisodes, EpisodeLinearAdapter.UP_NEXT_MODE, this);
 		mUpNextRecycler.setAdapter(mUpNextLinearAdapter);
 
+		ItemTouchHelper.Callback callback = new ItemDragAndDropHelperCallback(mUpNextLinearAdapter, onItemMoveEventFinishedRunnable);
+		mItemTouchHelper = new ItemTouchHelper(callback);
+		mItemTouchHelper.attachToRecyclerView(mUpNextRecycler);
+
 		return mView;
 
 	}
@@ -145,4 +153,12 @@ public class UpNextFragment extends Fragment implements ItemClickListener {
 
 	@Override
 	public void onItemClicked(PodcastDetail podcast) {}
+
+	Runnable onItemMoveEventFinishedRunnable = new Runnable() {
+		@Override
+		public void run() {
+			Log.d("unf", "Update database");
+			queueService.updateDatabase();
+		}
+	};
 }
