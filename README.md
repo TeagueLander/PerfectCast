@@ -3,7 +3,7 @@ PerfectCast
 
 A simple podcast application for Android.
 
-\centerline{\includegraphics[height=2in]{favourites.png}}
+<img src="https://github.com/favicon.ico" width="48">
 
 ![Alt text](/readme/favourites.png)
 ![Alt text](/readme/now_playing.png)
