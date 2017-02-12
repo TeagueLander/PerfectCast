@@ -39,7 +39,7 @@ public class PerfectCastApp extends Application {
 	@Override
 	public void onTrimMemory(int level) {
 		super.onTrimMemory(level);
-		Toast.makeText(mContext, "You need to trim the FUCKING MEMORY", Toast.LENGTH_LONG); //TODO implement a better solution
+//		Toast.makeText(mContext, "You need to trim the MEMORY", Toast.LENGTH_LONG).show(); //TODO trim memory on app in background
 	}
 
 	public static Context getContext() {

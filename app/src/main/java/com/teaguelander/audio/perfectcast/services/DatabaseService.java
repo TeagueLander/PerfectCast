@@ -31,7 +31,7 @@ public class DatabaseService extends SQLiteOpenHelper {
 	private static Context mContext;
 	private static SQLiteDatabase mDatabase;
 
-	private static final int DATABASE_VERSION = 31;
+	private static final int DATABASE_VERSION = 32;
 	private static final String DATABASE_NAME = "PerfectCast";
 	private static final String TABLE_EPISODES = "episodes";
 	private static final String TABLE_PODCASTS = "podcasts";

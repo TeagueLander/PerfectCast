@@ -10,6 +10,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.teaguelander.audio.perfectcast.R;
+import com.teaguelander.audio.perfectcast.objects.ItemDragAndDropHelperAdapter;
+import com.teaguelander.audio.perfectcast.objects.ItemDragAndDropHelperViewHolder;
 import com.teaguelander.audio.perfectcast.objects.PodcastEpisode;
 import com.teaguelander.audio.perfectcast.objects.ItemClickListener;
 import com.teaguelander.audio.perfectcast.services.PicassoService;
@@ -17,6 +19,7 @@ import com.teaguelander.audio.perfectcast.services.PicassoService;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static com.teaguelander.audio.perfectcast.PerfectCastApp.basicDateFormatter;
 
@@ -24,7 +27,7 @@ import static com.teaguelander.audio.perfectcast.PerfectCastApp.basicDateFormatt
  * Created by Teague-Win10 on 1/15/2017.
  */
 
-public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdapter.ViewHolder> {
+public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdapter.ViewHolder> implements ItemDragAndDropHelperAdapter {
 
 	public static final String PODCAST_DETAIL_MODE = "podcast_detail_mode";
 	public static final String UP_NEXT_MODE = "up_next_mode";
@@ -34,7 +37,7 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 	private ItemClickListener mItemClickListener;
 	private String mMode;
 
-	public static class ViewHolder extends RecyclerView.ViewHolder {
+	public static class ViewHolder extends RecyclerView.ViewHolder implements ItemDragAndDropHelperViewHolder {
 		public View mView;
 		public ImageView mPodcastImage;
 		public TextView mTitleTextView;
@@ -53,6 +56,16 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 			mPubDateTextView = (TextView) v.findViewById(R.id.episode_pubdate);
 			mProgressPercentTextView = (TextView) v.findViewById(R.id.episode_progress_percent);
 			mSizeTextView = (TextView) v.findViewById(R.id.episode_size);
+		}
+
+		@Override
+		public void onItemSelected() {
+			//TODO somehting here
+		}
+
+		@Override
+		public void onItemClear() {
+			//TODO something here
 		}
 	}
 
@@ -124,6 +137,20 @@ public class EpisodeLinearAdapter extends RecyclerView.Adapter<EpisodeLinearAdap
 	public void moveEpisodeTo(int position, int oldPosition) {
 		notifyItemMoved(oldPosition, position);
 	}
+	//TODO notifyItemChanged will update from the Episode I think! (WHAT DOES THIS MEAN?)
 
-	//TODO notifyItemChanged will update from the Episode I think!
+	@Override
+	public void onItemMove(int fromPosition, int toPosition) {
+		if (toPosition != 0) { //TODO remove and allow episodes to swap with first episode (this is change track after drop);
+			PodcastEpisode episode = mEpisodes.remove(fromPosition);
+			mEpisodes.add(toPosition, episode);
+			notifyItemMoved(fromPosition, toPosition);
+		}
+	}
+
+	@Override
+	public void onItemDismiss(int position) {
+		//TODO enable this somehow
+	}
+
 }

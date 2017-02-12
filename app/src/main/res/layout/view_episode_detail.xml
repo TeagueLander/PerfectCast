@@ -81,21 +81,23 @@
 				<Button
 					android:id="@+id/playEpisodeButton"
 					android:layout_width="0dp"
-					android:layout_height="wrap_content"
+					android:layout_height="match_parent"
 					android:layout_weight="0.6"
 					android:drawableTop="@android:drawable/ic_media_play"
 					android:contentDescription="Play/Pause Button"
 					android:text="Play Episode"
+					android:textSize="10dp"
 					/>
 				<!-- Toggle Queue Button -->
 				<Button
 					android:id="@+id/addtoQueueButton"
 					android:layout_width="0dp"
-					android:layout_height="wrap_content"
+					android:layout_height="match_parent"
 					android:layout_weight="0.4"
 					android:drawableTop="@android:drawable/ic_menu_add"
 					android:contentDescription="Add to Queue Button"
 					android:text="Add to Queue"
+					android:textSize="10dp"
 					/>
 			</LinearLayout>
 
