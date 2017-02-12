@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.teaguelander.audio.perfectcast.MainActivity;
 import com.teaguelander.audio.perfectcast.R;
@@ -136,6 +137,7 @@ public class EpisodeDetailFragment extends Fragment {
 							setToggleQueueButtonImage();
 						} else {
 							Log.d("edf", "CANT REMOVE EPISODE AT FRONT OF QUEUE"); //TODO remove episode at front of queue
+							Toast.makeText(getContext(), "Currently cant remove item at front of queue", Toast.LENGTH_LONG).show();
 						}
 					} else {
 						mPositionInQueue = TrackQueueService.getInstance().addEpisodeAtEnd(mEpisode); //TODO maybe the trackqueue should make broadcasts
@@ -167,6 +169,7 @@ public class EpisodeDetailFragment extends Fragment {
 		}else {
 			drawableResource = android.R.drawable.ic_menu_delete;
 			text = "Remove from Queue";
+//			toggleQueueButton.setTextSize(10);
 		}
 		Drawable drawable = getContext().getResources().getDrawable(drawableResource, null);
 
