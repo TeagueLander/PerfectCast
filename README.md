@@ -3,8 +3,8 @@ PerfectCast
 
 A simple podcast application for Android.
 
-<img src="/readme/favourites.png" alt="Drawing" style="width: 200px;"/>
-<img src="/readme/now_playing.png" alt="Drawing" style="width: 200px;"/>
-<img src="/readme/up_next.png" alt="Drawing" style="width: 200px;"/>
-<img src="/readme/podcast_detail.png" alt="Drawing" style="width: 200px;"/>
+![](/readme/favourites.png | width=100)
+![](/readme/now_playing.png | width=100)
+![](/readme/up_next.png | width=100)
+![](/readme/podcast_detail.png | width=100)
 
