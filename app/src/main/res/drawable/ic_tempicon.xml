@@ -1,3 +1,5 @@
+<!--<div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>-->
+
 <vector android:height="48dp" android:viewportHeight="59.542"
     android:viewportWidth="59.542" android:width="48dp" xmlns:android="http://schemas.android.com/apk/res/android">
     <path android:fillColor="#3F51B5" android:pathData="M55.62,52.71L8.39,6.89C7.86,6.38 7.13,6.21 6.47,6.38C6.42,6.3 6.38,6.22 6.31,6.15L1.71,1.54c-0.39,-0.39 -1.02,-0.39 -1.41,0s-0.39,1.02 0,1.41l4.6,4.6c0.05,0.05 0.12,0.09 0.19,0.13C4.86,8.38 5.02,9.16 5.56,9.72l45.81,47.22c1.17,1.17 3.07,1.17 4.24,0S56.79,53.88 55.62,52.71z"/>
