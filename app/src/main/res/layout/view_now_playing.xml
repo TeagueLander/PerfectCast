@@ -119,7 +119,7 @@
 		android:id="@+id/podcastImage"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:src="@drawable/ic_tempicon"
+		android:src="@drawable/ic_cast_icon"
 		android:layout_centerHorizontal="true"
 		android:layout_below="@id/podcastTitle"
 		android:layout_above="@id/control_area"

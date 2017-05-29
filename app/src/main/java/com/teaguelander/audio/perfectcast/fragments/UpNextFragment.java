@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.teaguelander.audio.perfectcast.MainActivity;
 import com.teaguelander.audio.perfectcast.R;
@@ -39,6 +40,7 @@ public class UpNextFragment extends Fragment implements ItemClickListener {
 	private LinearLayoutManager mUpNextLinearLayoutManager;
 	private EpisodeLinearAdapter mUpNextLinearAdapter;
 	private ItemTouchHelper mItemTouchHelper;
+	private TextView mEmptyQueueTextView;
 
 	private ArrayList<PodcastEpisode> mEpisodes;
 	private MainActivity mMainActivity;
@@ -106,6 +108,7 @@ public class UpNextFragment extends Fragment implements ItemClickListener {
 		mEpisodes = queueService.getQueueItems();
 
 		mView = inflater.inflate(R.layout.view_up_next, container, false);
+		mEmptyQueueTextView = (TextView) mView.findViewById(R.id.emptyQueue);
 
 		mUpNextRecycler = (RecyclerView) mView.findViewById(R.id.upNextRecycler);
 		mUpNextRecycler.setHasFixedSize(true);
@@ -118,6 +121,12 @@ public class UpNextFragment extends Fragment implements ItemClickListener {
 		ItemTouchHelper.Callback callback = new ItemDragAndDropHelperCallback(mUpNextLinearAdapter, onItemMoveEventFinishedRunnable);
 		mItemTouchHelper = new ItemTouchHelper(callback);
 		mItemTouchHelper.attachToRecyclerView(mUpNextRecycler);
+		
+		if (mEpisodes.size() > 0) {
+			mEmptyQueueTextView.setVisibility(View.INVISIBLE);
+		} else {
+			mEmptyQueueTextView.setVisibility(View.VISIBLE);
+		}
 
 		return mView;
 
