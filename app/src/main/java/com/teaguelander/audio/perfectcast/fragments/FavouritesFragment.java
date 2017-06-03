@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
+import android.widget.TextView;
 
 import com.teaguelander.audio.perfectcast.R;
 import com.teaguelander.audio.perfectcast.objects.ItemClickListener;
@@ -33,6 +34,7 @@ public class FavouritesFragment extends Fragment implements ItemClickListener {
 	ArrayList<PodcastDetail> mSubbedPodcasts;
 	DatabaseService mDatabaseService;
 	View mView;
+	TextView mNoSubsView;
 
 	RecyclerView subbedPodcastRecycler;
 	GridLayoutManager subbedPodcastGridLayoutManager;
@@ -50,9 +52,10 @@ public class FavouritesFragment extends Fragment implements ItemClickListener {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		mSubbedPodcasts = mDatabaseService.getSubscribedPodcasts();
+		mSubbedPodcasts = mDatabaseService.getSubscribedPodcasts(); //Synchronous
 
 		mView = inflater.inflate(R.layout.view_favourites, container, false);
+		mNoSubsView = (TextView) mView.findViewById(R.id.noSubs);
 
 		subbedPodcastRecycler = (RecyclerView) mView.findViewById(R.id.subbedPodcastRecycler);
 		subbedPodcastRecycler.setHasFixedSize(true);
@@ -61,6 +64,13 @@ public class FavouritesFragment extends Fragment implements ItemClickListener {
 		subbedPodcastRecycler.setLayoutManager(subbedPodcastGridLayoutManager);
 		subbedPodcastGridAdapter = new PodcastGridAdapter(mSubbedPodcasts, this);
 		subbedPodcastRecycler.setAdapter(subbedPodcastGridAdapter);
+		
+//		If there are podcasts, then hide the "No Subs" message
+		if (mSubbedPodcasts.size() > 0) {
+			mNoSubsView.setVisibility(View.INVISIBLE);
+		} else {
+			mNoSubsView.setVisibility(View.VISIBLE);
+		}
 
 		return mView;
 
